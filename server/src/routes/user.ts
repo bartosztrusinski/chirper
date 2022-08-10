@@ -1,25 +1,22 @@
 import express from 'express';
+import {
+  getUsers,
+  createUser,
+  getUser,
+  updateUser,
+  deleteUser,
+} from '../controllers/user';
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.json({ message: 'All users are here' });
-});
+router.get('/', getUsers);
 
-router.post('/', (req, res) => {
-  res.status(201).json({ message: 'New user created' });
-});
+router.post('/', createUser);
 
-router.get('/:id', (req, res) => {
-  res.json({ message: `User ${req.params.id} found` });
-});
+router.get('/:id', getUser);
 
-router.put('/:id', (req, res) => {
-  res.json({ message: `User ${req.params.id} updated` });
-});
+router.put('/:id', updateUser);
 
-router.delete('/:id', (req, res) => {
-  res.json({ message: `User ${req.params.id} deleted` });
-});
+router.delete('/:id', deleteUser);
 
 export default router;
