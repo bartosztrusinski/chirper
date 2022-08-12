@@ -4,6 +4,9 @@ import express, { Application } from 'express';
 import 'express-async-errors';
 import userRoutes from './routes/user';
 import errorHandler from './middleware/error';
+import connectDB from './config/db';
+
+connectDB();
 
 const PORT = process.env.PORT || 3000;
 const app: Application = express();
