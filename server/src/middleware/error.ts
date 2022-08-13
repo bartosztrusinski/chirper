@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { StatusCodeError } from '../utils/errors';
 
 const errorHandler = (
-  err: StatusCodeError | Error,
+  err: Error,
   req: Request,
   res: Response,
   next: NextFunction

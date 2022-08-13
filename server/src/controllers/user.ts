@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
 import { BadRequestError } from '../utils/errors';
+import User from '../models/User';
 
-export const getUsers = (req: Request, res: Response) => {
-  res.json({ message: 'All users are here' });
+export const getUsers = async (req: Request, res: Response) => {
+  const allUsers = await User.find();
+  res.status(200).json(allUsers);
+  // res.json({ message: 'All users are here' });
 };
 
 export const createUser = (req: Request, res: Response) => {

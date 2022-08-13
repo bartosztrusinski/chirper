@@ -1,10 +1,10 @@
-interface StatusCodeErrorI extends Error {
+interface IStatusCodeError extends Error {
   statusCode: number;
 }
 
 export abstract class StatusCodeError
   extends Error
-  implements StatusCodeErrorI
+  implements IStatusCodeError
 {
   public abstract statusCode: number;
 }
