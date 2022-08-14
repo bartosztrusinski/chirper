@@ -12,7 +12,7 @@ export interface IUser {
 interface IUserProfile {
   name: string;
   picture?: string;
-  backgroundPicture?: string;
+  header?: string;
   bio?: string;
   location?: string;
   website?: string;
@@ -32,24 +32,35 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
       type: String,
       required: [true, 'Username is required'],
       unique: true,
-      max: [50, 'Username must be less than 50 characters'],
+      minLength: [5, 'Username must be at least 5 characters'],
+      maxLength: [50, 'Username must be less than 50 characters'],
+      match: /^[^<>]*$/,
     },
     email: {
       type: String,
       required: [true, 'Email is required'],
       unique: true,
+      match: [
+        /^([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        '',
+      ],
     },
     password: {
       type: String,
       required: [true, 'Password is required'],
-      min: [8, 'Password must be at least 8 characters'],
-      max: [50, 'Password must be less than 50 characters'],
+      minLength: [8, 'Password must be at least 8 characters'],
+      maxLength: [64, 'Password must be less than 64 characters'],
+      match: [
+        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])[^\s<>]*$/,
+        'Password must contain at least one uppercase, one lowercase, and one number characters',
+      ],
     },
     profile: {
       name: {
         type: String,
-        required: [true, 'Name is required'],
+        required: [true, 'Profile name is required'],
         max: [50, 'Profile name must be less than 50 characters'],
+        match: [/^[^<>]*$/, 'Profile name cannot include invalid characters'],
       },
       picture: {
         type: String,
@@ -59,15 +70,21 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
       },
       bio: {
         type: String,
-        max: [160, 'Biography must be less than 160 characters'],
+        max: [160, 'Description must be less than 160 characters'],
+        match: [/^[^<>]*$/, 'Description cannot include invalid characters'],
       },
       location: {
         type: String,
         max: [30, 'Location must be less than 30 characters'],
+        match: [/^[^<>]*$/, 'Location cannot include invalid characters'],
       },
       website: {
         type: String,
         max: [100, 'Website URL must be less than 100 characters'],
+        match: [
+          /^(https?:\/\/)?(www.)?([a-z0-9]+\.)+[a-zA-Z]{2,}\/?(\/[a-zA-Z0-9#-_]+\/?)*$/,
+          'Website URL must be valid and cannot include invalid characters',
+        ],
       },
     },
   },
