@@ -3,15 +3,55 @@ import mongoose from 'mongoose';
 import { BadRequestError } from '../utils/errors';
 import User from '../models/User';
 
-export const getUsers = async (req: Request, res: Response) => {
+export const getAllUsers = async (req: Request, res: Response) => {
   const allUsers = await User.find();
   res.status(200).json(allUsers);
 };
 
-export const createUser = async (req: Request, res: Response) => {
-  const { userData } = req.body;
-  const newUser = await User.create(userData);
-  res.status(201).json(newUser);
+export const signUpUser = async (req: Request, res: Response) => {
+  //get user data ✅
+  const { username, email, password, profile } = req.body;
+
+  //check if user already exists ✅
+  //or let mongoose send ugly duplicate key error
+  const existingUser = await User.exists({
+    $or: [{ email }, { username }],
+  });
+  if (existingUser) {
+    throw new BadRequestError('Username or email has already been taken');
+  }
+
+  //check if required fields are filled ✅ mongoose validates this
+  //check if fields are valid ✅ mongoose validates this
+  //encrypt password ✅ uses bcrypt pre save hook
+  //create user ✅
+  const newUser = await User.create({ username, email, password, profile });
+
+  //jtw token
+  //send necessary user data ✅
+  res.status(201).json({ id: newUser._id });
+};
+
+export const logInUser = async (req: Request, res: Response) => {
+  //get user credentials ✅
+  const { login, password } = req.body;
+
+  //check if user exists ✅
+  const existingUser = await User.findOne({
+    $or: [{ email: login }, { username: login }],
+  });
+  if (!existingUser) {
+    throw new BadRequestError('Sorry, we could not find your account');
+  }
+
+  //check if password is correct ✅
+  const isPasswordCorrect = await existingUser.comparePassword(password);
+  if (!isPasswordCorrect) {
+    throw new BadRequestError('Sorry, wrong password!');
+  }
+  //jwt token
+  //send necessary user data ✅
+  res.status(200).json({ id: existingUser._id });
 };
 
 export const getUser = async (req: Request, res: Response) => {

@@ -1,5 +1,4 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
 import express, { Application } from 'express';
 import 'express-async-errors';
 import userRoutes from './routes/user';
@@ -17,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/users', userRoutes);
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((req, res, next) => {
   throw new NotFoundError('Sorry! Route you are looking for does not exist');
 });

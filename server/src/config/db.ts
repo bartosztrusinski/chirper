@@ -1,9 +1,16 @@
 import mongoose from 'mongoose';
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/chirper';
+const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGODB_URI_LOCAL;
+
+if (!MONGODB_URI) {
+  console.error(
+    'No MongoDB connection string provided. Set MONGODB_URI environment variable.'
+  );
+  process.exit(1);
+}
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(MONGO_URI);
+    await mongoose.connect(MONGODB_URI);
     console.log(`MongoDB Connected: ${mongoose.connection.host}`);
     listenForErrors();
   } catch (error) {
