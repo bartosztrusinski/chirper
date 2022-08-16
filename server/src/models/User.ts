@@ -34,7 +34,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
       unique: true,
       minLength: [5, 'Username must be at least 5 characters'],
       maxLength: [50, 'Username must be less than 50 characters'],
-      match: /^[^<>]*$/,
+      match: [/^[^<>]*$/, 'Username cannot include invalid characters'],
     },
     email: {
       type: String,
@@ -42,7 +42,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
       unique: true,
       match: [
         /^([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        '',
+        'Please enter a valid email address',
       ],
     },
     password: {
@@ -106,7 +106,7 @@ userSchema.pre('save', async function (next) {
 
 const comparePassword: ComparePasswordFunction = async function (
   this: IUser,
-  candidatePassword: string
+  candidatePassword
 ) {
   const isMatch = await bcrypt.compare(candidatePassword, this.password);
   return isMatch;
