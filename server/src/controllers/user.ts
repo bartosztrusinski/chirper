@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { BadRequestError } from '../utils/errors';
 import User from '../models/User';
+import jwt from 'jsonwebtoken';
 
 export const getAllUsers = async (req: Request, res: Response) => {
   const allUsers = await User.find();
@@ -27,9 +28,10 @@ export const signUpUser = async (req: Request, res: Response) => {
   //create user ✅
   const newUser = await User.create({ username, email, password, profile });
 
-  //jtw token
+  //jtw token ✅
+  const token = generateToken(newUser._id);
   //send necessary user data ✅
-  res.status(201).json({ id: newUser._id });
+  res.status(201).json({ id: newUser._id, token });
 };
 
 export const logInUser = async (req: Request, res: Response) => {
@@ -49,9 +51,22 @@ export const logInUser = async (req: Request, res: Response) => {
   if (!isPasswordCorrect) {
     throw new BadRequestError('Sorry, wrong password!');
   }
-  //jwt token
+  //jwt token ✅
+  const token = generateToken(existingUser._id);
   //send necessary user data ✅
-  res.status(200).json({ id: existingUser._id });
+  res.status(200).json({ id: existingUser._id, token });
+};
+
+const generateToken = (id: mongoose.Types.ObjectId) => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    console.error(
+      'No JWT secret string provided. Set JWT_SECRET environment variable.'
+    );
+    process.exit(1);
+  }
+  const token = jwt.sign({ id }, secret, { expiresIn: '30d' });
+  return token;
 };
 
 export const getUser = async (req: Request, res: Response) => {
