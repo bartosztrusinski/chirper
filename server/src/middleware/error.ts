@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodeError } from '../utils/errors';
+import { ENVIRONMENT } from '../utils/secrets';
 
 const errorHandler = (
   err: Error,
@@ -12,7 +13,7 @@ const errorHandler = (
   res.status(statusCode).json({
     message: err.message,
     status: statusCode,
-    stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack,
+    stack: ENVIRONMENT === 'production' ? '🥞' : err.stack,
   });
 };
 

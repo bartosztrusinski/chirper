@@ -1,12 +1,5 @@
 import mongoose from 'mongoose';
-const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGODB_URI_LOCAL;
-
-if (!MONGODB_URI) {
-  console.error(
-    'No MongoDB connection string provided. Set MONGODB_URI environment variable.'
-  );
-  process.exit(1);
-}
+import { MONGODB_URI } from '../utils/secrets';
 
 const connectDB = async () => {
   try {

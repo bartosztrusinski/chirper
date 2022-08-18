@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { BadRequestError } from '../utils/errors';
 import User from '../models/User';
 import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '../utils/secrets';
 
 export const getAllUsers = async (req: Request, res: Response) => {
   const allUsers = await User.find();
@@ -29,7 +30,7 @@ export const signUpUser = async (req: Request, res: Response) => {
   const newUser = await User.create({ username, email, password, profile });
 
   //jtw token ✅
-  const token = generateToken(newUser._id);
+  const token = generateJwt(newUser._id);
   //send necessary user data ✅
   res.status(201).json({ id: newUser._id, token });
 };
@@ -52,20 +53,13 @@ export const logInUser = async (req: Request, res: Response) => {
     throw new BadRequestError('Sorry, wrong password!');
   }
   //jwt token ✅
-  const token = generateToken(existingUser._id);
+  const token = generateJwt(existingUser._id);
   //send necessary user data ✅
   res.status(200).json({ id: existingUser._id, token });
 };
 
-const generateToken = (id: mongoose.Types.ObjectId) => {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    console.error(
-      'No JWT secret string provided. Set JWT_SECRET environment variable.'
-    );
-    process.exit(1);
-  }
-  const token = jwt.sign({ id }, secret, { expiresIn: '30d' });
+const generateJwt = (id: mongoose.Types.ObjectId) => {
+  const token = jwt.sign({ id }, JWT_SECRET, { expiresIn: '30d' });
   return token;
 };
 
