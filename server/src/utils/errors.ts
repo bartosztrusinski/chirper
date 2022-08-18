@@ -18,3 +18,8 @@ export class NotFoundError extends StatusCodeError {
   public statusCode = 404;
   public name = 'Not Found Error';
 }
+
+export class UnauthorizedError extends StatusCodeError {
+  public statusCode = 401;
+  public name = 'Unauthorized Error';
+}

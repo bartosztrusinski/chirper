@@ -8,8 +8,8 @@ import { NotFoundError } from './utils/errors';
 
 connectDB();
 
-const PORT = process.env.PORT || 3000;
 const app: Application = express();
+app.set('port', process.env.PORT || 3000);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -23,6 +23,8 @@ app.use((req, res, next) => {
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(app.get('port'), () => {
+  console.log(
+    `Server is running on port ${app.get('port')} in ${app.get('env')} mode`
+  );
 });

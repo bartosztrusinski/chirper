@@ -7,6 +7,7 @@ import {
   updateUser,
   deleteUser,
 } from '../controllers/user';
+import { isAuthenticated } from '../middleware/auth';
 
 const router = Router();
 
@@ -16,7 +17,7 @@ router.post('/', signUpUser);
 
 router.post('/login', logInUser);
 
-router.get('/:userID', getUser);
+router.get('/:userID', isAuthenticated, getUser);
 
 router.put('/:userID', updateUser);
 
