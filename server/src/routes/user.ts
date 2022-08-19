@@ -6,6 +6,7 @@ import {
   getUser,
   updateUser,
   deleteUser,
+  getLoggedInUser,
 } from '../controllers/user';
 import { isAuthenticated } from '../middleware/auth';
 
@@ -17,7 +18,9 @@ router.post('/', signUpUser);
 
 router.post('/login', logInUser);
 
-router.get('/:userID', isAuthenticated, getUser);
+router.get('/me', isAuthenticated, getLoggedInUser);
+
+router.get('/:userID', getUser);
 
 router.put('/:userID', updateUser);
 

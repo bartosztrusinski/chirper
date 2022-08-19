@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import mongoose from 'mongoose';
+import { Handler, Request, Response } from 'express';
+import { Types } from 'mongoose';
 import { BadRequestError } from '../utils/errors';
 import User from '../models/User';
 import jwt from 'jsonwebtoken';
@@ -7,7 +7,14 @@ import { JWT_SECRET } from '../utils/secrets';
 
 export const getAllUsers = async (req: Request, res: Response) => {
   const allUsers = await User.find();
-  res.status(200).json(allUsers);
+
+  res.status(200).json(
+    allUsers.map(({ _id, username, profile }) => ({
+      _id,
+      username,
+      profile,
+    }))
+  );
 };
 
 export const signUpUser = async (req: Request, res: Response) => {
@@ -28,11 +35,13 @@ export const signUpUser = async (req: Request, res: Response) => {
   //encrypt password ✅ uses bcrypt pre save hook
   //create user ✅
   const newUser = await User.create({ username, email, password, profile });
+  const { _id } = newUser;
 
-  //jtw token ✅
-  const token = generateJwt(newUser._id);
+  //sign token ✅
+  const authToken = generateAuthToken(_id);
+
   //send necessary user data ✅
-  res.status(201).json({ id: newUser._id, token });
+  res.status(201).json({ _id, authToken });
 };
 
 export const logInUser = async (req: Request, res: Response) => {
@@ -52,15 +61,31 @@ export const logInUser = async (req: Request, res: Response) => {
   if (!isPasswordCorrect) {
     throw new BadRequestError('Sorry, wrong password!');
   }
-  //jwt token ✅
-  const token = generateJwt(existingUser._id);
+
+  const { _id } = existingUser;
+
+  //sign token ✅
+  const authToken = generateAuthToken(_id);
+
   //send necessary user data ✅
-  res.status(200).json({ id: existingUser._id, token });
+  res.status(200).json({ _id, authToken });
 };
 
-const generateJwt = (id: mongoose.Types.ObjectId) => {
-  const token = jwt.sign({ id }, JWT_SECRET, { expiresIn: '30d' });
-  return token;
+const generateAuthToken = (loggedInUserId: Types.ObjectId) => {
+  return jwt.sign({ loggedInUserId }, JWT_SECRET, {
+    expiresIn: '30d',
+  });
+};
+
+export const getLoggedInUser: Handler = async (req, res) => {
+  const loggedInUser = await User.findById(req.loggedInUserId);
+  if (!loggedInUser) {
+    throw new BadRequestError('Sorry, we could not find your account');
+  }
+
+  const { _id, username } = loggedInUser;
+
+  res.status(200).json({ _id, username });
 };
 
 export const getUser = async (req: Request, res: Response) => {
@@ -70,30 +95,38 @@ export const getUser = async (req: Request, res: Response) => {
   if (!foundUser) {
     throw new BadRequestError('User not found');
   }
-  res.status(200).json(foundUser);
+
+  const { _id, username, profile } = foundUser;
+
+  res.status(200).json({ _id, username, profile });
 };
 
 export const updateUser = async (req: Request, res: Response) => {
   const { userID } = req.params;
   const { userData } = req.body;
-  const isValid = mongoose.Types.ObjectId.isValid(userID);
+
+  const isValid = Types.ObjectId.isValid(userID);
   if (!isValid) {
     throw new BadRequestError('Invalid user ID');
   }
+
   const updatedUser = await User.findByIdAndUpdate(userID, userData, {
     new: true,
   });
   if (!updatedUser) {
-    throw new BadRequestError('User not found');
+    throw new BadRequestError('Sorry, could not find that user');
   }
+
   res.status(200).json(updatedUser);
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
   const { userID } = req.params;
+
   const deletedUser = await User.findByIdAndDelete(userID);
   if (!deletedUser) {
-    throw new BadRequestError('User not found');
+    throw new BadRequestError('Sorry, could not find that user');
   }
-  res.status(200).json({ id: userID });
+
+  res.status(200).json({ _id: deletedUser._id });
 };
