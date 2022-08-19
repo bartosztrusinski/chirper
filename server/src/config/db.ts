@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
+import { connect, connection } from 'mongoose';
 import { MONGODB_URI } from '../utils/secrets';
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(MONGODB_URI);
-    console.log(`MongoDB Connected: ${mongoose.connection.host}`);
+    await connect(MONGODB_URI);
+    console.log(`MongoDB Connected: ${connection.host}`);
     listenForErrors();
   } catch (error) {
     console.error(error);
@@ -13,12 +13,12 @@ const connectDB = async () => {
 };
 
 const listenForErrors = () => {
-  mongoose.connection.on('error', (error) => {
+  connection.on('error', (error) => {
     console.error(error);
     process.exit(1);
   });
 
-  mongoose.connection.on('disconnected', (error) => {
+  connection.on('disconnected', (error) => {
     console.error(error);
     process.exit(1);
   });

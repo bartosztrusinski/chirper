@@ -1,24 +1,15 @@
+import { Handler } from 'express';
+import { Types } from 'mongoose';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import User, { IUser } from '../models/User';
-import { Request, Response, NextFunction } from 'express';
+import User from '../models/User';
 import { UnauthorizedError } from '../utils/errors';
-import mongoose from 'mongoose';
 import { JWT_SECRET } from '../utils/secrets';
-// import { HydratedDocument } from 'mongoose';
-
-interface AuthRequest extends Request {
-  user?: IUser;
-}
 
 interface AuthPayload extends JwtPayload {
-  id: mongoose.Types.ObjectId;
+  loggedInUserId: Types.ObjectId;
 }
 
-export const isAuthenticated = async (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const isAuthenticated: Handler = async (req, res, next) => {
   //get auth header ✅
   const authHeader = req.header('authorization');
 
@@ -35,18 +26,13 @@ export const isAuthenticated = async (
   }
 
   //get token from header ✅
-  const authJwt = authHeader.split(' ')[1];
+  const authToken = authHeader.split(' ')[1];
 
   //verify token ✅
-  const decodedAuthJwt = jwt.verify(authJwt, JWT_SECRET) as AuthPayload;
+  const { loggedInUserId } = jwt.verify(authToken, JWT_SECRET) as AuthPayload;
 
-  //find user by id ✅
-  //pass user in request object ✅
-  const loggedInUser = await User.findById(decodedAuthJwt.id).select(
-    '-password'
-  );
-
-  //check if user is found ✅
+  //check if user is found in db ✅
+  const loggedInUser = await User.exists({ _id: loggedInUserId });
   if (!loggedInUser) {
     throw new UnauthorizedError(
       'Not authorized, user with given authorization token not found'
@@ -54,7 +40,7 @@ export const isAuthenticated = async (
   }
 
   //pass user in request object ✅
-  req.user = loggedInUser;
+  req.loggedInUserId = loggedInUser._id;
 
   next();
 };
