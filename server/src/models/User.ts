@@ -1,14 +1,6 @@
 import { Schema, model, Model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-export interface IUser {
-  username: string;
-  email: string;
-  password: string;
-
-  profile: IUserProfile;
-}
-
 interface IUserProfile {
   name: string;
   picture?: string;
@@ -18,10 +10,49 @@ interface IUserProfile {
   website?: string;
 }
 
+const userProfileSchema = new Schema<IUserProfile>({
+  name: {
+    type: String,
+    required: [true, 'Profile name is required'],
+    max: [50, 'Profile name must be less than 50 characters'],
+    match: [/^[^<>]*$/, 'Profile name cannot include invalid characters'],
+  },
+  picture: {
+    type: String,
+  },
+  header: {
+    type: String,
+  },
+  bio: {
+    type: String,
+    max: [160, 'Description must be less than 160 characters'],
+    match: [/^[^<>]*$/, 'Description cannot include invalid characters'],
+  },
+  location: {
+    type: String,
+    max: [30, 'Location must be less than 30 characters'],
+    match: [/^[^<>]*$/, 'Location cannot include invalid characters'],
+  },
+  website: {
+    type: String,
+    max: [100, 'Website URL must be less than 100 characters'],
+    match: [
+      /^(https?:\/\/)?(www.)?([a-z0-9]+\.)+[a-zA-Z]{2,}\/?(\/[a-zA-Z0-9#-_]+\/?)*$/,
+      'Website URL must be valid and cannot include invalid characters',
+    ],
+  },
+});
+
+export interface IUser {
+  username: string;
+  email: string;
+  password: string;
+  profile: IUserProfile;
+}
+
 interface IUserMethods {
   comparePassword: ComparePasswordFunction;
 }
-
 type ComparePasswordFunction = (candidatePassword: string) => Promise<boolean>;
 
 type UserModel = Model<IUser, Record<string, unknown>, IUserMethods>;
@@ -34,7 +65,10 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
       unique: true,
       minLength: [5, 'Username must be at least 5 characters'],
       maxLength: [50, 'Username must be less than 50 characters'],
-      match: [/^[^<>]*$/, 'Username cannot include invalid characters'],
+      match: [
+        /^[A-Za-z0-9_]*$/,
+        'Username can only contain letters, numbers and "_"',
+      ],
     },
     email: {
       type: String,
@@ -55,38 +89,11 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
         'Password must contain at least one uppercase, one lowercase, and one number characters',
       ],
     },
-    profile: {
-      name: {
-        type: String,
-        required: [true, 'Profile name is required'],
-        max: [50, 'Profile name must be less than 50 characters'],
-        match: [/^[^<>]*$/, 'Profile name cannot include invalid characters'],
-      },
-      picture: {
-        type: String,
-      },
-      backgroundPicture: {
-        type: String,
-      },
-      bio: {
-        type: String,
-        max: [160, 'Description must be less than 160 characters'],
-        match: [/^[^<>]*$/, 'Description cannot include invalid characters'],
-      },
-      location: {
-        type: String,
-        max: [30, 'Location must be less than 30 characters'],
-        match: [/^[^<>]*$/, 'Location cannot include invalid characters'],
-      },
-      website: {
-        type: String,
-        max: [100, 'Website URL must be less than 100 characters'],
-        match: [
-          /^(https?:\/\/)?(www.)?([a-z0-9]+\.)+[a-zA-Z]{2,}\/?(\/[a-zA-Z0-9#-_]+\/?)*$/,
-          'Website URL must be valid and cannot include invalid characters',
-        ],
-      },
-    },
+    profile: userProfileSchema,
+    // follows
+    // followers
+    // chirps
+    // replies
   },
   { timestamps: true }
 );
