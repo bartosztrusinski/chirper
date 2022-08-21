@@ -16,6 +16,7 @@ const userProfileSchema = new Schema<IUserProfile>({
     required: [true, 'Profile name is required'],
     max: [50, 'Profile name must be less than 50 characters'],
     match: [/^[^<>]*$/, 'Profile name cannot include invalid characters'],
+    trim: true,
   },
   picture: {
     type: String,
@@ -27,6 +28,7 @@ const userProfileSchema = new Schema<IUserProfile>({
     type: String,
     max: [160, 'Description must be less than 160 characters'],
     match: [/^[^<>]*$/, 'Description cannot include invalid characters'],
+    trim: true,
   },
   location: {
     type: String,
@@ -38,7 +40,7 @@ const userProfileSchema = new Schema<IUserProfile>({
     max: [100, 'Website URL must be less than 100 characters'],
     match: [
       /^(https?:\/\/)?(www.)?([a-z0-9]+\.)+[a-zA-Z]{2,}\/?(\/[a-zA-Z0-9#-_]+\/?)*$/,
-      'Website URL must be valid and cannot include invalid characters',
+      'Website URL must be valid',
     ],
   },
 });
@@ -69,6 +71,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
         /^[A-Za-z0-9_]*$/,
         'Username can only contain letters, numbers and "_"',
       ],
+      trim: true,
     },
     email: {
       type: String,
@@ -78,6 +81,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
         /^([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
         'Please enter a valid email address',
       ],
+      trim: true,
     },
     password: {
       type: String,
@@ -88,6 +92,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
         /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])[^\s<>]*$/,
         'Password must contain at least one uppercase, one lowercase, and one number characters',
       ],
+      trim: true,
     },
     profile: userProfileSchema,
     // follows

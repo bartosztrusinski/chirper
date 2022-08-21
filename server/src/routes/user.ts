@@ -4,11 +4,10 @@ import {
   signUpUser,
   logInUser,
   getUser,
-  updateUser,
-  deleteUser,
-  getLoggedInUser,
+  // updateUser,
+  // deleteUser,
 } from '../controllers/user';
-import { isAuthenticated } from '../middleware/auth';
+// import { isAuthenticated } from '../middleware/auth';
 
 const router = Router();
 
@@ -18,12 +17,10 @@ router.post('/', signUpUser);
 
 router.post('/login', logInUser);
 
-router.get('/me', isAuthenticated, getLoggedInUser);
+router.get('/:username', getUser);
 
-router.get('/:userID', getUser);
+// router.put('/:username', isAuthenticated, updateUser); // me route?
 
-router.put('/:userID', updateUser);
-
-router.delete('/:userID', deleteUser);
+// router.delete('/:username', isAuthenticated, deleteUser); // me route?
 
 export default router;
