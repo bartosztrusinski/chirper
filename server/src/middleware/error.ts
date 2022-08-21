@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodeError } from '../utils/errors';
-import { ENVIRONMENT } from '../utils/secrets';
+import { ENVIRONMENT } from '../config/secrets';
 
 const errorHandler = (
   err: Error,

@@ -3,10 +3,10 @@ import { Types } from 'mongoose';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import User from '../models/User';
 import { UnauthorizedError } from '../utils/errors';
-import { JWT_SECRET } from '../utils/secrets';
+import { JWT_SECRET } from '../config/secrets';
 
 interface AuthPayload extends JwtPayload {
-  loggedInUserId: Types.ObjectId;
+  currentUserId: Types.ObjectId;
 }
 
 export const isAuthenticated: Handler = async (req, res, next) => {
@@ -29,18 +29,18 @@ export const isAuthenticated: Handler = async (req, res, next) => {
   const authToken = authHeader.split(' ')[1];
 
   //verify token ✅
-  const { loggedInUserId } = jwt.verify(authToken, JWT_SECRET) as AuthPayload;
+  const { currentUserId } = jwt.verify(authToken, JWT_SECRET) as AuthPayload;
 
   //check if user is found in db ✅
-  const loggedInUser = await User.exists({ _id: loggedInUserId });
-  if (!loggedInUser) {
+  const currentUser = await User.exists({ _id: currentUserId });
+  if (!currentUser) {
     throw new UnauthorizedError(
       'Not authorized, user with given authorization token not found'
     );
   }
 
   //pass user in request object ✅
-  req.loggedInUserId = loggedInUser._id;
+  req.currentUserId = currentUser._id;
 
   next();
 };

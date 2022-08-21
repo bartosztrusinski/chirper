@@ -1,23 +1,24 @@
-import { Handler, Request, Response } from 'express';
+import { Handler } from 'express';
 import { Types } from 'mongoose';
 import { BadRequestError } from '../utils/errors';
 import User from '../models/User';
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../utils/secrets';
+import { JWT_SECRET } from '../config/secrets';
 
-export const getAllUsers = async (req: Request, res: Response) => {
+export const getAllUsers: Handler = async (req, res) => {
   const allUsers = await User.find();
 
   res.status(200).json(
-    allUsers.map(({ _id, username, profile }) => ({
+    allUsers.map(({ _id, username, email, profile }) => ({
       _id,
       username,
+      email,
       profile,
     }))
   );
 };
 
-export const signUpUser = async (req: Request, res: Response) => {
+export const signUpUser: Handler = async (req, res) => {
   //get user data ✅
   const { username, email, password, profile } = req.body;
 
@@ -44,7 +45,7 @@ export const signUpUser = async (req: Request, res: Response) => {
   res.status(201).json({ _id, authToken });
 };
 
-export const logInUser = async (req: Request, res: Response) => {
+export const logInUser: Handler = async (req, res) => {
   //get user credentials ✅
   const { login, password } = req.body;
 
@@ -71,62 +72,50 @@ export const logInUser = async (req: Request, res: Response) => {
   res.status(200).json({ _id, authToken });
 };
 
-const generateAuthToken = (loggedInUserId: Types.ObjectId) => {
-  return jwt.sign({ loggedInUserId }, JWT_SECRET, {
+const generateAuthToken = (currentUserId: Types.ObjectId) => {
+  return jwt.sign({ currentUserId }, JWT_SECRET, {
     expiresIn: '30d',
   });
 };
 
-export const getLoggedInUser: Handler = async (req, res) => {
-  const loggedInUser = await User.findById(req.loggedInUserId);
-  if (!loggedInUser) {
-    throw new BadRequestError('Sorry, we could not find your account');
-  }
+export const getUser: Handler = async (req, res) => {
+  const { username } = req.params;
 
-  const { _id, username } = loggedInUser;
-
-  res.status(200).json({ _id, username });
-};
-
-export const getUser = async (req: Request, res: Response) => {
-  const { userID } = req.params;
-
-  const foundUser = await User.findById(userID);
+  const foundUser = await User.findOne({ username });
   if (!foundUser) {
-    throw new BadRequestError('User not found');
+    throw new BadRequestError('Sorry, we could not find that user');
   }
 
-  const { _id, username, profile } = foundUser;
-
-  res.status(200).json({ _id, username, profile });
+  const { _id, email, profile } = foundUser;
+  res.status(200).json({ _id, username, email, profile });
 };
 
-export const updateUser = async (req: Request, res: Response) => {
-  const { userID } = req.params;
-  const { userData } = req.body;
+// export const updateUser = async (req: Request, res: Response) => {
+//   const { username } = req.params;
+//   const { userData } = req.body;
 
-  const isValid = Types.ObjectId.isValid(userID);
-  if (!isValid) {
-    throw new BadRequestError('Invalid user ID');
-  }
+//   const isValid = Types.ObjectId.isValid(username);
+//   if (!isValid) {
+//     throw new BadRequestError('Invalid user ID');
+//   }
 
-  const updatedUser = await User.findByIdAndUpdate(userID, userData, {
-    new: true,
-  });
-  if (!updatedUser) {
-    throw new BadRequestError('Sorry, could not find that user');
-  }
+//   const updatedUser = await User.findOneAndUpdate({ username }, userData, {
+//     new: true,
+//   });
+//   if (!updatedUser) {
+//     throw new BadRequestError('Sorry, we could not find that user');
+//   }
 
-  res.status(200).json(updatedUser);
-};
+//   res.status(200).json(updatedUser);
+// };
 
-export const deleteUser = async (req: Request, res: Response) => {
-  const { userID } = req.params;
+// export const deleteUser = async (req: Request, res: Response) => {
+//   const { username } = req.params;
 
-  const deletedUser = await User.findByIdAndDelete(userID);
-  if (!deletedUser) {
-    throw new BadRequestError('Sorry, could not find that user');
-  }
+//   const deletedUser = await User.findByIdAndDelete(username);
+//   if (!deletedUser) {
+//     throw new BadRequestError('Sorry, we could not find that user');
+//   }
 
-  res.status(200).json({ _id: deletedUser._id });
-};
+//   res.status(200).json({ _id: deletedUser._id });
+// };
