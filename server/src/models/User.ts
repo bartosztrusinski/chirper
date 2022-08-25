@@ -1,6 +1,5 @@
-import { Schema, model, Model } from 'mongoose';
+import { Schema, model, Model, HydratedDocument } from 'mongoose';
 import bcrypt from 'bcryptjs';
-
 interface IUserProfile {
   name: string;
   picture?: string;
@@ -52,12 +51,14 @@ export interface IUser {
   profile: IUserProfile;
 }
 
-interface IUserMethods {
-  comparePassword: ComparePasswordFunction;
+export interface IUserMethods {
+  isPasswordMatch: IsPasswordMatch;
 }
-type ComparePasswordFunction = (candidatePassword: string) => Promise<boolean>;
+type IsPasswordMatch = (candidatePassword: string) => Promise<boolean>;
 
 type UserModel = Model<IUser, Record<string, unknown>, IUserMethods>;
+
+export type HydratedUser = HydratedDocument<IUser, IUserMethods>;
 
 const userSchema = new Schema<IUser, UserModel, IUserMethods>(
   {
@@ -103,28 +104,28 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
   { timestamps: true }
 );
 
-const encryptPassword = async (password: string): Promise<string> => {
+const generateHash = async (input: string): Promise<string> => {
   const salt = await bcrypt.genSalt(10);
-  const hash = await bcrypt.hash(password, salt);
-  return hash;
+  const hashedInput = bcrypt.hash(input, salt);
+  return hashedInput;
 };
 
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function hashPassword(next) {
   if (!this.isModified('password')) return next();
-  const hash = await encryptPassword(this.password);
-  this.password = hash;
+  const hashedPassword = await generateHash(this.password);
+  this.password = hashedPassword;
   next();
 });
 
-const comparePassword: ComparePasswordFunction = async function (
+const isPasswordMatch: IsPasswordMatch = function (
   this: IUser,
   candidatePassword
 ) {
-  const isMatch = await bcrypt.compare(candidatePassword, this.password);
+  const isMatch = bcrypt.compare(candidatePassword, this.password);
   return isMatch;
 };
 
-userSchema.method('comparePassword', comparePassword);
+userSchema.method('isPasswordMatch', isPasswordMatch);
 
 const User = model<IUser, UserModel>('User', userSchema);
 

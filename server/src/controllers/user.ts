@@ -58,8 +58,8 @@ export const logInUser: Handler = async (req, res) => {
   }
 
   //check if password is correct ✅
-  const isPasswordCorrect = await existingUser.comparePassword(password);
-  if (!isPasswordCorrect) {
+  const isPasswordMatch = await existingUser.isPasswordMatch(password);
+  if (!isPasswordMatch) {
     throw new BadRequestError('Sorry, wrong password!');
   }
 
