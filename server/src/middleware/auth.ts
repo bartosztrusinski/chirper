@@ -2,8 +2,9 @@ import { Handler } from 'express';
 import { Types } from 'mongoose';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import User from '../models/User';
-import { UnauthorizedError } from '../utils/errors';
+import { BadRequestError, UnauthorizedError } from '../utils/errors';
 import { JWT_SECRET } from '../config/secrets';
+import { Chirp } from '../models/Chirp';
 
 interface AuthPayload extends JwtPayload {
   currentUserId: Types.ObjectId;
@@ -41,6 +42,30 @@ export const isAuthenticated: Handler = async (req, res, next) => {
 
   //pass user in request object ✅
   req.currentUserId = currentUser._id;
+
+  next();
+};
+
+export const isChirpAuthor: Handler = async (req, res, next) => {
+  const { currentUserId } = req;
+  const { chirpId } = req.params;
+
+  if (!currentUserId) {
+    throw new UnauthorizedError(
+      'Not authorized, you must be logged in to do that'
+    );
+  }
+
+  const foundChirp = await Chirp.findById(chirpId);
+  if (!foundChirp) {
+    throw new BadRequestError('Sorry, we could not find that chirp');
+  }
+
+  if (!foundChirp.author.equals(currentUserId)) {
+    throw new UnauthorizedError(
+      'Not authorized, you must be the author of the chirp to do that'
+    );
+  }
 
   next();
 };
