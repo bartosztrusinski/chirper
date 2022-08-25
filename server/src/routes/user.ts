@@ -1,13 +1,13 @@
 import { Router } from 'express';
+import { getUserChirps } from '../controllers/chirp/all';
+import { getUserPosts } from '../controllers/chirp/post';
+import { getUserReplies } from '../controllers/chirp/reply';
 import {
   getAllUsers,
   signUpUser,
   logInUser,
   getUser,
-  // updateUser,
-  // deleteUser,
 } from '../controllers/user';
-// import { isAuthenticated } from '../middleware/auth';
 
 const router = Router();
 
@@ -19,8 +19,8 @@ router.post('/login', logInUser);
 
 router.get('/:username', getUser);
 
-// router.put('/:username', isAuthenticated, updateUser); // me route?
-
-// router.delete('/:username', isAuthenticated, deleteUser); // me route?
+router.get('/:username/posts', getUserPosts);
+router.get('/:username/replies', getUserReplies);
+router.get('/:username/all-chirps', getUserChirps);
 
 export default router;
