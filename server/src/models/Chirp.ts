@@ -1,10 +1,11 @@
-import { Schema, Types, model, Model } from 'mongoose';
+import { Schema, Types, model, Model, HydratedDocument } from 'mongoose';
+import { HydratedUser } from './User';
 
 interface IChirp {
   content: string;
-  likes: number; //temporary
   author: Types.ObjectId;
   replies: Types.ObjectId[];
+  likes?: number; //temporary
 }
 
 type ChirpModel = Model<IChirp>;
@@ -24,6 +25,7 @@ const chirpSchema = new Schema<IChirp, ChirpModel>(
     author: {
       type: Schema.Types.ObjectId,
       ref: 'User',
+      required: [true, 'Chirp author is required'],
     },
     replies: [
       {
@@ -35,16 +37,56 @@ const chirpSchema = new Schema<IChirp, ChirpModel>(
   { timestamps: true, discriminatorKey: 'kind' }
 );
 
+export type HydratedChirp = HydratedDocument<IChirp>;
+export type HydratedReply = HydratedDocument<IReply>;
+export interface PopulatedReplies {
+  replies: HydratedReply[];
+}
+
+export interface PopulatedAuthor {
+  author: HydratedUser;
+}
+
+const removeReplies = async (chirp: HydratedChirp) => {
+  const { replies } = await chirp.populate<PopulatedReplies>('replies');
+  await Promise.all(replies.map((reply) => reply.remove()));
+};
+
+const removeFromParent = async (chirp: HydratedChirp) => {
+  await Chirp.findOneAndUpdate(
+    {
+      replies: { $elemMatch: { $eq: chirp._id } },
+    },
+    { $pull: { replies: chirp._id } }
+  );
+};
+
+chirpSchema.pre('remove', async function (next) {
+  await removeReplies(this);
+  await removeFromParent(this);
+  next();
+});
+
 const Chirp = model<IChirp, ChirpModel>('Chirp', chirpSchema);
 
-const PostChirp = Chirp.discriminator<IChirp, ChirpModel>(
-  'Post',
-  new Schema({})
-);
+export type IPost = IChirp;
+type PostModel = Model<IPost>;
 
-const ReplyChirp = Chirp.discriminator<IChirp, ChirpModel>(
+const PostChirp = Chirp.discriminator<IPost, PostModel>('Post', new Schema({}));
+
+export interface IReply extends IChirp {
+  post: Types.ObjectId;
+}
+type ReplyModel = Model<IReply>;
+
+const ReplyChirp = Chirp.discriminator<IReply, ReplyModel>(
   'Reply',
-  new Schema({})
+  new Schema({
+    post: {
+      type: Schema.Types.ObjectId,
+      ref: 'Post',
+    },
+  })
 );
 
 export { Chirp, PostChirp, ReplyChirp };
