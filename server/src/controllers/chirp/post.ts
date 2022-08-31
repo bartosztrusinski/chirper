@@ -21,8 +21,8 @@ export const getUserPosts: Handler = async (req, res) => {
 };
 
 export const createPost: Handler = async (req, res) => {
-  const { content } = req.body;
   const { currentUserId } = req;
+  const { content } = req.body;
 
   if (!currentUserId) {
     throw new BadRequestError('Sorry, you must be logged in to post');
@@ -35,19 +35,6 @@ export const createPost: Handler = async (req, res) => {
   });
 
   res.status(200).json(newPost);
-};
-
-// user deletes post
-export const deletePost: Handler = async (req, res) => {
-  const { chirpId } = req.params;
-
-  const foundPost = await PostChirp.findById(chirpId);
-  if (!foundPost) {
-    throw new BadRequestError('Sorry, we could not find that chirp');
-  }
-
-  const deletedPost = await foundPost.remove();
-  res.status(200).json(deletedPost._id);
 };
 
 export const getPost: Handler = async (req, res) => {

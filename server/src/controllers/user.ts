@@ -5,17 +5,15 @@ import User from '../models/User';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/secrets';
 
-export const getAllUsers: Handler = async (req, res) => {
-  const allUsers = await User.find();
+export const getUsers: Handler = async (req, res) => {
+  const { ids } = req.query;
 
-  res.status(200).json(
-    allUsers.map(({ _id, username, email, profile }) => ({
-      _id,
-      username,
-      email,
-      profile,
-    }))
+  const foundUsers = await User.find(
+    { _id: { $in: ids } },
+    'profile.name username'
   );
+
+  res.status(200).json(foundUsers);
 };
 
 export const signUpUser: Handler = async (req, res) => {
@@ -89,33 +87,3 @@ export const getUser: Handler = async (req, res) => {
   const { _id, email, profile } = foundUser;
   res.status(200).json({ _id, username, email, profile });
 };
-
-// export const updateUser = async (req: Request, res: Response) => {
-//   const { username } = req.params;
-//   const { userData } = req.body;
-
-//   const isValid = Types.ObjectId.isValid(username);
-//   if (!isValid) {
-//     throw new BadRequestError('Invalid user ID');
-//   }
-
-//   const updatedUser = await User.findOneAndUpdate({ username }, userData, {
-//     new: true,
-//   });
-//   if (!updatedUser) {
-//     throw new BadRequestError('Sorry, we could not find that user');
-//   }
-
-//   res.status(200).json(updatedUser);
-// };
-
-// export const deleteUser = async (req: Request, res: Response) => {
-//   const { username } = req.params;
-
-//   const deletedUser = await User.findByIdAndDelete(username);
-//   if (!deletedUser) {
-//     throw new BadRequestError('Sorry, we could not find that user');
-//   }
-
-//   res.status(200).json({ _id: deletedUser._id });
-// };

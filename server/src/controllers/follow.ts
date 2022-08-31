@@ -88,14 +88,14 @@ export const followUser: Handler = async (req, res) => {
 
 export const unfollowUser: Handler = async (req, res) => {
   const { currentUserId } = req;
-  const { targetUsername } = req.params;
+  const { username } = req.params;
 
   // const currentUser = await User.exists({ _id: currentUserId });
   // if (!currentUser) {
   //   throw new BadRequestError('Sorry, we could not find your account');
   // }
 
-  const targetUser = await User.exists({ username: targetUsername });
+  const targetUser = await User.exists({ username });
   if (!targetUser) {
     throw new BadRequestError(
       'Sorry, we could not find the user you are trying to unfollow'
@@ -120,44 +120,3 @@ export const unfollowUser: Handler = async (req, res) => {
 
   res.status(200).json({ following: !deletedFollow });
 };
-
-// export const getCurrentUserFollowing: Handler = async (req, res) => {
-//   const { currentUserId } = req;
-
-//   const follows = await Follow.find({
-//     sourceUser: currentUserId,
-//   }).populate<PopulatedTargetUser>({
-//     path: 'targetUser',
-//     select: 'username profile.name',
-//   });
-
-//   const following = follows.map(({ targetUser }) => targetUser);
-//   // const followingIds = following.map((follow) => follow.targetUser);
-//   // const followedUsers = await User.find(
-//   //   { _id: { $in: followingIds } },
-//   //   '_id username profile.name'
-//   // );
-
-//   res.status(200).json(following);
-// };
-
-// export const getCurrentUserFollowers: Handler = async (req, res) => {
-//   const { currentUserId } = req;
-
-//   const follows = await Follow.find({
-//     targetUser: currentUserId,
-//   }).populate<PopulatedSourceUser>({
-//     path: 'sourceUser',
-//     select: 'username profile.name',
-//   });
-
-//   // const followerIds = followers.map((follow) => follow.sourceUser);
-//   // const followers = await User.find(
-//   //   { _id: { $in: followerIds } },
-//   //   '_id username profile.name'
-//   // );
-
-//   const followers = follows.map(({ sourceUser }) => sourceUser);
-
-//   res.status(200).json(followers);
-// };
