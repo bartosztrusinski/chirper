@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  // getReverseChronologicalTimeline,
+  getReverseChronologicalTimeline,
   getUserChirps,
 } from '../controllers/chirp/all';
 import { getUserFollowers, getUserFollowing } from '../controllers/follow';
@@ -22,9 +22,9 @@ router.get('/:username/liked-chirps', getLikedChirps);
 
 router.get('/:username/chirps', getUserChirps);
 
-// router.get(
-//   '/:username/timelines/reverse-chronological',
-//   getReverseChronologicalTimeline
-// );
+router.get(
+  '/:username/timelines/reverse-chronological',
+  getReverseChronologicalTimeline
+);
 
 export default router;

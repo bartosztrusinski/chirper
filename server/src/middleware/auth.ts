@@ -69,3 +69,20 @@ export const isChirpAuthor: Handler = async (req, res, next) => {
 
   next();
 };
+
+export const confirmPassword: Handler = async (req, res, next) => {
+  const { currentUserId } = req;
+  const { password } = req.body;
+
+  const currentUser = await User.findById(currentUserId);
+  if (!currentUser) {
+    throw new BadRequestError('Sorry, we could not find your account');
+  }
+
+  const isPasswordMatch = await currentUser.isPasswordMatch(password);
+  if (!isPasswordMatch) {
+    throw new BadRequestError('Sorry, wrong password!');
+  }
+
+  next();
+};
