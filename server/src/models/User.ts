@@ -1,5 +1,7 @@
 import { Schema, model, Model, HydratedDocument } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import Follow from './Follow';
+import Like from './Like';
 interface IUserProfile {
   name: string;
   picture?: string;
@@ -19,9 +21,11 @@ const userProfileSchema = new Schema<IUserProfile>({
   },
   picture: {
     type: String,
+    trim: true,
   },
   header: {
     type: String,
+    trim: true,
   },
   bio: {
     type: String,
@@ -33,6 +37,7 @@ const userProfileSchema = new Schema<IUserProfile>({
     type: String,
     max: [30, 'Location must be less than 30 characters'],
     match: [/^[^<>]*$/, 'Location cannot include invalid characters'],
+    trim: true,
   },
   website: {
     type: String,
@@ -41,6 +46,7 @@ const userProfileSchema = new Schema<IUserProfile>({
       /^(https?:\/\/)?(www.)?([a-z0-9]+\.)+[a-zA-Z]{2,}\/?(\/[a-zA-Z0-9#-_]+\/?)*$/,
       'Website URL must be valid',
     ],
+    trim: true,
   },
 });
 
@@ -95,11 +101,10 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
       ],
       trim: true,
     },
-    profile: userProfileSchema,
-    // follows
-    // followers
-    // chirps
-    // replies
+    profile: {
+      type: userProfileSchema,
+      required: [true, 'User profile is required'],
+    },
   },
   { timestamps: true }
 );
@@ -115,6 +120,13 @@ userSchema.pre('save', async function hashPassword(next) {
   const hashedPassword = await generateHash(this.password);
   this.password = hashedPassword;
   next();
+});
+
+userSchema.pre('remove', async function removeDependencies() {
+  await Follow.deleteMany({
+    $or: [{ sourceUser: this._id }, { targetUser: this._id }],
+  });
+  await Like.deleteMany({ user: this._id });
 });
 
 const isPasswordMatch: IsPasswordMatch = function (

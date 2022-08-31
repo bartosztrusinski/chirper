@@ -25,8 +25,7 @@ export const getUserReplies: Handler = async (req, res) => {
 
 export const createReply: Handler = async (req, res) => {
   const { currentUserId } = req;
-  const { content } = req.body;
-  const { chirpId } = req.params;
+  const { content, chirpId } = req.body;
 
   if (!currentUserId) {
     throw new BadRequestError('Sorry, you must be logged in to reply');
@@ -39,13 +38,14 @@ export const createReply: Handler = async (req, res) => {
     );
   }
 
-  const post =
-    foundChirp instanceof ReplyChirp ? foundChirp.post : foundChirp._id;
+  const parent = foundChirp._id;
+  const post = foundChirp instanceof ReplyChirp ? foundChirp.post : parent;
 
   const newReply = await ReplyChirp.create<IReply>({
     content,
     author: currentUserId,
     post,
+    parent,
     replies: [],
   });
 
@@ -53,19 +53,6 @@ export const createReply: Handler = async (req, res) => {
   await foundChirp.save();
 
   res.status(200).json(newReply);
-};
-
-export const deleteReply: Handler = async (req, res) => {
-  const { chirpId } = req.params;
-
-  const foundReply = await ReplyChirp.findById(chirpId);
-  if (!foundReply) {
-    throw new BadRequestError('Sorry, we could not find that chirp');
-  }
-
-  const deletedReply = await foundReply.remove();
-
-  res.status(200).json(deletedReply._id);
 };
 
 export const getReply: Handler = async (req, res) => {
