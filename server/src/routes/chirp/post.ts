@@ -1,13 +1,10 @@
 import { Router } from 'express';
-import { createPost, deletePost, getPost } from '../../controllers/chirp/post';
-import { isAuthenticated, isChirpAuthor } from '../../middleware/auth';
+import { createPost, getPost } from '../../controllers/chirp/post';
+import { isAuthenticated } from '../../middleware/auth';
 
 const router = Router();
 
-router.post('/', isAuthenticated, createPost);
-
-router.delete('/:chirpId', isAuthenticated, isChirpAuthor, deletePost);
-
 router.get('/:chirpId', getPost);
+router.post('/', isAuthenticated, createPost);
 
 export default router;

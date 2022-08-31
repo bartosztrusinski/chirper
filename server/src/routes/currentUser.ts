@@ -10,7 +10,7 @@ router.get('/', isAuthenticated, getCurrentUser);
 
 router.post('/following', isAuthenticated, followUser);
 
-router.delete('/following/:targetUsername', isAuthenticated, unfollowUser);
+router.delete('/following/:username', isAuthenticated, unfollowUser);
 
 router.post('/likes', isAuthenticated, likeChirp);
 

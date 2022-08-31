@@ -1,12 +1,11 @@
 import { Router } from 'express';
-import { createReply } from '../../controllers/chirp/reply';
+import { deleteChirp } from '../../controllers/chirp/all';
 import { getLikingUsers } from '../../controllers/like';
-import { isAuthenticated } from '../../middleware/auth';
+import { isAuthenticated, isChirpAuthor } from '../../middleware/auth';
 
 const router = Router();
 
-router.post('/:chirpId/replies', isAuthenticated, createReply);
-
 router.get('/:chirpId/liking-users', getLikingUsers);
+router.delete('/:chirpId/', isAuthenticated, isChirpAuthor, deleteChirp);
 
 export default router;
