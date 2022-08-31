@@ -1,4 +1,6 @@
 import { model, Model, Schema, Types } from 'mongoose';
+import { Chirp } from './Chirp';
+import User from './User';
 
 interface ILike {
   user: Types.ObjectId;
@@ -22,6 +24,24 @@ const likeSchema = new Schema<ILike, LikeModel>(
   },
   { timestamps: true }
 );
+
+likeSchema.pre('save', async function () {
+  await Chirp.findByIdAndUpdate(this.chirp, {
+    $inc: { likeCount: 1 },
+  });
+  await User.findByIdAndUpdate(this.user, {
+    $inc: { likedChirpCount: 1 },
+  });
+});
+
+likeSchema.pre('remove', async function () {
+  await Chirp.findByIdAndUpdate(this.chirp, {
+    $inc: { likeCount: -1 },
+  });
+  await User.findByIdAndUpdate(this.user, {
+    $inc: { likedChirpCount: -1 },
+  });
+});
 
 const Like = model<ILike>('Like', likeSchema);
 

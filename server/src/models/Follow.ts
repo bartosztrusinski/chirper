@@ -1,4 +1,5 @@
 import { model, Model, Schema, Types } from 'mongoose';
+import User from './User';
 
 interface IFollow {
   sourceUser: Types.ObjectId;
@@ -18,6 +19,24 @@ const followSchema = new Schema<IFollow, FollowModel>({
     ref: 'User',
     required: [true, 'Target user is required'],
   },
+});
+
+followSchema.pre('save', async function () {
+  await User.findByIdAndUpdate(this.sourceUser, {
+    $inc: { followingCount: 1 },
+  });
+  await User.findByIdAndUpdate(this.targetUser, {
+    $inc: { followersCount: 1 },
+  });
+});
+
+followSchema.pre('remove', async function () {
+  await User.findByIdAndUpdate(this.sourceUser, {
+    $inc: { followingCount: -1 },
+  });
+  await User.findByIdAndUpdate(this.targetUser, {
+    $inc: { followersCount: -1 },
+  });
 });
 
 const Follow = model<IFollow>('Follow', followSchema);

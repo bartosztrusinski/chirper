@@ -22,12 +22,6 @@ export const getUserFollowing: Handler = async (req, res) => {
     select: 'username profile.name',
   });
 
-  // const followingIds = follows.map((follow) => follow.targetUser);
-  // const followedUsers = await User.find(
-  //   { _id: { $in: followingIds } },
-  //   '_id username profile.name'
-  // );
-
   const following = follows.map(({ targetUser }) => targetUser);
 
   res.status(200).json(following);
@@ -44,11 +38,6 @@ export const getUserFollowers: Handler = async (req, res) => {
     select: 'username profile.name',
   });
 
-  // const followers = follows.map((follow) => ({
-  //   _id: follow.sourceUser._id,
-  //   username: follow.sourceUser.username,
-  //   name: follow.sourceUser.profile.name,
-  // }));
   const followers = follows.map((follow) => follow.sourceUser);
 
   res.status(200).json(followers);
@@ -90,33 +79,22 @@ export const unfollowUser: Handler = async (req, res) => {
   const { currentUserId } = req;
   const { username } = req.params;
 
-  // const currentUser = await User.exists({ _id: currentUserId });
-  // if (!currentUser) {
-  //   throw new BadRequestError('Sorry, we could not find your account');
-  // }
-
-  const targetUser = await User.exists({ username });
-  if (!targetUser) {
+  const followedUser = await User.exists({ username });
+  if (!followedUser) {
     throw new BadRequestError(
       'Sorry, we could not find the user you are trying to unfollow'
     );
   }
 
-  // const isFollowed = await Follow.exists({
-  //   sourceUser: currentUser._id,
-  //   targetUser: targetUser._id,
-  // });
-  // if (!isFollowed) {
-  //   throw new BadRequestError('You are not following this user');
-  // }
-
-  const deletedFollow = await Follow.findOneAndDelete({
+  const foundFollow = await Follow.findOne({
     sourceUser: currentUserId,
-    targetUser: targetUser._id,
+    targetUser: followedUser._id,
   });
-  if (!deletedFollow) {
+  if (!foundFollow) {
     throw new BadRequestError('You are not following this user');
   }
+
+  const deletedFollow = await foundFollow.remove();
 
   res.status(200).json({ following: !deletedFollow });
 };

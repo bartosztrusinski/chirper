@@ -1,11 +1,16 @@
 import { Schema, Types, model, Model, HydratedDocument } from 'mongoose';
 import Like from './Like';
-import { HydratedUser } from './User';
+import User, { HydratedUser } from './User';
 
 export interface IChirp {
   content: string;
   author: Types.ObjectId;
   replies: Types.ObjectId[];
+  metrics: IChirpMetrics;
+}
+
+interface IChirpMetrics {
+  likeCount: number;
 }
 
 type ChirpModel = Model<IChirp>;
@@ -29,6 +34,12 @@ const chirpSchema = new Schema<IChirp, ChirpModel>(
         ref: 'Reply',
       },
     ],
+    metrics: {
+      likeCount: {
+        type: Number,
+        default: 0,
+      },
+    },
   },
   { timestamps: true, discriminatorKey: 'kind' }
 );
@@ -61,7 +72,16 @@ const removeFromParent = async (reply: HydratedReply) => {
   });
 };
 
+chirpSchema.pre('save', async function () {
+  await User.findByIdAndUpdate(this.author, {
+    $inc: { chirpCount: 1 },
+  });
+});
+
 chirpSchema.pre('remove', async function (next) {
+  await User.findByIdAndUpdate(this.author, {
+    $inc: { chirpCount: -1 },
+  });
   await removeReplies(this);
   if (this instanceof ReplyChirp) {
     await removeFromParent(this);

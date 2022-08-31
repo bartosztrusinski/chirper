@@ -11,6 +11,13 @@ interface IUserProfile {
   website?: string;
 }
 
+interface IUserMetrics {
+  followersCount: number;
+  followingCount: number;
+  chirpCount: number;
+  likedChirpCount: number;
+}
+
 const userProfileSchema = new Schema<IUserProfile>({
   name: {
     type: String,
@@ -55,6 +62,7 @@ export interface IUser {
   email: string;
   password: string;
   profile: IUserProfile;
+  metrics: IUserMetrics;
 }
 
 export interface IUserMethods {
@@ -104,6 +112,24 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
     profile: {
       type: userProfileSchema,
       required: [true, 'User profile is required'],
+    },
+    metrics: {
+      followersCount: {
+        type: Number,
+        default: 0,
+      },
+      followingCount: {
+        type: Number,
+        default: 0,
+      },
+      chirpCount: {
+        type: Number,
+        default: 0,
+      },
+      likedChirpCount: {
+        type: Number,
+        default: 0,
+      },
     },
   },
   { timestamps: true }

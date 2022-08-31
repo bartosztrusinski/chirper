@@ -39,24 +39,17 @@ export const unlikeChirp: Handler = async (req, res) => {
   const { currentUserId } = req;
   const { chirpId } = req.params;
 
-  const currentUser = await User.exists({ _id: currentUserId });
-  if (!currentUser) {
-    throw new BadRequestError('Sorry, we could not find your account');
-  }
-
-  const likedChirp = await Chirp.exists({ _id: chirpId });
-  if (!likedChirp) {
-    throw new BadRequestError(
-      'Sorry, we could not find the chirp you are trying to unlike'
-    );
-  }
-
-  const like = await Like.findOneAndDelete({
-    user: currentUser._id,
-    chirp: likedChirp._id,
+  const foundLike = await Like.findOne({
+    user: currentUserId,
+    chirp: chirpId,
   });
+  if (!foundLike) {
+    throw new BadRequestError('You have not liked this chirp');
+  }
 
-  res.status(200).json({ liked: !like });
+  const deletedLike = await foundLike.remove();
+
+  res.status(200).json({ liked: !deletedLike });
 };
 
 export const getLikingUsers: Handler = async (req, res) => {
