@@ -54,11 +54,18 @@ export const unlikeChirp: Handler = async (req, res) => {
 
 export const getLikingUsers: Handler = async (req, res) => {
   const { chirpId } = req.params;
+  const { lastCreated, limit } = req.query;
 
-  const likes = await Like.find({ chirp: chirpId }).populate<PopulatedUser>({
-    path: 'user',
-    select: '_id username profile.name',
-  });
+  const likes = await Like.find({
+    chirp: chirpId,
+    createdAt: { $lt: lastCreated || Date.now() },
+  })
+    .populate<PopulatedUser>({
+      path: 'user',
+      select: '_id username profile.name',
+    })
+    .sort({ createdAt: -1 })
+    .limit(Math.min(Number(limit) || 10, 100));
 
   const likingUsers = likes.map(({ user }) => user);
 
@@ -67,6 +74,7 @@ export const getLikingUsers: Handler = async (req, res) => {
 
 export const getLikedChirps: Handler = async (req, res) => {
   const { username } = req.params;
+  const { lastCreated, limit } = req.query;
 
   const existingUser = await User.exists({ username });
   if (!existingUser) {
@@ -77,12 +85,16 @@ export const getLikedChirps: Handler = async (req, res) => {
 
   const likes = await Like.find({
     user: existingUser._id,
-  }).populate<PopulatedChirp>({
-    path: 'chirp',
-    select: 'content',
-  });
+    createdAt: { $lt: lastCreated || Date.now() },
+  })
+    .populate<PopulatedChirp>({
+      path: 'chirp',
+      select: 'content',
+    })
+    .sort({ createdAt: -1 })
+    .limit(Math.min(Number(limit) || 10, 100));
 
-  const likedChirps = likes.map(({ chirp: { content } }) => content);
+  const likedChirps = likes.map((like) => like.chirp);
 
   res.status(200).json(likedChirps);
 };

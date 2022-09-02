@@ -8,18 +8,21 @@ interface IFollow {
 
 type FollowModel = Model<IFollow>;
 
-const followSchema = new Schema<IFollow, FollowModel>({
-  sourceUser: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'Source user is required'],
+const followSchema = new Schema<IFollow, FollowModel>(
+  {
+    sourceUser: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'Source user is required'],
+    },
+    targetUser: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'Target user is required'],
+    },
   },
-  targetUser: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'Target user is required'],
-  },
-});
+  { timestamps: true }
+);
 
 followSchema.pre('save', async function () {
   await User.findByIdAndUpdate(this.sourceUser, {

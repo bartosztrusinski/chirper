@@ -7,6 +7,7 @@ import { BadRequestError } from '../../utils/errors';
 export const getUserChirps: Handler = async (req, res) => {
   const { username } = req.params;
   const { query } = req;
+  const { lastCreated, limit } = query;
 
   const chirpsAuthor = await User.findOne({ username });
   if (!chirpsAuthor) {
@@ -14,7 +15,13 @@ export const getUserChirps: Handler = async (req, res) => {
   }
 
   const chirpQuery = { ...query, author: chirpsAuthor._id };
-  const foundUsersChirps = await Chirp.find({ ...chirpQuery });
+
+  const foundUsersChirps = await Chirp.find({
+    ...chirpQuery,
+    createdAt: { $lt: lastCreated || Date.now() },
+  })
+    .sort({ createdAt: -1 })
+    .limit(Math.min(Number(limit) || 10, 100));
 
   res.status(200).json(foundUsersChirps);
 };
@@ -48,10 +55,10 @@ export const getReverseChronologicalTimeline: Handler = async (req, res) => {
 
   const timelineChirps = await Chirp.find({
     author: { $in: timelineChirpsAuthors },
-    createdAt: { $lt: lastCreated },
+    createdAt: { $lt: lastCreated || Date.now() },
   })
     .sort({ createdAt: -1 })
-    .limit(Number(limit) || 10);
+    .limit(Math.min(Number(limit) || 10, 100));
 
   res.status(200).json(timelineChirps);
 };

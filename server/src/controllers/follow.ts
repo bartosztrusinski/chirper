@@ -13,14 +13,20 @@ interface PopulatedSourceUser {
 
 export const getUserFollowing: Handler = async (req, res) => {
   const { username } = req.params;
+  const { lastCreated, limit } = req.query;
+
   const user = await User.exists({ username });
 
   const follows = await Follow.find({
     sourceUser: user?._id,
-  }).populate<PopulatedTargetUser>({
-    path: 'targetUser',
-    select: 'username profile.name',
-  });
+    createdAt: { $lt: lastCreated || Date.now() },
+  })
+    .populate<PopulatedTargetUser>({
+      path: 'targetUser',
+      select: 'username profile.name',
+    })
+    .sort({ createdAt: -1 })
+    .limit(Math.min(Number(limit) || 10, 100));
 
   const following = follows.map(({ targetUser }) => targetUser);
 
@@ -29,14 +35,20 @@ export const getUserFollowing: Handler = async (req, res) => {
 
 export const getUserFollowers: Handler = async (req, res) => {
   const { username } = req.params;
+  const { lastCreated, limit } = req.query;
+
   const user = await User.exists({ username });
 
   const follows = await Follow.find({
     targetUser: user?._id,
-  }).populate<PopulatedSourceUser>({
-    path: 'sourceUser',
-    select: 'username profile.name',
-  });
+    createdAt: { $lt: lastCreated || Date.now() },
+  })
+    .populate<PopulatedSourceUser>({
+      path: 'sourceUser',
+      select: 'username profile.name',
+    })
+    .sort({ createdAt: -1 })
+    .limit(Math.min(Number(limit) || 10, 100));
 
   const followers = follows.map((follow) => follow.sourceUser);
 
