@@ -54,27 +54,42 @@ export const unlikeChirp: Handler = async (req, res) => {
 
 export const getLikingUsers: Handler = async (req, res) => {
   const { chirpId } = req.params;
-  const { lastCreated, limit } = req.query;
+  const { lastId, limit } = req.query;
+  const reqLimit = Math.min(Number(limit) || 10, 20);
+
+  let nextPageQuery = {};
+  if (lastId) {
+    nextPageQuery = { _id: { $lt: lastId } };
+  }
 
   const likes = await Like.find({
     chirp: chirpId,
-    createdAt: { $lt: lastCreated || Date.now() },
+    ...nextPageQuery,
   })
     .populate<PopulatedUser>({
       path: 'user',
-      select: '_id username profile.name',
+      select: 'username profile.name',
     })
-    .sort({ createdAt: -1 })
-    .limit(Math.min(Number(limit) || 10, 100));
+    .sort({ _id: -1 })
+    .limit(reqLimit);
 
-  const likingUsers = likes.map(({ user }) => user);
+  const likingUsers = likes.map((like) => ({
+    likeId: like._id,
+    user: like.user,
+  }));
 
   res.status(200).json(likingUsers);
 };
 
 export const getLikedChirps: Handler = async (req, res) => {
   const { username } = req.params;
-  const { lastCreated, limit } = req.query;
+  const { lastId, limit } = req.query;
+  const reqLimit = Math.min(Number(limit) || 10, 20);
+
+  let nextPageQuery = {};
+  if (lastId) {
+    nextPageQuery = { _id: { $lt: lastId } };
+  }
 
   const existingUser = await User.exists({ username });
   if (!existingUser) {
@@ -85,16 +100,19 @@ export const getLikedChirps: Handler = async (req, res) => {
 
   const likes = await Like.find({
     user: existingUser._id,
-    createdAt: { $lt: lastCreated || Date.now() },
+    ...nextPageQuery,
   })
     .populate<PopulatedChirp>({
       path: 'chirp',
       select: 'content',
     })
-    .sort({ createdAt: -1 })
-    .limit(Math.min(Number(limit) || 10, 100));
+    .sort({ _id: -1 })
+    .limit(reqLimit);
 
-  const likedChirps = likes.map((like) => like.chirp);
+  const likedChirps = likes.map((like) => ({
+    likeId: like._id,
+    chirp: like.chirp,
+  }));
 
   res.status(200).json(likedChirps);
 };

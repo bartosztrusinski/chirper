@@ -11,46 +11,64 @@ interface PopulatedSourceUser {
   sourceUser: IUser;
 }
 
-export const getUserFollowing: Handler = async (req, res) => {
+export const getUserFollowings: Handler = async (req, res) => {
   const { username } = req.params;
-  const { lastCreated, limit } = req.query;
+  const { lastId, limit } = req.query;
+  const reqLimit = Math.min(Number(limit) || 10, 20);
+
+  let nextPageQuery = {};
+  if (lastId) {
+    nextPageQuery = { _id: { $lt: lastId } };
+  }
 
   const user = await User.exists({ username });
 
   const follows = await Follow.find({
     sourceUser: user?._id,
-    createdAt: { $lt: lastCreated || Date.now() },
+    ...nextPageQuery,
   })
     .populate<PopulatedTargetUser>({
       path: 'targetUser',
       select: 'username profile.name',
     })
-    .sort({ createdAt: -1 })
-    .limit(Math.min(Number(limit) || 10, 100));
+    .sort({ _id: -1 })
+    .limit(reqLimit);
 
-  const following = follows.map(({ targetUser }) => targetUser);
+  const following = follows.map((follow) => ({
+    followId: follow._id,
+    user: follow.targetUser,
+  }));
 
   res.status(200).json(following);
 };
 
 export const getUserFollowers: Handler = async (req, res) => {
   const { username } = req.params;
-  const { lastCreated, limit } = req.query;
+  const { lastId, limit } = req.query;
+  const reqLimit = Math.min(Number(limit) || 10, 20);
+
+  let nextPageQuery = {};
+  if (lastId) {
+    nextPageQuery = { _id: { $lt: lastId } };
+  }
 
   const user = await User.exists({ username });
 
   const follows = await Follow.find({
     targetUser: user?._id,
-    createdAt: { $lt: lastCreated || Date.now() },
+    ...nextPageQuery,
   })
     .populate<PopulatedSourceUser>({
       path: 'sourceUser',
       select: 'username profile.name',
     })
-    .sort({ createdAt: -1 })
-    .limit(Math.min(Number(limit) || 10, 100));
+    .sort({ _id: -1 })
+    .limit(reqLimit);
 
-  const followers = follows.map((follow) => follow.sourceUser);
+  const followers = follows.map((follow) => ({
+    followId: follow._id,
+    user: follow.sourceUser,
+  }));
 
   res.status(200).json(followers);
 };
