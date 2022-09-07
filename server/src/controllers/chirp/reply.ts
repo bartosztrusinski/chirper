@@ -41,13 +41,14 @@ export const createReply: Handler = async (req, res) => {
   const parent = foundChirp._id;
   const post = foundChirp instanceof ReplyChirp ? foundChirp.post : parent;
 
-  const newReply = await ReplyChirp.create<IReply>({
-    content,
-    author: currentUserId,
-    post,
-    parent,
-    replies: [],
-  });
+  const newReply = await ReplyChirp.create<Omit<IReply, 'metrics' | 'replies'>>(
+    {
+      content,
+      author: currentUserId,
+      post,
+      parent,
+    }
+  );
 
   foundChirp.replies.push(newReply._id);
   await foundChirp.save();

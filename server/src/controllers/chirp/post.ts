@@ -28,10 +28,9 @@ export const createPost: Handler = async (req, res) => {
     throw new BadRequestError('Sorry, you must be logged in to post');
   }
 
-  const newPost = await PostChirp.create<IPost>({
+  const newPost = await PostChirp.create<Omit<IPost, 'metrics' | 'replies'>>({
     content,
     author: currentUserId,
-    replies: [],
   });
 
   res.status(200).json(newPost);
