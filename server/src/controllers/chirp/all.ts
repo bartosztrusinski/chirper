@@ -50,7 +50,7 @@ export const getUserChirps: Handler = async (req, res) => {
     .sort({ _id: -1 })
     .limit(limit);
 
-  res.status(200).json(foundUsersChirps);
+  res.status(200).json({ status: 'success', data: foundUsersChirps });
 };
 
 export const searchChirps: Handler = async (req, res) => {
@@ -150,7 +150,7 @@ export const searchChirps: Handler = async (req, res) => {
     .skip(skip) // not the best way to do this
     .limit(limit);
 
-  res.status(200).json(foundChirps);
+  res.status(200).json({ status: 'success', data: foundChirps });
 };
 
 export const getReverseChronologicalTimeline: Handler = async (req, res) => {
@@ -202,7 +202,7 @@ export const getReverseChronologicalTimeline: Handler = async (req, res) => {
     .sort({ _id: -1 })
     .limit(limit);
 
-  res.status(200).json(timelineChirps);
+  res.status(200).json({ status: 'success', data: timelineChirps });
 };
 
 export const deleteChirp: Handler = async (req, res) => {
@@ -215,5 +215,5 @@ export const deleteChirp: Handler = async (req, res) => {
 
   await foundPost.remove();
 
-  res.status(200).json({ message: 'Chirp deleted' });
+  res.status(200).json({ status: 'success', data: null });
 };
