@@ -44,6 +44,8 @@ const chirpSchema = new Schema<IChirp, ChirpModel>(
   { timestamps: true, discriminatorKey: 'kind' }
 );
 
+chirpSchema.index({ content: 'text' });
+
 export type HydratedChirp = HydratedDocument<IChirp>;
 export type HydratedReply = HydratedDocument<IReply>;
 
