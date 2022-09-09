@@ -15,12 +15,6 @@ const router = Router();
 
 router.get('/', isAuthenticated, getCurrentUser);
 
-router.post('/following', isAuthenticated, followUser);
-router.delete('/following/:username', isAuthenticated, unfollowUser);
-
-router.post('/likes', isAuthenticated, likeChirp);
-router.delete('/likes/:chirpId', isAuthenticated, unlikeChirp);
-
 router.put('/profile', isAuthenticated, updateCurrentUserProfile);
 router.put(
   '/password',
@@ -36,5 +30,11 @@ router.put(
 );
 router.put('/email', isAuthenticated, confirmPassword, updateCurrentUserEmail);
 router.delete('/', isAuthenticated, confirmPassword, deleteCurrentUser);
+
+router.post('/following', isAuthenticated, followUser);
+router.delete('/following/:username', isAuthenticated, unfollowUser);
+
+router.post('/likes', isAuthenticated, likeChirp);
+router.delete('/likes/:chirpId', isAuthenticated, unlikeChirp);
 
 export default router;

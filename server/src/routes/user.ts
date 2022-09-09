@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
   getReverseChronologicalTimeline,
   getUserChirps,
-} from '../controllers/chirp/all';
+} from '../controllers/chirp';
 import { getUserFollowers, getUserFollowings } from '../controllers/follow';
 import { getLikedChirps } from '../controllers/like';
 import {
@@ -18,6 +18,11 @@ const router = Router();
 router.get('/', getUsers);
 router.get('/search', searchUsers);
 router.get('/:username', getUser);
+router.get('/:username/chirps', getUserChirps);
+router.get(
+  '/:username/timelines/reverse-chronological',
+  getReverseChronologicalTimeline
+);
 
 router.post('/', signUpUser);
 router.post('/login', logInUser);
@@ -26,12 +31,5 @@ router.get('/:username/followers', getUserFollowers);
 router.get('/:username/following', getUserFollowings);
 
 router.get('/:username/liked-chirps', getLikedChirps);
-
-router.get('/:username/chirps', getUserChirps);
-
-router.get(
-  '/:username/timelines/reverse-chronological',
-  getReverseChronologicalTimeline
-);
 
 export default router;

@@ -7,10 +7,10 @@ import {
   IReply,
   PostChirp,
   ReplyChirp,
-} from '../../models/Chirp';
-import Follow from '../../models/Follow';
-import User from '../../models/User';
-import { BadRequestError } from '../../utils/errors';
+} from '../models/Chirp';
+import Follow from '../models/Follow';
+import User from '../models/User';
+import { BadRequestError } from '../utils/errors';
 
 export const getUserChirps: Handler = async (req, res) => {
   const { username } = req.params;
