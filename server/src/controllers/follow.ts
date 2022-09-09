@@ -106,26 +106,22 @@ export const getUserFollowers: Handler = async (req, res) => {
 
 export const followUser: Handler = async (req, res) => {
   const { currentUserId } = req;
-  const { targetUsername } = req.body;
+  const { username } = req.body;
 
   const currentUser = await User.exists({ _id: currentUserId });
   if (!currentUser) {
     throw new BadRequestError('Sorry, we could not find your account');
   }
 
-  const targetUser = await User.exists({ username: targetUsername });
+  const targetUser = await User.exists({ username });
   if (!targetUser) {
     throw new BadRequestError(
       'Sorry, we could not find the user you are trying to follow'
     );
   }
 
-  const isFollowed = await Follow.exists({
-    sourceUser: currentUser._id,
-    targetUser: targetUser._id,
-  });
-  if (isFollowed) {
-    throw new BadRequestError('You are already following this user');
+  if (currentUser._id.equals(targetUser._id)) {
+    throw new BadRequestError('Sorry, you cannot follow yourself');
   }
 
   const newFollow = await Follow.create({
