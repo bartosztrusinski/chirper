@@ -1,7 +1,7 @@
 import { model, Model, Schema, Types } from 'mongoose';
 import User from './User';
 
-interface IFollow {
+export interface IFollow {
   sourceUser: Types.ObjectId;
   targetUser: Types.ObjectId;
 }

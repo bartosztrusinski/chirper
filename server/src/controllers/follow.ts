@@ -1,5 +1,6 @@
 import { Handler } from 'express';
-import Follow from '../models/Follow';
+import { FilterQuery } from 'mongoose';
+import Follow, { IFollow } from '../models/Follow';
 import User, { IUser } from '../models/User';
 import { BadRequestError } from '../utils/errors';
 
@@ -13,64 +14,94 @@ interface PopulatedSourceUser {
 
 export const getUserFollowings: Handler = async (req, res) => {
   const { username } = req.params;
-  const { lastId, limit } = req.query;
-  const reqLimit = Math.min(Number(limit) || 10, 20);
+  const { sinceId, userFields } = req.query;
+  const limit = Math.min(
+    Math.abs(parseInt(req.query.limit as string)) || 10,
+    100
+  );
 
-  let nextPageQuery = {};
-  if (lastId) {
-    nextPageQuery = { _id: { $lt: lastId } };
+  const sourceUser = await User.exists({ username });
+  if (!sourceUser) {
+    throw new BadRequestError(
+      'Sorry, we could not find user with that username'
+    );
   }
 
-  const user = await User.exists({ username });
+  let filter: FilterQuery<IFollow> = {
+    sourceUser: sourceUser._id,
+  };
+  filter = Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
 
-  const follows = await Follow.find({
-    sourceUser: user?._id,
-    ...nextPageQuery,
-  })
-    .populate<PopulatedTargetUser>({
-      path: 'targetUser',
-      select: 'username profile.name',
-    })
+  const userSelect = userFields
+    ? (userFields as string)
+        .replace(/,/g, ' ')
+        .replace(/__v|password|email/g, '')
+        .trim()
+    : '';
+
+  const populate = {
+    path: 'targetUser',
+    select: `${userSelect} username`,
+  };
+
+  const follows = await Follow.find(filter)
+    .populate<PopulatedTargetUser>(populate)
     .sort({ _id: -1 })
-    .limit(reqLimit);
+    .limit(limit);
 
-  const following = follows.map((follow) => ({
-    followId: follow._id,
-    user: follow.targetUser,
-  }));
+  const following = follows.map((follow) => follow.targetUser);
+  const oldestId = follows[follows.length - 1]?._id;
+  const meta = Object.assign({}, oldestId && { oldestId });
 
-  res.status(200).json(following);
+  res.status(200).json({ status: 'success', data: following, meta });
 };
 
 export const getUserFollowers: Handler = async (req, res) => {
   const { username } = req.params;
-  const { lastId, limit } = req.query;
-  const reqLimit = Math.min(Number(limit) || 10, 20);
+  const { sinceId, userFields } = req.query;
+  const limit = Math.min(
+    Math.abs(parseInt(req.query.limit as string)) || 10,
+    100
+  );
 
-  let nextPageQuery = {};
-  if (lastId) {
-    nextPageQuery = { _id: { $lt: lastId } };
+  const targetUser = await User.exists({ username });
+  if (!targetUser) {
+    throw new BadRequestError(
+      'Sorry, we could not find user with that username'
+    );
   }
 
-  const user = await User.exists({ username });
+  let filter: FilterQuery<IFollow> = {
+    targetUser: targetUser._id,
+  };
+  filter = Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
 
-  const follows = await Follow.find({
-    targetUser: user?._id,
-    ...nextPageQuery,
-  })
-    .populate<PopulatedSourceUser>({
-      path: 'sourceUser',
-      select: 'username profile.name',
-    })
+  const userSelect = userFields
+    ? (userFields as string)
+        .replace(/,/g, ' ')
+        .replace(/__v|password|email/g, '')
+        .trim()
+    : '';
+
+  const populate = {
+    path: 'sourceUser',
+    select: `${userSelect} username`,
+  };
+
+  const follows = await Follow.find(filter)
+    .populate<PopulatedSourceUser>(populate)
     .sort({ _id: -1 })
-    .limit(reqLimit);
+    .limit(limit);
 
-  const followers = follows.map((follow) => ({
-    followId: follow._id,
-    user: follow.sourceUser,
-  }));
+  const followers = follows.map((follow) => follow.sourceUser);
+  const oldestId = follows.length ? follows[follows.length - 1]._id : '';
+  const meta = Object.assign({}, oldestId && { oldestId });
 
-  res.status(200).json(followers);
+  res.status(200).json({
+    status: 'success',
+    data: followers,
+    meta,
+  });
 };
 
 export const followUser: Handler = async (req, res) => {
@@ -102,7 +133,7 @@ export const followUser: Handler = async (req, res) => {
     targetUser: targetUser._id,
   });
 
-  res.status(200).json({ following: Boolean(newFollow) });
+  res.status(200).json({ status: 'success', data: newFollow });
 };
 
 export const unfollowUser: Handler = async (req, res) => {
@@ -124,7 +155,7 @@ export const unfollowUser: Handler = async (req, res) => {
     throw new BadRequestError('You are not following this user');
   }
 
-  const deletedFollow = await foundFollow.remove();
+  await foundFollow.remove();
 
-  res.status(200).json({ following: !deletedFollow });
+  res.status(200).json({ status: 'success', data: null });
 };
