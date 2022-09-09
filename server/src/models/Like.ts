@@ -2,7 +2,7 @@ import { model, Model, Schema, Types } from 'mongoose';
 import { Chirp } from './Chirp';
 import User from './User';
 
-interface ILike {
+export interface ILike {
   user: Types.ObjectId;
   chirp: Types.ObjectId;
 }
