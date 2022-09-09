@@ -43,7 +43,7 @@ export const updateCurrentUserProfile: Handler = async (req, res) => {
   };
   const updatedUser = await currentUser.save();
 
-  res.status(200).json({ status: 'success', data: updatedUser });
+  res.status(200).json({ status: 'success', data: updatedUser.profile });
 };
 
 export const updateCurrentUserPassword: Handler = async (req, res) => {
@@ -56,9 +56,9 @@ export const updateCurrentUserPassword: Handler = async (req, res) => {
   }
 
   currentUser.password = newPassword;
-  const updatedUser = await currentUser.save();
+  await currentUser.save();
 
-  res.status(200).json({ status: 'success', data: updatedUser });
+  res.status(200).json({ status: 'success', data: null });
 };
 
 export const updateCurrentUserUsername: Handler = async (req, res) => {
@@ -71,9 +71,9 @@ export const updateCurrentUserUsername: Handler = async (req, res) => {
   }
 
   currentUser.username = newUsername;
-  const updatedUser = await currentUser.save();
+  await currentUser.save();
 
-  res.status(200).json({ status: 'success', data: updatedUser });
+  res.status(200).json({ status: 'success', data: newUsername });
 };
 
 export const updateCurrentUserEmail: Handler = async (req, res) => {
@@ -87,9 +87,9 @@ export const updateCurrentUserEmail: Handler = async (req, res) => {
   }
 
   currentUser.email = newEmail;
-  const updatedUser = await currentUser.save();
+  await currentUser.save();
 
-  res.status(200).json({ status: 'success', data: updatedUser });
+  res.status(200).json({ status: 'success', data: newEmail });
 };
 
 export const deleteCurrentUser: Handler = async (req, res) => {
