@@ -7,18 +7,52 @@ import { JWT_SECRET } from '../config/secrets';
 import Follow from '../models/Follow';
 
 export const getUsers: Handler = async (req, res) => {
-  const { ids } = req.query;
+  const { ids, userFields } = req.query;
 
-  const foundUsers = await User.find(
-    { _id: { $in: ids } },
-    'profile.name username'
+  if (ids instanceof Array && ids.length > 100) {
+    throw new BadRequestError(
+      'Sorry, you can only request up to 100 users at a time'
+    );
+  }
+
+  const userSelect = userFields
+    ? (userFields as string)
+        .replace(/,/g, ' ')
+        .replace(/__v|password|email/g, '')
+        .trim()
+    : '';
+
+  const foundUsers = await User.find({ _id: ids }).select(
+    `${userSelect} username`
   );
 
-  res.status(200).json(foundUsers);
+  res.status(200).json({ status: 'success', data: foundUsers });
+};
+
+export const getUser: Handler = async (req, res) => {
+  const { username } = req.params;
+  const { userFields } = req.query;
+
+  const userSelect = userFields
+    ? (userFields as string)
+        .replace(/,/g, ' ')
+        .replace(/__v|password|email/g, '')
+        .trim()
+    : '';
+
+  const foundUser = await User.findOne({ username }).select(
+    `${userSelect} username`
+  );
+
+  if (!foundUser) {
+    throw new BadRequestError('Sorry, we could not find that user');
+  }
+
+  res.status(200).json({ status: 'success', data: foundUser });
 };
 
 export const searchUsers: Handler = async (req, res) => {
-  const { query, followingOnly } = req.query;
+  const { query, followingOnly, userFields } = req.query;
 
   if (!query) {
     throw new BadRequestError('Query is required');
@@ -33,7 +67,6 @@ export const searchUsers: Handler = async (req, res) => {
   const sort: { [key: string]: { $meta: 'textScore' } } = {
     score: { $meta: 'textScore' },
   };
-  const projection = { score: { $meta: 'textScore' }, profile: 1, username: 1 }; // delete score later
 
   let filter: FilterQuery<IUser> = { $text: { $search: query as string } };
 
@@ -46,13 +79,21 @@ export const searchUsers: Handler = async (req, res) => {
     filter = { ...filter, _id: followingIds };
   }
 
-  const users = await User.find(filter)
-    .projection(projection)
+  const userSelect = userFields
+    ? (userFields as string)
+        .replace(/,/g, ' ')
+        .replace(/__v|password|email/g, '')
+        .trim()
+    : '';
+
+  const foundUsers = await User.find(filter)
+    .select(`${userSelect} username`)
+    .select({ score: { $meta: 'textScore' } }) // delete score later
     .sort(sort)
     .skip(skip) // not the best way to do this
     .limit(limit);
 
-  res.status(200).json(users);
+  res.status(200).json({ status: 'success', data: foundUsers });
 };
 
 export const signUpUser: Handler = async (req, res) => {
@@ -77,7 +118,7 @@ export const signUpUser: Handler = async (req, res) => {
 
   const authToken = generateAuthToken(_id);
 
-  res.status(201).json({ _id, authToken });
+  res.status(201).json({ status: 'success', data: { authToken } });
 };
 
 export const logInUser: Handler = async (req, res) => {
@@ -99,23 +140,11 @@ export const logInUser: Handler = async (req, res) => {
 
   const authToken = generateAuthToken(_id);
 
-  res.status(200).json({ _id, authToken });
+  res.status(200).json({ status: 'success', data: { authToken } });
 };
 
 const generateAuthToken = (currentUserId: Types.ObjectId) => {
   return jwt.sign({ currentUserId }, JWT_SECRET, {
     expiresIn: '7d',
   });
-};
-
-export const getUser: Handler = async (req, res) => {
-  const { username } = req.params;
-
-  const foundUser = await User.findOne({ username });
-  if (!foundUser) {
-    throw new BadRequestError('Sorry, we could not find that user');
-  }
-
-  const { _id, email, profile } = foundUser;
-  res.status(200).json({ _id, username, email, profile });
 };

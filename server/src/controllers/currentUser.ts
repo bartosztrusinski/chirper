@@ -3,14 +3,25 @@ import User from '../models/User';
 import { BadRequestError } from '../utils/errors';
 
 export const getCurrentUser: Handler = async (req, res) => {
-  const currentUser = await User.findById(req.currentUserId);
+  const { currentUserId } = req;
+  const { userFields } = req.query;
+
+  const userSelect = userFields
+    ? (userFields as string)
+        .replace(/,/g, ' ')
+        .replace(/__v|password|email/g, '')
+        .trim()
+    : '';
+
+  const currentUser = await User.findById(currentUserId).select(
+    `${userSelect} username`
+  );
+
   if (!currentUser) {
     throw new BadRequestError('Sorry, we could not find your account');
   }
 
-  const { _id, username, email, profile } = currentUser;
-
-  res.status(200).json({ _id, username, email, profile });
+  res.status(200).json({ status: 'success', data: currentUser });
 };
 
 export const updateCurrentUserProfile: Handler = async (req, res) => {
@@ -32,7 +43,7 @@ export const updateCurrentUserProfile: Handler = async (req, res) => {
   };
   const updatedUser = await currentUser.save();
 
-  res.status(200).json(updatedUser);
+  res.status(200).json({ status: 'success', data: updatedUser });
 };
 
 export const updateCurrentUserPassword: Handler = async (req, res) => {
@@ -47,7 +58,7 @@ export const updateCurrentUserPassword: Handler = async (req, res) => {
   currentUser.password = newPassword;
   const updatedUser = await currentUser.save();
 
-  res.status(200).json(updatedUser);
+  res.status(200).json({ status: 'success', data: updatedUser });
 };
 
 export const updateCurrentUserUsername: Handler = async (req, res) => {
@@ -62,7 +73,7 @@ export const updateCurrentUserUsername: Handler = async (req, res) => {
   currentUser.username = newUsername;
   const updatedUser = await currentUser.save();
 
-  res.status(200).json(updatedUser);
+  res.status(200).json({ status: 'success', data: updatedUser });
 };
 
 export const updateCurrentUserEmail: Handler = async (req, res) => {
@@ -78,7 +89,7 @@ export const updateCurrentUserEmail: Handler = async (req, res) => {
   currentUser.email = newEmail;
   const updatedUser = await currentUser.save();
 
-  res.status(200).json(updatedUser);
+  res.status(200).json({ status: 'success', data: updatedUser });
 };
 
 export const deleteCurrentUser: Handler = async (req, res) => {
@@ -91,7 +102,7 @@ export const deleteCurrentUser: Handler = async (req, res) => {
 
   await currentUser.remove();
 
-  res.status(200).json({ message: 'Account deleted' });
+  res.status(200).json({ status: 'success', data: null });
 };
 
 // export const confirmCurrentUserPassword: Handler = async (req, res) => {
