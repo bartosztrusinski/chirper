@@ -44,8 +44,6 @@ const chirpSchema = new Schema<IChirp, ChirpModel>(
   { timestamps: true, discriminatorKey: 'kind' }
 );
 
-chirpSchema.index({ content: 'text' });
-
 export type HydratedChirp = HydratedDocument<IChirp>;
 export type HydratedReply = HydratedDocument<IReply>;
 
@@ -57,40 +55,23 @@ export interface PopulatedAuthor {
   author: HydratedUser;
 }
 
-const removeReplies = async (chirp: HydratedChirp) => {
-  const { replies } = await chirp.populate<PopulatedReplies>('replies');
-  await Promise.all(replies.map((reply) => reply.remove()));
-};
-
-const removeFromParent = async (reply: HydratedReply) => {
-  // await Chirp.findOneAndUpdate(
-  //   {
-  //     replies: { $elemMatch: { $eq: chirp._id } },
-  //   },
-  //   { $pull: { replies: chirp._id } }
-  // );
-  await Chirp.findByIdAndUpdate(reply.parent, {
-    $pull: { replies: reply._id },
-  });
-};
-
-chirpSchema.pre('save', async function () {
+chirpSchema.post('save', async function incrementMetrics() {
   await User.findByIdAndUpdate(this.author, {
-    $inc: { chirpCount: 1 },
+    $inc: { 'metrics.chirpCount': 1 },
   });
 });
 
-chirpSchema.pre('remove', async function (next) {
+chirpSchema.post('remove', async function removeDependencies() {
   await User.findByIdAndUpdate(this.author, {
-    $inc: { chirpCount: -1 },
+    $inc: { 'metrics.chirpCount': -1 },
   });
-  await removeReplies(this);
-  if (this instanceof ReplyChirp) {
-    await removeFromParent(this);
-  }
-  await Like.deleteMany({ chirp: this._id });
-  next();
+
+  const { replies } = await this.populate<PopulatedReplies>('replies');
+  const likes = await Like.find({ chirp: this._id });
+  await Promise.all([...likes, ...replies].map((doc) => doc.remove()));
 });
+
+chirpSchema.index({ content: 'text' });
 
 const Chirp = model<IChirp, ChirpModel>('Chirp', chirpSchema);
 
@@ -124,9 +105,15 @@ const replySchema = new Schema<IReply, ReplyModel>({
   },
 });
 
-replySchema.pre('save', async function () {
-  await User.findByIdAndUpdate(this.author, {
+replySchema.post('save', async function pushToParent() {
+  await Chirp.findByIdAndUpdate(this.parent, {
     $push: { replies: this._id },
+  });
+});
+
+replySchema.post('remove', async function pullFromParent() {
+  await Chirp.findByIdAndUpdate(this.parent, {
+    $pull: { replies: this._id },
   });
 });
 

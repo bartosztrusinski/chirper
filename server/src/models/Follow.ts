@@ -24,23 +24,25 @@ const followSchema = new Schema<IFollow, FollowModel>(
   { timestamps: true }
 );
 
-followSchema.pre('save', async function () {
+followSchema.post('save', async function incrementMetrics() {
   await User.findByIdAndUpdate(this.sourceUser, {
-    $inc: { followingCount: 1 },
+    $inc: { 'metrics.followingCount': 1 },
   });
   await User.findByIdAndUpdate(this.targetUser, {
-    $inc: { followersCount: 1 },
+    $inc: { 'metrics.followersCount': 1 },
   });
 });
 
-followSchema.pre('remove', async function () {
+followSchema.post('remove', async function decrementMetrics() {
   await User.findByIdAndUpdate(this.sourceUser, {
-    $inc: { followingCount: -1 },
+    $inc: { 'metrics.followingCount': -1 },
   });
   await User.findByIdAndUpdate(this.targetUser, {
-    $inc: { followersCount: -1 },
+    $inc: { 'metrics.followersCount': -1 },
   });
 });
+
+followSchema.index({ sourceUser: 1, targetUser: 1 }, { unique: true });
 
 const Follow = model<IFollow>('Follow', followSchema);
 

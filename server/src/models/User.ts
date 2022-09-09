@@ -135,8 +135,6 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
   { timestamps: true }
 );
 
-userSchema.index({ username: 'text', 'profile.name': 'text' });
-
 const generateHash = async (input: string): Promise<string> => {
   const salt = await bcrypt.genSalt(10);
   const hashedInput = bcrypt.hash(input, salt);
@@ -150,11 +148,12 @@ userSchema.pre('save', async function hashPassword(next) {
   next();
 });
 
-userSchema.pre('remove', async function removeDependencies() {
-  await Follow.deleteMany({
+userSchema.post('remove', async function removeDependencies() {
+  const follows = await Follow.find({
     $or: [{ sourceUser: this._id }, { targetUser: this._id }],
   });
-  await Like.deleteMany({ user: this._id });
+  const likes = await Like.find({ user: this._id });
+  await Promise.all([...likes, ...follows].map((doc) => doc.remove()));
 });
 
 const isPasswordMatch: IsPasswordMatch = function (
@@ -166,6 +165,8 @@ const isPasswordMatch: IsPasswordMatch = function (
 };
 
 userSchema.method('isPasswordMatch', isPasswordMatch);
+
+userSchema.index({ username: 'text', 'profile.name': 'text' });
 
 const User = model<IUser, UserModel>('User', userSchema);
 
