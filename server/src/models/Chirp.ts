@@ -96,10 +96,11 @@ const Chirp = model<IChirp, ChirpModel>('Chirp', chirpSchema);
 
 export type IPost = IChirp;
 type PostModel = Model<IPost>;
+const postSchema = new Schema<IPost, PostModel>({});
 
 const PostChirp = Chirp.discriminator<IPost, PostModel>(
   'Post',
-  new Schema({}),
+  postSchema,
   'post'
 );
 
@@ -107,22 +108,31 @@ export interface IReply extends IChirp {
   post: Types.ObjectId;
   parent: Types.ObjectId;
 }
+
 type ReplyModel = Model<IReply>;
+
+const replySchema = new Schema<IReply, ReplyModel>({
+  post: {
+    type: Schema.Types.ObjectId,
+    ref: 'Post',
+    required: [true, 'Reply post is required'],
+  },
+  parent: {
+    type: Schema.Types.ObjectId,
+    ref: 'Chirp',
+    required: [true, 'Reply parent is required'],
+  },
+});
+
+replySchema.pre('save', async function () {
+  await User.findByIdAndUpdate(this.author, {
+    $push: { replies: this._id },
+  });
+});
 
 const ReplyChirp = Chirp.discriminator<IReply, ReplyModel>(
   'Reply',
-  new Schema({
-    post: {
-      type: Schema.Types.ObjectId,
-      ref: 'Post',
-      required: [true, 'Reply post is required'],
-    },
-    parent: {
-      type: Schema.Types.ObjectId,
-      ref: 'Chirp',
-      required: [true, 'Reply parent is required'],
-    },
-  }),
+  replySchema,
   'reply'
 );
 
