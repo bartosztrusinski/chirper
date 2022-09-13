@@ -18,44 +18,47 @@ interface IUserMetrics {
   likedChirpCount: number;
 }
 
-const userProfileSchema = new Schema<IUserProfile>({
-  name: {
-    type: String,
-    required: [true, 'Profile name is required'],
-    max: [50, 'Profile name must be less than 50 characters'],
-    match: [/^[^<>]*$/, 'Profile name cannot include invalid characters'],
-    trim: true,
+const userProfileSchema = new Schema<IUserProfile>(
+  {
+    name: {
+      type: String,
+      required: [true, 'Profile name is required'],
+      max: [50, 'Profile name must be less than 50 characters'],
+      match: [/^[^<>]*$/, 'Profile name cannot include invalid characters'],
+      trim: true,
+    },
+    picture: {
+      type: String,
+      trim: true,
+    },
+    header: {
+      type: String,
+      trim: true,
+    },
+    bio: {
+      type: String,
+      max: [160, 'Description must be less than 160 characters'],
+      match: [/^[^<>]*$/, 'Description cannot include invalid characters'],
+      trim: true,
+    },
+    location: {
+      type: String,
+      max: [30, 'Location must be less than 30 characters'],
+      match: [/^[^<>]*$/, 'Location cannot include invalid characters'],
+      trim: true,
+    },
+    website: {
+      type: String,
+      max: [100, 'Website URL must be less than 100 characters'],
+      match: [
+        /^(https?:\/\/)?(www.)?([a-z0-9]+\.)+[a-zA-Z]{2,}\/?(\/[a-zA-Z0-9#-_]+\/?)*$/,
+        'Website URL must be valid',
+      ],
+      trim: true,
+    },
   },
-  picture: {
-    type: String,
-    trim: true,
-  },
-  header: {
-    type: String,
-    trim: true,
-  },
-  bio: {
-    type: String,
-    max: [160, 'Description must be less than 160 characters'],
-    match: [/^[^<>]*$/, 'Description cannot include invalid characters'],
-    trim: true,
-  },
-  location: {
-    type: String,
-    max: [30, 'Location must be less than 30 characters'],
-    match: [/^[^<>]*$/, 'Location cannot include invalid characters'],
-    trim: true,
-  },
-  website: {
-    type: String,
-    max: [100, 'Website URL must be less than 100 characters'],
-    match: [
-      /^(https?:\/\/)?(www.)?([a-z0-9]+\.)+[a-zA-Z]{2,}\/?(\/[a-zA-Z0-9#-_]+\/?)*$/,
-      'Website URL must be valid',
-    ],
-    trim: true,
-  },
-});
+  { _id: false }
+);
 
 export interface IUser {
   username: string;
@@ -104,7 +107,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
       minLength: [8, 'Password must be at least 8 characters'],
       maxLength: [64, 'Password must be less than 64 characters'],
       match: [
-        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])[^\s<>]*$/,
+        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)[^\s<>]*$/,
         'Password must contain at least one uppercase, one lowercase, and one number characters',
       ],
       trim: true,
