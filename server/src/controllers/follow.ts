@@ -1,7 +1,12 @@
-import { Handler } from 'express';
+import { Request, Response } from 'express';
 import { FilterQuery } from 'mongoose';
+import { Username } from '../schemas';
 import Follow, { IFollow } from '../models/Follow';
 import User, { IUser } from '../models/User';
+import {
+  GetUserFollowersQuery,
+  GetUserFollowingsQuery,
+} from '../schemas/follow';
 import { BadRequestError } from '../utils/errors';
 
 interface PopulatedTargetUser {
@@ -12,13 +17,17 @@ interface PopulatedSourceUser {
   sourceUser: IUser;
 }
 
-export const getUserFollowings: Handler = async (req, res) => {
+export const getUserFollowings = async (
+  req: Request<
+    Username,
+    { status: string; data: object; meta: object },
+    unknown,
+    GetUserFollowingsQuery
+  >,
+  res: Response<{ status: string; data: object; meta: object }>
+) => {
   const { username } = req.params;
-  const { sinceId, userFields } = req.query;
-  const limit = Math.min(
-    Math.abs(parseInt(req.query.limit as string)) || 10,
-    100
-  );
+  const { sinceId, userFields, limit } = req.query;
 
   const sourceUser = await User.exists({ username });
   if (!sourceUser) {
@@ -27,21 +36,14 @@ export const getUserFollowings: Handler = async (req, res) => {
     );
   }
 
-  let filter: FilterQuery<IFollow> = {
+  const filter: FilterQuery<IFollow> = {
     sourceUser: sourceUser._id,
   };
-  filter = Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
-
-  const userSelect = userFields
-    ? (userFields as string)
-        .replace(/,/g, ' ')
-        .replace(/__v|password|email/g, '')
-        .trim()
-    : '';
+  Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
 
   const populate = {
     path: 'targetUser',
-    select: `${userSelect} username`,
+    select: userFields,
   };
 
   const follows = await Follow.find(filter)
@@ -56,13 +58,17 @@ export const getUserFollowings: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: following, meta });
 };
 
-export const getUserFollowers: Handler = async (req, res) => {
+export const getUserFollowers = async (
+  req: Request<
+    Username,
+    { status: string; data: object; meta: object },
+    unknown,
+    GetUserFollowersQuery
+  >,
+  res: Response<{ status: string; data: object; meta: object }>
+) => {
   const { username } = req.params;
-  const { sinceId, userFields } = req.query;
-  const limit = Math.min(
-    Math.abs(parseInt(req.query.limit as string)) || 10,
-    100
-  );
+  const { sinceId, userFields, limit } = req.query;
 
   const targetUser = await User.exists({ username });
   if (!targetUser) {
@@ -71,21 +77,14 @@ export const getUserFollowers: Handler = async (req, res) => {
     );
   }
 
-  let filter: FilterQuery<IFollow> = {
+  const filter: FilterQuery<IFollow> = {
     targetUser: targetUser._id,
   };
-  filter = Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
-
-  const userSelect = userFields
-    ? (userFields as string)
-        .replace(/,/g, ' ')
-        .replace(/__v|password|email/g, '')
-        .trim()
-    : '';
+  Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
 
   const populate = {
     path: 'sourceUser',
-    select: `${userSelect} username`,
+    select: userFields,
   };
 
   const follows = await Follow.find(filter)
@@ -94,7 +93,7 @@ export const getUserFollowers: Handler = async (req, res) => {
     .limit(limit);
 
   const followers = follows.map((follow) => follow.sourceUser);
-  const oldestId = follows.length ? follows[follows.length - 1]._id : '';
+  const oldestId = follows[follows.length - 1]?._id;
   const meta = Object.assign({}, oldestId && { oldestId });
 
   res.status(200).json({
@@ -104,7 +103,10 @@ export const getUserFollowers: Handler = async (req, res) => {
   });
 };
 
-export const followUser: Handler = async (req, res) => {
+export const followUser = async (
+  req: Request<unknown, { status: string; data: object }, Username>,
+  res: Response<{ status: string; data: object }>
+) => {
   const { currentUserId } = req;
   const { username } = req.body;
 
@@ -132,7 +134,10 @@ export const followUser: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: newFollow });
 };
 
-export const unfollowUser: Handler = async (req, res) => {
+export const unfollowUser = async (
+  req: Request<Username>,
+  res: Response<{ status: string; data: null }>
+) => {
   const { currentUserId } = req;
   const { username } = req.params;
 

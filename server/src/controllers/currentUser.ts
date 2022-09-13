@@ -1,21 +1,27 @@
-import { Handler } from 'express';
+import { Request, Response } from 'express';
 import User from '../models/User';
+import {
+  UpdateCurrentUserEmailBody,
+  UpdateCurrentUserPasswordBody,
+  UpdateCurrentUserUsernameBody,
+  UserProfile,
+} from '../schemas/currentUser';
+import { GetUserQuery } from '../schemas/user';
 import { BadRequestError } from '../utils/errors';
 
-export const getCurrentUser: Handler = async (req, res) => {
+export const getCurrentUser = async (
+  req: Request<
+    unknown,
+    { status: string; data: object },
+    unknown,
+    GetUserQuery
+  >,
+  res: Response<{ status: string; data: object }>
+) => {
   const { currentUserId } = req;
   const { userFields } = req.query;
 
-  const userSelect = userFields
-    ? (userFields as string)
-        .replace(/,/g, ' ')
-        .replace(/__v|password|email/g, '')
-        .trim()
-    : '';
-
-  const currentUser = await User.findById(currentUserId).select(
-    `${userSelect} username`
-  );
+  const currentUser = await User.findById(currentUserId).select(userFields);
 
   if (!currentUser) {
     throw new BadRequestError('Sorry, we could not find your account');
@@ -24,7 +30,10 @@ export const getCurrentUser: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: currentUser });
 };
 
-export const updateCurrentUserProfile: Handler = async (req, res) => {
+export const updateCurrentUserProfile = async (
+  req: Request<unknown, { status: string; data: object }, UserProfile>,
+  res: Response<{ status: string; data: object }>
+) => {
   const { currentUserId } = req;
   const { name, picture, header, bio, location, website } = req.body;
 
@@ -46,7 +55,14 @@ export const updateCurrentUserProfile: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: updatedUser.profile });
 };
 
-export const updateCurrentUserPassword: Handler = async (req, res) => {
+export const updateCurrentUserPassword = async (
+  req: Request<
+    unknown,
+    { status: string; data: null },
+    UpdateCurrentUserPasswordBody
+  >,
+  res: Response<{ status: string; data: null }>
+) => {
   const { currentUserId } = req;
   const { newPassword } = req.body;
 
@@ -61,7 +77,14 @@ export const updateCurrentUserPassword: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: null });
 };
 
-export const updateCurrentUserUsername: Handler = async (req, res) => {
+export const updateCurrentUserUsername = async (
+  req: Request<
+    unknown,
+    { status: string; data: string },
+    UpdateCurrentUserUsernameBody
+  >,
+  res: Response<{ status: string; data: string }>
+) => {
   const { currentUserId } = req;
   const { newUsername } = req.body;
 
@@ -76,7 +99,14 @@ export const updateCurrentUserUsername: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: newUsername });
 };
 
-export const updateCurrentUserEmail: Handler = async (req, res) => {
+export const updateCurrentUserEmail = async (
+  req: Request<
+    unknown,
+    { status: string; data: string },
+    UpdateCurrentUserEmailBody
+  >,
+  res: Response<{ status: string; data: string }>
+) => {
   // verify new email
   const { currentUserId } = req;
   const { newEmail } = req.body;
@@ -92,7 +122,10 @@ export const updateCurrentUserEmail: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: newEmail });
 };
 
-export const deleteCurrentUser: Handler = async (req, res) => {
+export const deleteCurrentUser = async (
+  req: Request,
+  res: Response<{ status: string; data: null }>
+) => {
   const { currentUserId } = req;
 
   const currentUser = await User.findById(currentUserId);

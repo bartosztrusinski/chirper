@@ -1,48 +1,48 @@
-import { Handler } from 'express';
+import { Request, Response } from 'express';
 import { FilterQuery, Types } from 'mongoose';
 import { BadRequestError } from '../utils/errors';
 import User, { IUser } from '../models/User';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/secrets';
 import Follow from '../models/Follow';
+import {
+  GetUserQuery,
+  GetUsersQuery,
+  LogInUserBody,
+  SearchUsersQuery,
+  SignUpUserBody,
+} from '../schemas/user';
+import { Username } from '../schemas';
 
-export const getUsers: Handler = async (req, res) => {
+export const getUsers = async (
+  req: Request<
+    unknown,
+    { status: string; data: object },
+    unknown,
+    GetUsersQuery
+  >,
+  res: Response<{ status: string; data: object }>
+) => {
   const { ids, userFields } = req.query;
 
-  if (ids instanceof Array && ids.length > 100) {
-    throw new BadRequestError(
-      'Sorry, you can only request up to 100 users at a time'
-    );
-  }
-
-  const userSelect = userFields
-    ? (userFields as string)
-        .replace(/,/g, ' ')
-        .replace(/__v|password|email/g, '')
-        .trim()
-    : '';
-
-  const foundUsers = await User.find({ _id: ids }).select(
-    `${userSelect} username`
-  );
+  const foundUsers = await User.find({ _id: ids }).select(userFields);
 
   res.status(200).json({ status: 'success', data: foundUsers });
 };
 
-export const getUser: Handler = async (req, res) => {
+export const getUser = async (
+  req: Request<
+    Username,
+    { status: string; data: object },
+    unknown,
+    GetUserQuery
+  >,
+  res: Response<{ status: string; data: object }>
+) => {
   const { username } = req.params;
   const { userFields } = req.query;
 
-  const userSelect = userFields
-    ? (userFields as string)
-        .replace(/,/g, ' ')
-        .replace(/__v|password|email/g, '')
-        .trim()
-    : '';
-
-  const foundUser = await User.findOne({ username }).select(
-    `${userSelect} username`
-  );
+  const foundUser = await User.findOne({ username }).select(userFields);
 
   if (!foundUser) {
     throw new BadRequestError('Sorry, we could not find that user');
@@ -51,43 +51,39 @@ export const getUser: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: foundUser });
 };
 
-export const searchUsers: Handler = async (req, res) => {
-  const { query, followingOnly, userFields } = req.query;
+export const searchUsers = async (
+  req: Request<
+    unknown,
+    { status: string; data: object },
+    unknown,
+    SearchUsersQuery
+  >,
+  res: Response<{ status: string; data: object }>
+) => {
+  const { currentUserId } = req;
+  const { query, followingOnly, userFields, limit, page } = req.query;
 
-  if (!query) {
-    throw new BadRequestError('Query is required');
-  }
-
-  const limit = Math.min(
-    Math.abs(parseInt(req.query.limit as string)) || 10,
-    20
-  );
-  const page = Math.abs(parseInt(req.query.page as string) || 1);
-  const skip = (page - 1) * limit;
-  const sort: { [key: string]: { $meta: 'textScore' } } = {
-    score: { $meta: 'textScore' },
-  };
-
-  let filter: FilterQuery<IUser> = { $text: { $search: query as string } };
+  let filter: FilterQuery<IUser> = { $text: { $search: query } };
 
   if (followingOnly) {
-    if (!req.currentUserId) {
-      throw new BadRequestError('You must be logged in to do that');
+    if (!currentUserId) {
+      throw new BadRequestError(
+        'You must be logged in to search following users'
+      );
     }
-    const follows = await Follow.find({ sourceUser: req.currentUserId });
+    const follows = await Follow.find({ sourceUser: currentUserId });
     const followingIds = follows.map((follow) => follow.targetUser);
     filter = { ...filter, _id: followingIds };
   }
 
-  const userSelect = userFields
-    ? (userFields as string)
-        .replace(/,/g, ' ')
-        .replace(/__v|password|email/g, '')
-        .trim()
-    : '';
+  const sort: { [key: string]: { $meta: 'textScore' } } = {
+    score: { $meta: 'textScore' },
+  };
+
+  const skip = (page - 1) * limit;
 
   const foundUsers = await User.find(filter)
-    .select(`${userSelect} username`)
+    .select(userFields)
     .select({ score: { $meta: 'textScore' } }) // delete score later
     .sort(sort)
     .skip(skip) // not the best way to do this
@@ -96,7 +92,10 @@ export const searchUsers: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: foundUsers });
 };
 
-export const signUpUser: Handler = async (req, res) => {
+export const signUpUser = async (
+  req: Request<unknown, { status: string; data: object }, SignUpUserBody>,
+  res: Response<{ status: string; data: object }>
+) => {
   // verify email
   const { username, email, password, profile } = req.body;
 
@@ -121,7 +120,10 @@ export const signUpUser: Handler = async (req, res) => {
   res.status(201).json({ status: 'success', data: { authToken } });
 };
 
-export const logInUser: Handler = async (req, res) => {
+export const logInUser = async (
+  req: Request<unknown, { status: string; data: object }, LogInUserBody>,
+  res: Response<{ status: string; data: object }>
+) => {
   const { login, password } = req.body;
 
   const existingUser = await User.findOne({
@@ -136,9 +138,7 @@ export const logInUser: Handler = async (req, res) => {
     throw new BadRequestError('Sorry, wrong password!');
   }
 
-  const { _id } = existingUser;
-
-  const authToken = generateAuthToken(_id);
+  const authToken = generateAuthToken(existingUser._id);
 
   res.status(200).json({ status: 'success', data: { authToken } });
 };

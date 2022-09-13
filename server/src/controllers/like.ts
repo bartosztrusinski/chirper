@@ -1,8 +1,10 @@
-import { Handler } from 'express';
-import { FilterQuery, PopulateOptions } from 'mongoose';
+import { Request, Response } from 'express';
+import { FilterQuery } from 'mongoose';
+import { ChirpId, Username } from '../schemas';
 import { Chirp, IChirp } from '../models/Chirp';
 import Like, { ILike } from '../models/Like';
 import User, { IUser } from '../models/User';
+import { GetLikedChirpsQuery, GetLikingUsersQuery } from '../schemas/like';
 import { BadRequestError } from '../utils/errors';
 
 interface PopulatedUser {
@@ -12,29 +14,26 @@ interface PopulatedChirp {
   chirp: IChirp;
 }
 
-export const getLikingUsers: Handler = async (req, res) => {
+export const getLikingUsers = async (
+  req: Request<
+    ChirpId,
+    { status: string; data: object; meta: object },
+    unknown,
+    GetLikingUsersQuery
+  >,
+  res: Response<{ status: string; data: object; meta: object }>
+) => {
   const { chirpId } = req.params;
-  const { sinceId, userFields } = req.query;
-  const limit = Math.min(
-    Math.abs(parseInt(req.query.limit as string)) || 10,
-    100
-  );
+  const { sinceId, userFields, limit } = req.query;
 
-  let filter: FilterQuery<ILike> = {
+  const filter: FilterQuery<ILike> = {
     chirp: chirpId,
   };
-  filter = Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
-
-  const userSelect = userFields
-    ? (userFields as string)
-        .replace(/,/g, ' ')
-        .replace(/__v|password|email/g, '')
-        .trim()
-    : '';
+  Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
 
   const populate = {
     path: 'user',
-    select: `${userSelect} username`,
+    select: userFields,
   };
 
   const likes = await Like.find(filter)
@@ -49,13 +48,17 @@ export const getLikingUsers: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: likingUsers, meta });
 };
 
-export const getLikedChirps: Handler = async (req, res) => {
+export const getLikedChirps = async (
+  req: Request<
+    Username,
+    { status: string; data: object; meta: object },
+    unknown,
+    GetLikedChirpsQuery
+  >,
+  res: Response<{ status: string; data: object; meta: object }>
+) => {
   const { username } = req.params;
-  const { sinceId, userFields, chirpFields, expandAuthor } = req.query;
-  const limit = Math.min(
-    Math.abs(parseInt(req.query.limit as string)) || 10,
-    20
-  );
+  const { sinceId, userFields, chirpFields, expandAuthor, limit } = req.query;
 
   const existingUser = await User.exists({ username });
   if (!existingUser) {
@@ -64,31 +67,18 @@ export const getLikedChirps: Handler = async (req, res) => {
     );
   }
 
-  let filter: FilterQuery<ILike> = {
+  const filter: FilterQuery<ILike> = {
     user: existingUser._id,
   };
-  filter = Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
+  Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
 
-  const chirpSelect = chirpFields
-    ? (chirpFields as string).replace(/,/g, ' ').replace(/__v/g, '').trim()
-    : '';
-
-  const userSelect = userFields
-    ? (userFields as string)
-        .replace(/,/g, ' ')
-        .replace(/__v|password|email/g, '')
-        .trim()
-    : '';
-
-  const populateAuthor: PopulateOptions | string[] = expandAuthor
-    ? { path: 'author', select: `${userSelect} username` }
-    : [];
-
+  const populateAuthor = { path: 'author', select: userFields };
   const populateChirp = {
     path: 'chirp',
-    select: `${chirpSelect} content ${expandAuthor ? 'author' : ''}`,
+    select: chirpFields,
     populate: populateAuthor,
   };
+  Object.assign(populateChirp, expandAuthor && { populate: populateAuthor });
 
   const likes = await Like.find(filter)
     .populate<PopulatedChirp>(populateChirp)
@@ -102,7 +92,10 @@ export const getLikedChirps: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: likedChirps, meta });
 };
 
-export const likeChirp: Handler = async (req, res) => {
+export const likeChirp = async (
+  req: Request<unknown, { status: string; data: object }, ChirpId>,
+  res: Response<{ status: string; data: object }>
+) => {
   const { currentUserId } = req;
   const { chirpId } = req.body;
 
@@ -126,7 +119,10 @@ export const likeChirp: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: like });
 };
 
-export const unlikeChirp: Handler = async (req, res) => {
+export const unlikeChirp = async (
+  req: Request<ChirpId>,
+  res: Response<{ status: string; data: null }>
+) => {
   const { currentUserId } = req;
   const { chirpId } = req.params;
 

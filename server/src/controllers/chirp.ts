@@ -1,5 +1,6 @@
-import { Handler } from 'express';
-import { FilterQuery, PopulateOptions, SortOrder, Types } from 'mongoose';
+import { Request, Response } from 'express';
+import { FilterQuery, SortOrder, Types } from 'mongoose';
+import { ChirpId, Username } from '../schemas';
 import {
   Chirp,
   IChirp,
@@ -10,108 +11,51 @@ import {
 } from '../models/Chirp';
 import Follow from '../models/Follow';
 import User from '../models/User';
+import {
+  CreateChirpBody,
+  GetChirpsQuery,
+  ReverseChronologicalTimelineQuery,
+  SearchChirpsQuery,
+} from '../schemas/chirp';
+import { GetUserChirpsQuery } from '../schemas/user';
 import { BadRequestError } from '../utils/errors';
 
-export const getUserChirps: Handler = async (req, res) => {
-  const { username } = req.params;
-  const { sinceId, includeReplies, userFields, chirpFields, expandAuthor } =
-    req.query;
-
-  const limit = Math.min(
-    Math.abs(parseInt(req.query.limit as string)) || 10,
-    20
-  );
-
-  const chirpsAuthor = await User.exists({ username });
-  if (!chirpsAuthor) {
-    throw new BadRequestError('Sorry, we could not find that user');
-  }
-
-  const filter: FilterQuery<IChirp> = {
-    author: chirpsAuthor._id,
-  };
-  Object.assign(
-    filter,
-    sinceId && { _id: { $lt: sinceId } },
-    includeReplies !== 'true' && { kind: 'post' }
-  );
-
-  const chirpSelect = chirpFields
-    ? (chirpFields as string).replace(/,/g, ' ').replace(/__v/g, '').trim()
-    : '';
-
-  const userSelect = userFields
-    ? (userFields as string)
-        .replace(/,/g, ' ')
-        .replace(/__v|password|email/g, '')
-        .trim()
-    : '';
-
-  const populate: PopulateOptions | string[] = expandAuthor
-    ? { path: 'author', select: `${userSelect} username` }
-    : [];
-
-  const foundUsersChirps = await Chirp.find(filter)
-    .select(`${chirpSelect} content ${expandAuthor ? 'author' : ''}`)
-    .populate(populate)
-    .sort({ _id: -1 })
-    .limit(limit);
-
-  res.status(200).json({ status: 'success', data: foundUsersChirps });
-};
-
-export const getChirps: Handler = async (req, res) => {
+export const getChirps = async (
+  req: Request<
+    unknown,
+    { status: string; data: object },
+    unknown,
+    GetChirpsQuery
+  >,
+  res: Response<{ status: string; data: object }>
+) => {
   const { ids, userFields, chirpFields, expandAuthor } = req.query;
 
-  if (ids instanceof Array && ids.length > 100) {
-    throw new BadRequestError(
-      'Sorry, you can only request up to 100 chirps at a time'
-    );
-  }
-
-  const chirpSelect = chirpFields
-    ? (chirpFields as string).replace(/,/g, ' ').replace(/__v/g, '').trim()
-    : '';
-
-  const userSelect = userFields
-    ? (userFields as string)
-        .replace(/,/g, ' ')
-        .replace(/__v|password|email/g, '')
-        .trim()
-    : '';
-
-  const populate: PopulateOptions | string[] = expandAuthor
-    ? { path: 'author', select: `${userSelect} username` }
-    : [];
+  const populate = expandAuthor ? [{ path: 'author', select: userFields }] : [];
 
   const foundChirps = await Chirp.find({ _id: ids })
-    .select(`${chirpSelect} content ${expandAuthor ? 'author' : ''}`)
+    .select(chirpFields)
     .populate(populate);
 
   res.status(200).json({ status: 'success', data: foundChirps });
 };
 
-export const getChirp: Handler = async (req, res) => {
+export const getChirp = async (
+  req: Request<
+    ChirpId,
+    { status: string; data: object },
+    unknown,
+    GetChirpsQuery
+  >,
+  res: Response<{ status: string; data: object }>
+) => {
   const { chirpId } = req.params;
   const { userFields, chirpFields, expandAuthor } = req.query;
 
-  const chirpSelect = chirpFields
-    ? (chirpFields as string).replace(/,/g, ' ').replace(/__v/g, '').trim()
-    : '';
-
-  const userSelect = userFields
-    ? (userFields as string)
-        .replace(/,/g, ' ')
-        .replace(/__v|password|email/g, '')
-        .trim()
-    : '';
-
-  const populate: PopulateOptions | string[] = expandAuthor
-    ? { path: 'author', select: `${userSelect} username` }
-    : [];
+  const populate = expandAuthor ? [{ path: 'author', select: userFields }] : [];
 
   const foundChirp = await Chirp.findById(chirpId)
-    .select(`${chirpSelect} content ${expandAuthor ? 'author' : ''}`)
+    .select(chirpFields)
     .populate(populate);
 
   if (!foundChirp) {
@@ -121,35 +65,34 @@ export const getChirp: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: foundChirp });
 };
 
-export const searchChirps: Handler = async (req, res) => {
+export const searchChirps = async (
+  req: Request<
+    unknown,
+    { status: string; data: object },
+    unknown,
+    SearchChirpsQuery
+  >,
+  res: Response<{ status: string; data: object }>
+) => {
   const {
     query,
-    followingOnly,
-    sortBy,
     from,
+    followingOnly,
     includeReplies,
-    startTime,
-    endTime,
+    expandAuthor,
     chirpFields,
     userFields,
-    expandAuthor,
+    sortBy,
+    startTime,
+    endTime,
+    page,
+    limit,
   } = req.query;
 
-  if (!query) {
-    throw new BadRequestError('Query is required');
-  }
-
-  const limit = Math.min(
-    Math.abs(parseInt(req.query.limit as string)) || 10,
-    20
-  );
-  const page = Math.abs(parseInt(req.query.page as string) || 1);
-  const skip = (page - 1) * limit;
-
   let filter: FilterQuery<IChirp> = {
-    $text: { $search: query as string },
+    $text: { $search: query },
   };
-  Object.assign(filter, includeReplies !== 'true' && { kind: 'post' });
+  Object.assign(filter, !includeReplies && { kind: 'post' });
 
   if (followingOnly) {
     if (!req.currentUserId) {
@@ -158,7 +101,9 @@ export const searchChirps: Handler = async (req, res) => {
     const follows = await Follow.find({ sourceUser: req.currentUserId });
     const followingIds = follows.map((follow) => follow.targetUser);
     filter = { ...filter, author: followingIds };
-  } else if (from) {
+  }
+
+  if (from) {
     const fromUser = await User.exists({ username: from });
     if (!fromUser) {
       throw new BadRequestError('Sorry, we could not find that user');
@@ -168,37 +113,26 @@ export const searchChirps: Handler = async (req, res) => {
 
   const createdAt = Object.assign(
     {},
-    typeof startTime === 'string' && { $gte: new Date(startTime) },
-    typeof endTime === 'string' && { $lte: new Date(endTime) }
+    startTime && { $gte: startTime },
+    endTime && { $lte: endTime }
   );
   Object.assign(filter, Object.keys(createdAt).length && { createdAt });
 
-  const chirpSelect = chirpFields
-    ? (chirpFields as string).replace(/,/g, ' ').replace(/__v/g, '').trim()
-    : '';
+  const populate = expandAuthor ? [{ path: 'author', select: userFields }] : [];
 
-  const userSelect = userFields
-    ? (userFields as string)
-        .replace(/,/g, ' ')
-        .replace(/__v|password|email/g, '')
-        .trim()
-    : '';
-
-  const populate: PopulateOptions | string[] = expandAuthor
-    ? { path: 'author', select: `${userSelect} username` }
-    : [];
-
-  let sort: { [key: string]: SortOrder | { $meta: 'textScore' } } = {
-    score: { $meta: 'textScore' },
+  const sortOrder: {
+    [key: string]: { [key: string]: SortOrder | { $meta: 'textScore' } };
+  } = {
+    recent: { createdAt: -1 },
+    popular: { 'metrics.likeCount': -1 },
+    relevant: { score: { $meta: 'textScore' } },
   };
-  if (sortBy === 'recent') {
-    sort = { createdAt: -1 };
-  } else if (sortBy === 'popular') {
-    sort = { 'metrics.likeCount': -1 };
-  }
+  const sort = sortOrder[sortBy];
+
+  const skip = (page - 1) * limit;
 
   const foundChirps = await Chirp.find(filter)
-    .select(`${chirpSelect} content ${expandAuthor ? 'author' : ''}`)
+    .select(chirpFields)
     .select({ score: { $meta: 'textScore' } }) // delete score later
     .populate(populate)
     .sort(sort)
@@ -208,14 +142,17 @@ export const searchChirps: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: foundChirps });
 };
 
-export const getReverseChronologicalTimeline: Handler = async (req, res) => {
+export const getReverseChronologicalTimeline = async (
+  req: Request<
+    Username,
+    { status: string; data: object },
+    unknown,
+    ReverseChronologicalTimelineQuery
+  >,
+  res: Response<{ status: string; data: object }>
+) => {
   const { username } = req.params;
-  const { sinceId, expandAuthor, chirpFields, userFields } = req.query;
-
-  const limit = Math.min(
-    Math.abs(parseInt(req.query.limit as string)) || 10,
-    20
-  );
+  const { sinceId, expandAuthor, chirpFields, userFields, limit } = req.query;
 
   const timelineUser = await User.exists({ username });
   if (!timelineUser) {
@@ -231,23 +168,10 @@ export const getReverseChronologicalTimeline: Handler = async (req, res) => {
   };
   Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
 
-  const chirpSelect = chirpFields
-    ? (chirpFields as string).replace(/,/g, ' ').replace(/__v/g, '').trim()
-    : '';
-
-  const userSelect = userFields
-    ? (userFields as string)
-        .replace(/,/g, ' ')
-        .replace(/__v|password|email/g, '')
-        .trim()
-    : '';
-
-  const populate: PopulateOptions | string[] = expandAuthor
-    ? { path: 'author', select: `${userSelect} username` }
-    : [];
+  const populate = expandAuthor ? [{ path: 'author', select: userFields }] : [];
 
   const timelineChirps = await Chirp.find(filter)
-    .select(`${chirpSelect} content ${expandAuthor ? 'author' : ''}`)
+    .select(chirpFields)
     .populate(populate)
     .sort({ _id: -1 })
     .limit(limit);
@@ -255,16 +179,63 @@ export const getReverseChronologicalTimeline: Handler = async (req, res) => {
   res.status(200).json({ status: 'success', data: timelineChirps });
 };
 
-export const createChirp: Handler = async (req, res) => {
+export const getUserChirps = async (
+  req: Request<
+    Username,
+    { status: string; data: object },
+    unknown,
+    GetUserChirpsQuery
+  >,
+  res: Response<{ status: string; data: object }>
+) => {
+  const { username } = req.params;
+  const {
+    sinceId,
+    includeReplies,
+    userFields,
+    chirpFields,
+    expandAuthor,
+    limit,
+  } = req.query;
+
+  const chirpsAuthor = await User.exists({ username });
+  if (!chirpsAuthor) {
+    throw new BadRequestError('Sorry, we could not find that user');
+  }
+
+  const filter: FilterQuery<IChirp> = {
+    author: chirpsAuthor._id,
+  };
+  Object.assign(
+    filter,
+    sinceId && { _id: { $lt: sinceId } },
+    !includeReplies && { kind: 'post' }
+  );
+
+  const populate = expandAuthor ? [{ path: 'author', select: userFields }] : [];
+
+  const foundUsersChirps = await Chirp.find(filter)
+    .select(chirpFields)
+    .populate(populate)
+    .sort({ _id: -1 })
+    .limit(limit);
+
+  res.status(200).json({ status: 'success', data: foundUsersChirps });
+};
+
+export const createChirp = async (
+  req: Request<unknown, { status: string; data: object }, CreateChirpBody>,
+  res: Response<{ status: string; data: object }>
+) => {
   const { currentUserId } = req;
-  const { content, isReply } = req.body;
+  const { content, isReply, chirpId } = req.body;
 
   if (!currentUserId) {
     throw new BadRequestError('Sorry, you must be logged in to chirp');
   }
 
   const chirp = isReply
-    ? await createReply(currentUserId, content, req.body.chirpId)
+    ? await createReply(currentUserId, content, chirpId)
     : await createPost(currentUserId, content);
 
   res.status(200).json({ status: 'success', data: chirp });
@@ -273,7 +244,7 @@ export const createChirp: Handler = async (req, res) => {
 const createReply = async (
   userId: Types.ObjectId,
   content: string,
-  parentId: Types.ObjectId
+  parentId: Types.ObjectId | undefined
 ) => {
   const parentChirp = await Chirp.findById(parentId);
   if (!parentChirp) {
@@ -304,7 +275,10 @@ const createPost = async (userId: Types.ObjectId, content: string) => {
   return newPost;
 };
 
-export const deleteChirp: Handler = async (req, res) => {
+export const deleteChirp = async (
+  req: Request<ChirpId>,
+  res: Response<{ status: string; data: null }>
+) => {
   const { chirpId } = req.params;
 
   const foundPost = await Chirp.findById(chirpId);
