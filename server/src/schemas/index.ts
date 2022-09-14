@@ -43,8 +43,11 @@ export const chirpFields = z
   .optional()
   .transform(
     transformOptionalFields(
-      'username',
-      'profile',
+      'content',
+      'author',
+      'replies',
+      'post',
+      'parent',
       'metrics',
       '_id',
       'createdAt'
