@@ -1,12 +1,9 @@
 import { Request, Response } from 'express';
 import { FilterQuery } from 'mongoose';
-import { Username } from '../schemas';
+import { UsernameInput, ResponseBody } from '../schemas';
 import Follow, { IFollow } from '../models/Follow';
 import User, { IUser } from '../models/User';
-import {
-  GetUserFollowersQuery,
-  GetUserFollowingsQuery,
-} from '../schemas/follow';
+import { GetUserFollowers, GetUserFollowings } from '../schemas/follow';
 import { BadRequestError } from '../utils/errors';
 
 interface PopulatedTargetUser {
@@ -18,13 +15,8 @@ interface PopulatedSourceUser {
 }
 
 export const getUserFollowings = async (
-  req: Request<
-    Username,
-    { status: string; data: object; meta: object },
-    unknown,
-    GetUserFollowingsQuery
-  >,
-  res: Response<{ status: string; data: object; meta: object }>
+  req: Request<UsernameInput, ResponseBody, unknown, GetUserFollowings>,
+  res: Response<ResponseBody>
 ) => {
   const { username } = req.params;
   const { sinceId, userFields, limit } = req.query;
@@ -59,13 +51,8 @@ export const getUserFollowings = async (
 };
 
 export const getUserFollowers = async (
-  req: Request<
-    Username,
-    { status: string; data: object; meta: object },
-    unknown,
-    GetUserFollowersQuery
-  >,
-  res: Response<{ status: string; data: object; meta: object }>
+  req: Request<UsernameInput, ResponseBody, unknown, GetUserFollowers>,
+  res: Response<ResponseBody>
 ) => {
   const { username } = req.params;
   const { sinceId, userFields, limit } = req.query;
@@ -104,8 +91,8 @@ export const getUserFollowers = async (
 };
 
 export const followUser = async (
-  req: Request<unknown, { status: string; data: object }, Username>,
-  res: Response<{ status: string; data: object }>
+  req: Request<unknown, ResponseBody, UsernameInput>,
+  res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;
   const { username } = req.body;
@@ -135,8 +122,8 @@ export const followUser = async (
 };
 
 export const unfollowUser = async (
-  req: Request<Username>,
-  res: Response<{ status: string; data: null }>
+  req: Request<UsernameInput>,
+  res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;
   const { username } = req.params;

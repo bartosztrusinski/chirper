@@ -8,22 +8,17 @@ import {
 } from '../controllers/chirp';
 import { getLikingUsers } from '../controllers/like';
 import { isAuthenticated, isChirpAuthor } from '../middleware/auth';
-import { chirpIdSchema, currentUserIdSchema } from '../schemas';
 import { validateRequest } from '../middleware/validation';
-import {
-  createChirpBody,
-  getChirpQuery,
-  getChirpsQuery,
-  searchChirpsQuery,
-} from '../schemas/chirp';
-import { getLikingUsersQuery } from '../schemas/like';
+import { chirpIdSchema, objectId } from '../schemas';
+import * as chirpSchemas from '../schemas/chirp';
+import * as likeSchemas from '../schemas/like';
 
 const router = Router();
 
 router.get(
   '/',
   validateRequest({
-    query: getChirpsQuery,
+    query: chirpSchemas.getChirps,
   }),
   getChirps
 );
@@ -32,8 +27,8 @@ router.get(
   '/search',
   isAuthenticated,
   validateRequest({
-    query: searchChirpsQuery,
-    currentUserId: currentUserIdSchema,
+    currentUserId: objectId,
+    query: chirpSchemas.searchChirps,
   }),
   searchChirps
 );
@@ -42,7 +37,7 @@ router.get(
   '/:chirpId',
   validateRequest({
     params: chirpIdSchema,
-    query: getChirpQuery,
+    query: chirpSchemas.getChirp,
   }),
   getChirp
 );
@@ -51,8 +46,8 @@ router.post(
   '/',
   isAuthenticated,
   validateRequest({
-    body: createChirpBody,
-    currentUserId: currentUserIdSchema,
+    currentUserId: objectId,
+    body: chirpSchemas.createChirp,
   }),
   createChirp
 );
@@ -61,8 +56,8 @@ router.delete(
   '/:chirpId/',
   isAuthenticated,
   validateRequest({
+    currentUserId: objectId,
     params: chirpIdSchema,
-    currentUserId: currentUserIdSchema,
   }),
   isChirpAuthor,
   deleteChirp
@@ -72,7 +67,7 @@ router.get(
   '/:chirpId/liking-users',
   validateRequest({
     params: chirpIdSchema,
-    query: getLikingUsersQuery,
+    query: likeSchemas.getLikingUsers,
   }),
   getLikingUsers
 );

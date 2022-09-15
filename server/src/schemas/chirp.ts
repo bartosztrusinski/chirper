@@ -2,93 +2,77 @@ import { z } from 'zod';
 import {
   ids,
   chirpFields,
-  transformToBoolean,
   userFields,
-  query,
-  from,
-  sort,
-  transformToId,
   limit,
+  id,
   page,
-  transformToDate,
+  appendAuthorIfExpanded,
+  followingOnly,
+  expandAuthor,
+  includeReplies,
+  stringToDate,
 } from '.';
 
-export type GetChirpsQuery = z.infer<typeof getChirpsQuery>;
-export type GetChirpQuery = z.infer<typeof getChirpQuery>;
-export type SearchChirpsQuery = z.infer<typeof searchChirpsQuery>;
-export type CreateChirpBody = z.infer<typeof createChirpBody>;
-export type ReverseChronologicalTimelineQuery = z.infer<
-  typeof reverseChronologicalTimelineQuery
->;
+const getChirpsSchema = z.object({
+  ids: ids,
+  chirpFields,
+  userFields,
+  expandAuthor,
+});
 
-export const getChirpsQuery = z
-  .object({
-    ids,
-    chirpFields,
-    userFields,
-    expandAuthor: transformToBoolean,
-  })
-  .transform((query) => {
-    if (query.expandAuthor) {
-      query.chirpFields += 'author';
-    }
-    return query;
-  });
+const getChirpSchema = z.object({
+  chirpFields,
+  userFields,
+  expandAuthor,
+});
 
-export const getChirpQuery = z
-  .object({
-    userFields,
-    chirpFields,
-    expandAuthor: transformToBoolean,
-  })
-  .transform((query) => {
-    if (query.expandAuthor) {
-      query.chirpFields += 'author';
-    }
-    return query;
-  });
+const dateQuery = z.string().transform(stringToDate).optional();
 
-export const searchChirpsQuery = z
-  .object({
-    query,
-    followingOnly: transformToBoolean,
-    sortBy: sort,
-    from,
-    includeReplies: transformToBoolean,
-    startTime: transformToDate,
-    endTime: transformToDate,
-    chirpFields,
-    userFields,
-    expandAuthor: transformToBoolean,
-    limit,
-    page,
-  })
-  .transform((query) => {
-    if (query.expandAuthor) {
-      query.chirpFields += 'author';
-    }
-    return query;
-  });
+const searchChirpsSchema = z.object({
+  query: z.string(),
+  followingOnly,
+  sortOrder: z.enum(['relevant', 'popular', 'recent']).default('relevant'),
+  from: z.string().optional(),
+  includeReplies,
+  startTime: dateQuery,
+  endTime: dateQuery,
+  chirpFields,
+  userFields,
+  expandAuthor,
+  limit,
+  page,
+});
 
-export const reverseChronologicalTimelineQuery = z
-  .object({
-    sinceId: transformToId,
-    userFields,
-    chirpFields,
-    expandAuthor: transformToBoolean,
-    limit,
-  })
-  .transform((query) => {
-    if (query.expandAuthor) {
-      query.chirpFields += 'author';
-    }
-    return query;
-  });
+const reverseChronologicalTimelineSchema = z.object({
+  sinceId: id.optional(),
+  userFields,
+  chirpFields,
+  expandAuthor,
+  limit,
+});
 
-export const createChirpBody = z.object({
+const createChirpSchema = z.object({
   content: z
     .string()
+    .trim()
     .max(140, 'Chirp content must be less than 140 characters'),
   isReply: z.boolean().default(false),
-  chirpId: transformToId,
+  chirpId: id.optional(),
 });
+
+export const getChirps = getChirpsSchema.transform(appendAuthorIfExpanded);
+export const getChirp = getChirpSchema.transform(appendAuthorIfExpanded);
+export const searchChirps = searchChirpsSchema.transform(
+  appendAuthorIfExpanded
+);
+export const reverseChronologicalTimeline =
+  reverseChronologicalTimelineSchema.transform(appendAuthorIfExpanded);
+export const createChirp = createChirpSchema;
+
+export type GetChirps = z.infer<typeof getChirpsSchema>;
+export type GetChirp = z.infer<typeof getChirpSchema>;
+export type SearchChirps = z.infer<typeof searchChirpsSchema>;
+export type CreateChirp = z.infer<typeof createChirpSchema>;
+export type ReverseChronologicalTimeline = z.infer<
+  typeof reverseChronologicalTimelineSchema
+>;

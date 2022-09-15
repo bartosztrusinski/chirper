@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { FilterQuery } from 'mongoose';
-import { ChirpId, Username } from '../schemas';
 import { Chirp, IChirp } from '../models/Chirp';
 import Like, { ILike } from '../models/Like';
 import User, { IUser } from '../models/User';
-import { GetLikedChirpsQuery, GetLikingUsersQuery } from '../schemas/like';
+import { ChirpId, UsernameInput, ResponseBody } from '../schemas';
+import { GetLikedChirps, GetLikingUsers } from '../schemas/like';
 import { BadRequestError } from '../utils/errors';
 
 interface PopulatedUser {
@@ -15,13 +15,8 @@ interface PopulatedChirp {
 }
 
 export const getLikingUsers = async (
-  req: Request<
-    ChirpId,
-    { status: string; data: object; meta: object },
-    unknown,
-    GetLikingUsersQuery
-  >,
-  res: Response<{ status: string; data: object; meta: object }>
+  req: Request<ChirpId, ResponseBody, unknown, GetLikingUsers>,
+  res: Response<ResponseBody>
 ) => {
   const { chirpId } = req.params;
   const { sinceId, userFields, limit } = req.query;
@@ -49,13 +44,8 @@ export const getLikingUsers = async (
 };
 
 export const getLikedChirps = async (
-  req: Request<
-    Username,
-    { status: string; data: object; meta: object },
-    unknown,
-    GetLikedChirpsQuery
-  >,
-  res: Response<{ status: string; data: object; meta: object }>
+  req: Request<UsernameInput, ResponseBody, unknown, GetLikedChirps>,
+  res: Response<ResponseBody>
 ) => {
   const { username } = req.params;
   const { sinceId, userFields, chirpFields, expandAuthor, limit } = req.query;
@@ -93,8 +83,8 @@ export const getLikedChirps = async (
 };
 
 export const likeChirp = async (
-  req: Request<unknown, { status: string; data: object }, ChirpId>,
-  res: Response<{ status: string; data: object }>
+  req: Request<unknown, ResponseBody, ChirpId>,
+  res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;
   const { chirpId } = req.body;
@@ -121,7 +111,7 @@ export const likeChirp = async (
 
 export const unlikeChirp = async (
   req: Request<ChirpId>,
-  res: Response<{ status: string; data: null }>
+  res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;
   const { chirpId } = req.params;

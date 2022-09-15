@@ -1,102 +1,198 @@
 import { Types } from 'mongoose';
 import { z } from 'zod';
 
-export type CurrentUserId = z.infer<typeof currentUserIdSchema>;
-export type Username = z.infer<typeof usernameSchema>;
+const LIMIT_MIN = 1;
+const LIMIT_MAX = 100;
+const LIMIT_DEFAULT = 10;
+
+const PAGE_DEFAULT = 1;
+const PAGE_MIN = 1;
+const PAGE_MAX = Math.floor(Number.MAX_SAFE_INTEGER / LIMIT_MAX);
+
+const CHIRP_DEFAULT_FIELD = 'content';
+const CHIRP_ALLOWED_FIELDS = [
+  'content',
+  'author',
+  'replies',
+  'post',
+  'parent',
+  'metrics',
+  '_id',
+  'createdAt',
+];
+
+const USER_DEFAULT_FIELD = 'username';
+const USER_ALLOWED_FIELDS = [
+  'username',
+  'profile',
+  'metrics',
+  '_id',
+  'createdAt',
+];
+
+// type ObjectId = z.infer<typeof objectId>;
+export type UsernameInput = z.infer<typeof usernameInput>;
 export type ChirpId = z.infer<typeof chirpIdSchema>;
 
-export const LIMIT_MIN = 1;
-export const LIMIT_MAX = 100;
-export const LIMIT_DEFAULT = 10;
-export const PAGE_DEFAULT = 1;
+const stringToBoolean = z
+  .function()
+  .args(z.string())
+  .returns(z.boolean())
+  .implement((str) => str === 'true');
 
-export const clamp = (min: number, max: number) => (value: number) =>
-  Math.min(Math.max(value, min), max);
+const optionalStringToNumber = z
+  .function()
+  .args(z.string().optional())
+  .returns(z.number())
+  .implement((str) => {
+    if (!str) return NaN;
+    return parseInt(str);
+  });
 
-export const limitClamp = clamp(LIMIT_MIN, LIMIT_MAX);
+const setDefaultIfNaN = (defaultValue: number) =>
+  z
+    .function()
+    .args(z.number())
+    .returns(z.number())
+    .implement((value) => {
+      if (isNaN(value)) return defaultValue;
+      return value;
+    });
 
-const transformOptionalFields = (...allowedFields: string[]) =>
+const clamp = (min: number, max: number) =>
+  z
+    .function()
+    .args(z.number())
+    .returns(z.number())
+    .implement((value) => Math.min(Math.max(value, min), max));
+
+const parseFields = (...allowedFields: string[]) =>
+  z
+    .function()
+    .args(z.string())
+    .returns(z.string())
+    .implement((fields) => {
+      return fields
+        .split(',')
+        .map((field) => field.trim())
+        .filter((field) => allowedFields.includes(field))
+        .reduce((fields, currentField) => fields + currentField + ' ', '');
+    });
+
+const addDefaultField = (defaultField: string) =>
   z
     .function()
     .args(z.string().optional())
     .returns(z.string())
     .implement((fields) => {
-      fields = fields ? fields + `,${allowedFields[0]}` : allowedFields[0];
-      return fields
-        .split(',')
-        .map((field) => field.trim().toLowerCase())
-        .filter((field) => {
-          return allowedFields
-            .map((field) => field.toLowerCase())
-            .includes(field);
-        })
-        .reduce((str, field) => {
-          if (field === 'createdat') {
-            field = 'createdAt';
-          }
-          return str + field + ' ';
-        }, '');
+      if (!fields) return defaultField;
+      return `${fields},${defaultField}`;
     });
+
+const stringToId = z
+  .function()
+  .args(z.string(), z.any())
+  .implement((str, ctx: z.RefinementCtx) => {
+    try {
+      return new Types.ObjectId(str);
+    } catch (error) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Id must be valid',
+      });
+      return z.NEVER;
+    }
+  });
+
+export const stringToDate = z
+  .function()
+  .args(z.string(), z.any())
+  .implement((str, ctx: z.RefinementCtx) => {
+    const parsedDate = Date.parse(str);
+    if (isNaN(parsedDate)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Date must be valid',
+      });
+      return z.NEVER;
+    }
+    return new Date(parsedDate);
+  });
+
+export const id = z.string().transform(stringToId);
+
+export const ids = z
+  .array(id, {
+    invalid_type_error: 'Ids must be an array',
+    required_error: 'Ids is required',
+  })
+  .min(1, 'You must provide at least one id')
+  .max(100, 'You can only provide up to 100 ids');
+
+export const chirpIdSchema = z.object({
+  chirpId: id,
+});
+
+export const objectId = z.instanceof(Types.ObjectId, {
+  message: 'Id must be valid',
+});
+
+export const includeReplies = z
+  .string()
+  .default('false')
+  .transform(stringToBoolean);
+
+export const expandAuthor = z
+  .string()
+  .default('false')
+  .transform(stringToBoolean);
+
+export const followingOnly = z
+  .string()
+  .default('false')
+  .transform(stringToBoolean);
+
+export const limit = z
+  .string()
+  .optional()
+  .transform(optionalStringToNumber)
+  .transform(setDefaultIfNaN(LIMIT_DEFAULT))
+  .transform(clamp(LIMIT_MIN, LIMIT_MAX));
+
+export const page = z
+  .string()
+  .optional()
+  .transform(optionalStringToNumber)
+  .transform(setDefaultIfNaN(PAGE_DEFAULT))
+  .transform(clamp(PAGE_MIN, PAGE_MAX));
 
 export const chirpFields = z
   .string()
   .optional()
-  .transform(
-    transformOptionalFields(
-      'content',
-      'author',
-      'replies',
-      'post',
-      'parent',
-      'metrics',
-      '_id',
-      'createdAt'
-    )
-  );
+  .transform(addDefaultField(CHIRP_DEFAULT_FIELD))
+  .transform(parseFields(...CHIRP_ALLOWED_FIELDS));
 
 export const userFields = z
   .string()
   .optional()
-  .transform(
-    transformOptionalFields(
-      'username',
-      'profile',
-      'metrics',
-      '_id',
-      'createdAt'
-    )
-  );
+  .transform(addDefaultField(USER_DEFAULT_FIELD))
+  .transform(parseFields(...USER_ALLOWED_FIELDS));
 
-export const transformToBoolean = z
-  .string()
-  .optional()
-  .transform((val) => {
-    return val === 'true';
-  });
-
-export const currentUserIdSchema = z.instanceof(Types.ObjectId, {
-  message: 'Current user id must be valid',
-});
-
-export const usernameSchema = z.object({
+export const usernameInput = z.object({
   username: z.string({
     invalid_type_error: 'Username must be a string',
   }),
 });
 
-export const chirpIdSchema = z.object({
-  chirpId: z.string().transform((id, ctx) => {
-    try {
-      return new Types.ObjectId(id);
-    } catch (error) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'ChirpId must be valid',
-      });
-      return z.NEVER;
+export const appendAuthorIfExpanded = z
+  .function()
+  .args(z.any())
+  .implement((query) => {
+    if (query.expandAuthor) {
+      query.chirpFields += 'author';
     }
-  }),
-});
+    return query;
+  });
 
 export const password = z
   .string()
@@ -147,94 +243,40 @@ export const website = z
   .url('Website must be a valid URL')
   .optional();
 
-export const picture = z.string().optional();
-
-export const header = z.string().optional();
-
 export const profile = z.object({
   name,
   bio,
   location,
   website,
-  picture,
-  header,
+  picture: z.string().optional(),
+  header: z.string().optional(),
 });
 
-export const ids = z
-  .array(
-    z.string().transform((id, ctx) => {
-      try {
-        return new Types.ObjectId(id);
-      } catch (error) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'All ids must be valid',
-        });
-        return z.NEVER;
-      }
-    }),
-    {
-      invalid_type_error: 'Ids must be an array',
-      required_error: 'Ids is required',
-    }
-  )
-  .min(1, 'You must provide at least one id')
-  .max(100, 'You can only provide up to 100 ids');
+const metrics = z.object({
+  chirpCount: z.number().int().min(0).default(0),
+  likedChirpCount: z.number().int().min(0).default(0),
+  followingCount: z.number().int().min(0).default(0),
+  followersCount: z.number().int().min(0).default(0),
+});
 
-export const transformToId = z
-  .string()
-  .transform((id, ctx) => {
-    try {
-      return new Types.ObjectId(id);
-    } catch (error) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Id must be valid',
-      });
-      return z.NEVER;
-    }
-  })
-  .optional();
+const user = z.object({
+  username,
+  email,
+  password,
+  profile,
+  metrics,
+});
 
-export const query = z.string();
+type User = z.infer<typeof user>;
 
-export const sort = z
-  .enum(['relevant', 'popular', 'recent'])
-  .default('relevant');
+export const responseBody = z.object({
+  status: z.enum(['success', 'error', 'fail']),
+  data: z.any(),
+  meta: z.object({}),
+});
 
-export const from = z.string().optional();
-
-export const transformToDate = z
-  .string()
-  .transform((dateQuery, ctx) => {
-    const parsedDate = Date.parse(dateQuery);
-    if (isNaN(parsedDate)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Date must be valid',
-      });
-      return z.NEVER;
-    }
-    return new Date(parsedDate);
-  })
-  .optional();
-
-export const limit = z
-  .string()
-  .optional()
-  .transform((limitQuery) => {
-    if (!limitQuery) return LIMIT_DEFAULT;
-    const limit = parseInt(limitQuery);
-    if (isNaN(limit)) return LIMIT_DEFAULT;
-    return limitClamp(limit);
-  });
-
-export const page = z
-  .string()
-  .optional()
-  .transform((pageQuery) => {
-    if (!pageQuery) return PAGE_DEFAULT;
-    const page = parseInt(pageQuery);
-    if (isNaN(page)) return PAGE_DEFAULT;
-    return Math.max(page, 1);
-  });
+export interface ResponseBody {
+  status: 'success' | 'error' | 'fail';
+  data: object | null;
+  meta?: object;
+}

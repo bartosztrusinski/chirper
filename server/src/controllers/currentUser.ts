@@ -1,22 +1,18 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
 import {
-  UpdateCurrentUserEmailBody,
-  UpdateCurrentUserPasswordBody,
-  UpdateCurrentUserUsernameBody,
+  UpdateEmail,
+  UpdatePassword,
+  UpdateUsername,
   UserProfile,
 } from '../schemas/currentUser';
-import { GetUserQuery } from '../schemas/user';
+import { ResponseBody } from '../schemas';
+import { GetUser } from '../schemas/user';
 import { BadRequestError } from '../utils/errors';
 
 export const getCurrentUser = async (
-  req: Request<
-    unknown,
-    { status: string; data: object },
-    unknown,
-    GetUserQuery
-  >,
-  res: Response<{ status: string; data: object }>
+  req: Request<unknown, ResponseBody, unknown, GetUser>,
+  res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;
   const { userFields } = req.query;
@@ -31,8 +27,8 @@ export const getCurrentUser = async (
 };
 
 export const updateCurrentUserProfile = async (
-  req: Request<unknown, { status: string; data: object }, UserProfile>,
-  res: Response<{ status: string; data: object }>
+  req: Request<unknown, ResponseBody, UserProfile>,
+  res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;
   const { name, picture, header, bio, location, website } = req.body;
@@ -56,12 +52,8 @@ export const updateCurrentUserProfile = async (
 };
 
 export const updateCurrentUserPassword = async (
-  req: Request<
-    unknown,
-    { status: string; data: null },
-    UpdateCurrentUserPasswordBody
-  >,
-  res: Response<{ status: string; data: null }>
+  req: Request<unknown, ResponseBody, UpdatePassword>,
+  res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;
   const { newPassword } = req.body;
@@ -78,12 +70,8 @@ export const updateCurrentUserPassword = async (
 };
 
 export const updateCurrentUserUsername = async (
-  req: Request<
-    unknown,
-    { status: string; data: string },
-    UpdateCurrentUserUsernameBody
-  >,
-  res: Response<{ status: string; data: string }>
+  req: Request<unknown, ResponseBody, UpdateUsername>,
+  res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;
   const { newUsername } = req.body;
@@ -96,16 +84,12 @@ export const updateCurrentUserUsername = async (
   currentUser.username = newUsername;
   await currentUser.save();
 
-  res.status(200).json({ status: 'success', data: newUsername });
+  res.status(200).json({ status: 'success', data: { newUsername } });
 };
 
 export const updateCurrentUserEmail = async (
-  req: Request<
-    unknown,
-    { status: string; data: string },
-    UpdateCurrentUserEmailBody
-  >,
-  res: Response<{ status: string; data: string }>
+  req: Request<unknown, ResponseBody, UpdateEmail>,
+  res: Response<ResponseBody>
 ) => {
   // verify new email
   const { currentUserId } = req;
@@ -119,12 +103,12 @@ export const updateCurrentUserEmail = async (
   currentUser.email = newEmail;
   await currentUser.save();
 
-  res.status(200).json({ status: 'success', data: newEmail });
+  res.status(200).json({ status: 'success', data: { newEmail } });
 };
 
 export const deleteCurrentUser = async (
   req: Request,
-  res: Response<{ status: string; data: null }>
+  res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;
 

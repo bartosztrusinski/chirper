@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { FilterQuery, SortOrder, Types } from 'mongoose';
-import { ChirpId, Username } from '../schemas';
+import { ChirpId, UsernameInput, ResponseBody } from '../schemas';
 import {
   Chirp,
   IChirp,
@@ -12,22 +12,18 @@ import {
 import Follow from '../models/Follow';
 import User from '../models/User';
 import {
-  CreateChirpBody,
-  GetChirpsQuery,
-  ReverseChronologicalTimelineQuery,
-  SearchChirpsQuery,
+  CreateChirp,
+  GetChirp,
+  GetChirps,
+  ReverseChronologicalTimeline,
+  SearchChirps,
 } from '../schemas/chirp';
-import { GetUserChirpsQuery } from '../schemas/user';
+import { GetUserChirps } from '../schemas/user';
 import { BadRequestError } from '../utils/errors';
 
 export const getChirps = async (
-  req: Request<
-    unknown,
-    { status: string; data: object },
-    unknown,
-    GetChirpsQuery
-  >,
-  res: Response<{ status: string; data: object }>
+  req: Request<unknown, ResponseBody, unknown, GetChirps>,
+  res: Response<ResponseBody>
 ) => {
   const { ids, userFields, chirpFields, expandAuthor } = req.query;
 
@@ -41,13 +37,8 @@ export const getChirps = async (
 };
 
 export const getChirp = async (
-  req: Request<
-    ChirpId,
-    { status: string; data: object },
-    unknown,
-    GetChirpsQuery
-  >,
-  res: Response<{ status: string; data: object }>
+  req: Request<ChirpId, ResponseBody, unknown, GetChirp>,
+  res: Response<ResponseBody>
 ) => {
   const { chirpId } = req.params;
   const { userFields, chirpFields, expandAuthor } = req.query;
@@ -66,13 +57,8 @@ export const getChirp = async (
 };
 
 export const searchChirps = async (
-  req: Request<
-    unknown,
-    { status: string; data: object },
-    unknown,
-    SearchChirpsQuery
-  >,
-  res: Response<{ status: string; data: object }>
+  req: Request<unknown, ResponseBody, unknown, SearchChirps>,
+  res: Response<ResponseBody>
 ) => {
   const {
     query,
@@ -82,7 +68,7 @@ export const searchChirps = async (
     expandAuthor,
     chirpFields,
     userFields,
-    sortBy,
+    sortOrder,
     startTime,
     endTime,
     page,
@@ -120,14 +106,14 @@ export const searchChirps = async (
 
   const populate = expandAuthor ? [{ path: 'author', select: userFields }] : [];
 
-  const sortOrder: {
+  const sortBy: {
     [key: string]: { [key: string]: SortOrder | { $meta: 'textScore' } };
   } = {
     recent: { createdAt: -1 },
     popular: { 'metrics.likeCount': -1 },
     relevant: { score: { $meta: 'textScore' } },
   };
-  const sort = sortOrder[sortBy];
+  const sort = sortBy[sortOrder];
 
   const skip = (page - 1) * limit;
 
@@ -144,12 +130,12 @@ export const searchChirps = async (
 
 export const getReverseChronologicalTimeline = async (
   req: Request<
-    Username,
-    { status: string; data: object },
+    UsernameInput,
+    ResponseBody,
     unknown,
-    ReverseChronologicalTimelineQuery
+    ReverseChronologicalTimeline
   >,
-  res: Response<{ status: string; data: object }>
+  res: Response<ResponseBody>
 ) => {
   const { username } = req.params;
   const { sinceId, expandAuthor, chirpFields, userFields, limit } = req.query;
@@ -180,13 +166,8 @@ export const getReverseChronologicalTimeline = async (
 };
 
 export const getUserChirps = async (
-  req: Request<
-    Username,
-    { status: string; data: object },
-    unknown,
-    GetUserChirpsQuery
-  >,
-  res: Response<{ status: string; data: object }>
+  req: Request<UsernameInput, ResponseBody, unknown, GetUserChirps>,
+  res: Response<ResponseBody>
 ) => {
   const { username } = req.params;
   const {
@@ -224,8 +205,8 @@ export const getUserChirps = async (
 };
 
 export const createChirp = async (
-  req: Request<unknown, { status: string; data: object }, CreateChirpBody>,
-  res: Response<{ status: string; data: object }>
+  req: Request<unknown, ResponseBody, CreateChirp>,
+  res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;
   const { content, isReply, chirpId } = req.body;
@@ -277,7 +258,7 @@ const createPost = async (userId: Types.ObjectId, content: string) => {
 
 export const deleteChirp = async (
   req: Request<ChirpId>,
-  res: Response<{ status: string; data: null }>
+  res: Response<ResponseBody>
 ) => {
   const { chirpId } = req.params;
 

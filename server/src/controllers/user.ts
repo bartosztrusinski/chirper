@@ -6,22 +6,17 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/secrets';
 import Follow from '../models/Follow';
 import {
-  GetUserQuery,
-  GetUsersQuery,
-  LogInUserBody,
-  SearchUsersQuery,
-  SignUpUserBody,
+  GetUser,
+  GetUsers,
+  LogInUser,
+  SearchUsers,
+  SignUpUser,
 } from '../schemas/user';
-import { Username } from '../schemas';
+import { UsernameInput, ResponseBody } from '../schemas';
 
 export const getUsers = async (
-  req: Request<
-    unknown,
-    { status: string; data: object },
-    unknown,
-    GetUsersQuery
-  >,
-  res: Response<{ status: string; data: object }>
+  req: Request<unknown, ResponseBody, unknown, GetUsers>,
+  res: Response<ResponseBody>
 ) => {
   const { ids, userFields } = req.query;
 
@@ -31,13 +26,8 @@ export const getUsers = async (
 };
 
 export const getUser = async (
-  req: Request<
-    Username,
-    { status: string; data: object },
-    unknown,
-    GetUserQuery
-  >,
-  res: Response<{ status: string; data: object }>
+  req: Request<UsernameInput, ResponseBody, unknown, GetUser>,
+  res: Response<ResponseBody>
 ) => {
   const { username } = req.params;
   const { userFields } = req.query;
@@ -52,13 +42,8 @@ export const getUser = async (
 };
 
 export const searchUsers = async (
-  req: Request<
-    unknown,
-    { status: string; data: object },
-    unknown,
-    SearchUsersQuery
-  >,
-  res: Response<{ status: string; data: object }>
+  req: Request<unknown, ResponseBody, unknown, SearchUsers>,
+  res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;
   const { query, followingOnly, userFields, limit, page } = req.query;
@@ -93,8 +78,8 @@ export const searchUsers = async (
 };
 
 export const signUpUser = async (
-  req: Request<unknown, { status: string; data: object }, SignUpUserBody>,
-  res: Response<{ status: string; data: object }>
+  req: Request<unknown, ResponseBody, SignUpUser>,
+  res: Response<ResponseBody>
 ) => {
   // verify email
   const { username, email, password, profile } = req.body;
@@ -121,8 +106,8 @@ export const signUpUser = async (
 };
 
 export const logInUser = async (
-  req: Request<unknown, { status: string; data: object }, LogInUserBody>,
-  res: Response<{ status: string; data: object }>
+  req: Request<unknown, ResponseBody, LogInUser>,
+  res: Response<ResponseBody>
 ) => {
   const { login, password } = req.body;
 

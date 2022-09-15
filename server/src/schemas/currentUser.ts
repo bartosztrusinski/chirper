@@ -1,30 +1,29 @@
 import { z } from 'zod';
 import { profile, password, username, email } from '.';
 
-export type UserProfile = z.infer<typeof updateCurrentUserProfileBody>;
-export type UpdateCurrentUserPasswordBody = z.infer<
-  typeof updateCurrentUserPasswordBody
->;
-export type UpdateCurrentUserUsernameBody = z.infer<
-  typeof updateCurrentUserUsernameBody
->;
-export type UpdateCurrentUserEmailBody = z.infer<
-  typeof updateCurrentUserEmailBody
->;
+const updateProfileSchema = profile;
 
-export const updateCurrentUserProfileBody = profile;
-
-export const updateCurrentUserPasswordBody = z.object({
+const updatePasswordSchema = z.object({
   password: z.string().trim(),
   newPassword: password,
 });
 
-export const updateCurrentUserUsernameBody = z.object({
+const updateUsernameSchema = z.object({
   password: z.string().trim(),
   newUsername: username,
 });
 
-export const updateCurrentUserEmailBody = z.object({
+const updateEmailSchema = z.object({
   password: z.string().trim(),
   newEmail: email,
 });
+
+export const updateProfile = updateProfileSchema;
+export const updatePassword = updatePasswordSchema;
+export const updateUsername = updateUsernameSchema;
+export const updateEmail = updateEmailSchema;
+
+export type UserProfile = z.infer<typeof updateProfileSchema>;
+export type UpdatePassword = z.infer<typeof updatePasswordSchema>;
+export type UpdateUsername = z.infer<typeof updateUsernameSchema>;
+export type UpdateEmail = z.infer<typeof updateEmailSchema>;

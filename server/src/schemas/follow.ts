@@ -1,17 +1,14 @@
 import { z } from 'zod';
-import { transformToId, limit, userFields } from '.';
+import { id, limit, userFields } from '.';
 
-export type GetUserFollowingsQuery = z.infer<typeof getUserFollowingsQuery>;
-export type GetUserFollowersQuery = z.infer<typeof getUserFollowersQuery>;
-
-export const getUserFollowingsQuery = z.object({
-  sinceId: transformToId,
+const getUsersFromFollowsSchema = z.object({
+  sinceId: id.optional(),
   userFields,
   limit,
 });
 
-export const getUserFollowersQuery = z.object({
-  sinceId: transformToId,
-  userFields,
-  limit,
-});
+export const getUserFollowings = getUsersFromFollowsSchema;
+export const getUserFollowers = getUsersFromFollowsSchema;
+
+export type GetUserFollowings = z.infer<typeof getUsersFromFollowsSchema>;
+export type GetUserFollowers = z.infer<typeof getUsersFromFollowsSchema>;

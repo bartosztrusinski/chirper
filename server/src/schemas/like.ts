@@ -1,32 +1,31 @@
 import { z } from 'zod';
 import {
-  transformToId,
+  id,
   userFields,
   limit,
   chirpFields,
-  transformToBoolean,
+  expandAuthor,
+  appendAuthorIfExpanded,
 } from '.';
 
-export type GetLikingUsersQuery = z.infer<typeof getLikingUsersQuery>;
-export type GetLikedChirpsQuery = z.infer<typeof getLikedChirpsQuery>;
-
-export const getLikingUsersQuery = z.object({
-  sinceId: transformToId,
+const getLikingUsersSchema = z.object({
+  sinceId: id.optional(),
   userFields,
   limit,
 });
 
-export const getLikedChirpsQuery = z
-  .object({
-    sinceId: transformToId,
-    userFields,
-    chirpFields,
-    expandAuthor: transformToBoolean,
-    limit,
-  })
-  .transform((query) => {
-    if (query.expandAuthor) {
-      query.chirpFields += 'author';
-    }
-    return query;
-  });
+const getLikedChirpsSchema = z.object({
+  sinceId: id.optional(),
+  userFields,
+  chirpFields,
+  expandAuthor,
+  limit,
+});
+
+export const getLikingUsers = getLikingUsersSchema;
+export const getLikedChirps = getLikedChirpsSchema.transform(
+  appendAuthorIfExpanded
+);
+
+export type GetLikingUsers = z.infer<typeof getLikingUsersSchema>;
+export type GetLikedChirps = z.infer<typeof getLikedChirpsSchema>;

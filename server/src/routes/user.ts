@@ -14,28 +14,18 @@ import {
 } from '../controllers/user';
 import { isAuthenticated } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
-import { usernameSchema } from '../schemas';
-import { reverseChronologicalTimelineQuery } from '../schemas/chirp';
-import {
-  getUserFollowersQuery,
-  getUserFollowingsQuery,
-} from '../schemas/follow';
-import { getLikedChirpsQuery } from '../schemas/like';
-import {
-  getUserChirpsQuery,
-  getUserQuery,
-  getUsersQuery,
-  logInUserBody,
-  searchUsersQuery,
-  signUpUserBody,
-} from '../schemas/user';
+import { usernameInput } from '../schemas';
+import * as chirpSchemas from '../schemas/chirp';
+import * as followSchemas from '../schemas/follow';
+import * as likeSchemas from '../schemas/like';
+import * as userSchemas from '../schemas/user';
 
 const router = Router();
 
 router.get(
   '/',
   validateRequest({
-    query: getUsersQuery,
+    query: userSchemas.getUsers,
   }),
   getUsers
 );
@@ -44,7 +34,7 @@ router.get(
   '/search',
   isAuthenticated,
   validateRequest({
-    query: searchUsersQuery,
+    query: userSchemas.searchUsers,
   }),
   searchUsers
 );
@@ -52,8 +42,8 @@ router.get(
 router.get(
   '/:username',
   validateRequest({
-    params: usernameSchema,
-    query: getUserQuery,
+    params: usernameInput,
+    query: userSchemas.getUser,
   }),
   getUser
 );
@@ -61,8 +51,8 @@ router.get(
 router.get(
   '/:username/chirps',
   validateRequest({
-    query: getUserChirpsQuery,
-    params: usernameSchema,
+    query: userSchemas.getUserChirps,
+    params: usernameInput,
   }),
   getUserChirps
 );
@@ -70,8 +60,8 @@ router.get(
 router.get(
   '/:username/timelines/reverse-chronological',
   validateRequest({
-    query: reverseChronologicalTimelineQuery,
-    params: usernameSchema,
+    query: chirpSchemas.reverseChronologicalTimeline,
+    params: usernameInput,
   }),
   getReverseChronologicalTimeline
 );
@@ -79,7 +69,7 @@ router.get(
 router.post(
   '/',
   validateRequest({
-    body: signUpUserBody,
+    body: userSchemas.signUpUser,
   }),
   signUpUser
 );
@@ -87,7 +77,7 @@ router.post(
 router.post(
   '/login',
   validateRequest({
-    body: logInUserBody,
+    body: userSchemas.logInUser,
   }),
   logInUser
 );
@@ -95,8 +85,8 @@ router.post(
 router.get(
   '/:username/following',
   validateRequest({
-    params: usernameSchema,
-    query: getUserFollowingsQuery,
+    params: usernameInput,
+    query: followSchemas.getUserFollowings,
   }),
   getUserFollowings
 );
@@ -104,8 +94,8 @@ router.get(
 router.get(
   '/:username/followers',
   validateRequest({
-    params: usernameSchema,
-    query: getUserFollowersQuery,
+    params: usernameInput,
+    query: followSchemas.getUserFollowers,
   }),
   getUserFollowers
 );
@@ -113,8 +103,8 @@ router.get(
 router.get(
   '/:username/liked-chirps',
   validateRequest({
-    params: usernameSchema,
-    query: getLikedChirpsQuery,
+    params: usernameInput,
+    query: likeSchemas.getLikedChirps,
   }),
   getLikedChirps
 );

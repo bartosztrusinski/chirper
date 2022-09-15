@@ -11,14 +11,9 @@ import { followUser, unfollowUser } from '../controllers/follow';
 import { likeChirp, unlikeChirp } from '../controllers/like';
 import { confirmPassword, isAuthenticated } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
-import { chirpIdSchema, currentUserIdSchema, usernameSchema } from '../schemas';
-import {
-  updateCurrentUserEmailBody,
-  updateCurrentUserPasswordBody,
-  updateCurrentUserProfileBody,
-  updateCurrentUserUsernameBody,
-} from '../schemas/currentUser';
-import { getUserQuery } from '../schemas/user';
+import { chirpIdSchema, objectId, usernameInput } from '../schemas';
+import * as currentUserSchemas from '../schemas/currentUser';
+import * as userSchemas from '../schemas/user';
 
 const router = Router();
 
@@ -26,8 +21,8 @@ router.get(
   '/',
   isAuthenticated,
   validateRequest({
-    query: getUserQuery,
-    currentUserId: currentUserIdSchema,
+    currentUserId: objectId,
+    query: userSchemas.getUser,
   }),
   getCurrentUser
 );
@@ -36,8 +31,8 @@ router.put(
   '/profile',
   isAuthenticated,
   validateRequest({
-    body: updateCurrentUserProfileBody,
-    currentUserId: currentUserIdSchema,
+    currentUserId: objectId,
+    body: currentUserSchemas.updateProfile,
   }),
   updateCurrentUserProfile
 );
@@ -46,8 +41,8 @@ router.put(
   '/password',
   isAuthenticated,
   validateRequest({
-    body: updateCurrentUserPasswordBody,
-    currentUserId: currentUserIdSchema,
+    currentUserId: objectId,
+    body: currentUserSchemas.updatePassword,
   }),
   confirmPassword,
   updateCurrentUserPassword
@@ -57,8 +52,8 @@ router.put(
   '/username',
   isAuthenticated,
   validateRequest({
-    body: updateCurrentUserUsernameBody,
-    currentUserId: currentUserIdSchema,
+    currentUserId: objectId,
+    body: currentUserSchemas.updateUsername,
   }),
   confirmPassword,
   updateCurrentUserUsername
@@ -68,8 +63,8 @@ router.put(
   '/email',
   isAuthenticated,
   validateRequest({
-    body: updateCurrentUserEmailBody,
-    currentUserId: currentUserIdSchema,
+    currentUserId: objectId,
+    body: currentUserSchemas.updateEmail,
   }),
   confirmPassword,
   updateCurrentUserEmail
@@ -79,7 +74,7 @@ router.delete(
   '/',
   isAuthenticated,
   validateRequest({
-    currentUserId: currentUserIdSchema,
+    currentUserId: objectId,
   }),
   confirmPassword,
   deleteCurrentUser
@@ -89,8 +84,8 @@ router.post(
   '/following',
   isAuthenticated,
   validateRequest({
-    body: usernameSchema,
-    currentUserId: currentUserIdSchema,
+    currentUserId: objectId,
+    body: usernameInput,
   }),
   followUser
 );
@@ -99,8 +94,8 @@ router.delete(
   '/following/:username',
   isAuthenticated,
   validateRequest({
-    params: usernameSchema,
-    currentUserId: currentUserIdSchema,
+    currentUserId: objectId,
+    params: usernameInput,
   }),
   unfollowUser
 );
@@ -109,8 +104,8 @@ router.post(
   '/likes',
   isAuthenticated,
   validateRequest({
+    currentUserId: objectId,
     body: chirpIdSchema,
-    currentUserId: currentUserIdSchema,
   }),
   likeChirp
 );
@@ -119,8 +114,8 @@ router.delete(
   '/likes/:chirpId',
   isAuthenticated,
   validateRequest({
+    currentUserId: objectId,
     params: chirpIdSchema,
-    currentUserId: currentUserIdSchema,
   }),
   unlikeChirp
 );
