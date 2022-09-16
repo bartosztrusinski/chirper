@@ -1,75 +1,85 @@
 import { Router } from 'express';
-import {
-  getChirps,
-  getChirp,
-  searchChirps,
-  createChirp,
-  deleteChirp,
-} from '../controllers/chirp';
-import { getLikingUsers } from '../controllers/like';
+import * as chirpControllers from '../controllers/chirp';
 import { isAuthenticated, isChirpAuthor } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
-import { chirpIdSchema, objectId } from '../schemas';
+import { chirpIdSchema, objectId, usernameInput } from '../schemas';
 import * as chirpSchemas from '../schemas/chirp';
-import * as likeSchemas from '../schemas/like';
 
 const router = Router();
 
 router.get(
-  '/',
+  '/chirps',
   validateRequest({
     query: chirpSchemas.getChirps,
   }),
-  getChirps
+  chirpControllers.findMany
 );
 
 router.get(
-  '/search',
+  '/chirps/search',
   isAuthenticated,
   validateRequest({
     currentUserId: objectId,
     query: chirpSchemas.searchChirps,
   }),
-  searchChirps
+  chirpControllers.searchMany
 );
 
 router.get(
-  '/:chirpId',
+  '/chirps/:chirpId',
   validateRequest({
     params: chirpIdSchema,
     query: chirpSchemas.getChirp,
   }),
-  getChirp
+  chirpControllers.findOne
 );
 
 router.post(
-  '/',
+  '/chirps',
   isAuthenticated,
   validateRequest({
     currentUserId: objectId,
     body: chirpSchemas.createChirp,
   }),
-  createChirp
+  chirpControllers.createOne
 );
 
 router.delete(
-  '/:chirpId/',
+  '/chirps/:chirpId',
   isAuthenticated,
   validateRequest({
     currentUserId: objectId,
     params: chirpIdSchema,
   }),
   isChirpAuthor,
-  deleteChirp
+  chirpControllers.deleteOne
 );
 
 router.get(
-  '/:chirpId/liking-users',
+  '/users/:username/chirps',
   validateRequest({
-    params: chirpIdSchema,
-    query: likeSchemas.getLikingUsers,
+    query: chirpSchemas.getUserChirps,
+    params: usernameInput,
   }),
-  getLikingUsers
+  chirpControllers.findManyByUser
+);
+
+router.get(
+  '/users/:username/liked-chirps',
+  validateRequest({
+    params: usernameInput,
+    query: chirpSchemas.getLikedChirps,
+  }),
+  chirpControllers.findManyLiked
+);
+
+router.get(
+  '/users/:username/timelines/reverse-chronological',
+  validateRequest({
+    query: chirpSchemas.reverseChronologicalTimeline,
+    params: usernameInput,
+  }),
+  chirpControllers.getUserTimeline
 );
 
 export default router;

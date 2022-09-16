@@ -1,17 +1,8 @@
 import { Router } from 'express';
-import {
-  deleteCurrentUser,
-  getCurrentUser,
-  updateCurrentUserEmail,
-  updateCurrentUserPassword,
-  updateCurrentUserProfile,
-  updateCurrentUserUsername,
-} from '../controllers/currentUser';
-import { followUser, unfollowUser } from '../controllers/follow';
-import { likeChirp, unlikeChirp } from '../controllers/like';
+import * as currentUserControllers from '../controllers/currentUser';
 import { confirmPassword, isAuthenticated } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
-import { chirpIdSchema, objectId, usernameInput } from '../schemas';
+import { objectId } from '../schemas';
 import * as currentUserSchemas from '../schemas/currentUser';
 import * as userSchemas from '../schemas/user';
 
@@ -24,7 +15,7 @@ router.get(
     currentUserId: objectId,
     query: userSchemas.getUser,
   }),
-  getCurrentUser
+  currentUserControllers.getOne
 );
 
 router.put(
@@ -34,7 +25,7 @@ router.put(
     currentUserId: objectId,
     body: currentUserSchemas.updateProfile,
   }),
-  updateCurrentUserProfile
+  currentUserControllers.updateProfile
 );
 
 router.put(
@@ -45,7 +36,7 @@ router.put(
     body: currentUserSchemas.updatePassword,
   }),
   confirmPassword,
-  updateCurrentUserPassword
+  currentUserControllers.updatePassword
 );
 
 router.put(
@@ -56,7 +47,7 @@ router.put(
     body: currentUserSchemas.updateUsername,
   }),
   confirmPassword,
-  updateCurrentUserUsername
+  currentUserControllers.updateUsername
 );
 
 router.put(
@@ -67,7 +58,7 @@ router.put(
     body: currentUserSchemas.updateEmail,
   }),
   confirmPassword,
-  updateCurrentUserEmail
+  currentUserControllers.updateEmail
 );
 
 router.delete(
@@ -77,47 +68,7 @@ router.delete(
     currentUserId: objectId,
   }),
   confirmPassword,
-  deleteCurrentUser
-);
-
-router.post(
-  '/following',
-  isAuthenticated,
-  validateRequest({
-    currentUserId: objectId,
-    body: usernameInput,
-  }),
-  followUser
-);
-
-router.delete(
-  '/following/:username',
-  isAuthenticated,
-  validateRequest({
-    currentUserId: objectId,
-    params: usernameInput,
-  }),
-  unfollowUser
-);
-
-router.post(
-  '/likes',
-  isAuthenticated,
-  validateRequest({
-    currentUserId: objectId,
-    body: chirpIdSchema,
-  }),
-  likeChirp
-);
-
-router.delete(
-  '/likes/:chirpId',
-  isAuthenticated,
-  validateRequest({
-    currentUserId: objectId,
-    params: chirpIdSchema,
-  }),
-  unlikeChirp
+  currentUserControllers.deleteOne
 );
 
 export default router;

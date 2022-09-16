@@ -1,112 +1,79 @@
 import { Router } from 'express';
-import {
-  getReverseChronologicalTimeline,
-  getUserChirps,
-} from '../controllers/chirp';
-import { getUserFollowers, getUserFollowings } from '../controllers/follow';
-import { getLikedChirps } from '../controllers/like';
-import {
-  getUsers,
-  signUpUser,
-  logInUser,
-  getUser,
-  searchUsers,
-} from '../controllers/user';
+import * as userControllers from '../controllers/user';
 import { isAuthenticated } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
-import { usernameInput } from '../schemas';
-import * as chirpSchemas from '../schemas/chirp';
-import * as followSchemas from '../schemas/follow';
-import * as likeSchemas from '../schemas/like';
+import { chirpIdSchema, usernameInput } from '../schemas';
 import * as userSchemas from '../schemas/user';
 
 const router = Router();
 
 router.get(
-  '/',
+  '/users',
   validateRequest({
     query: userSchemas.getUsers,
   }),
-  getUsers
+  userControllers.findMany
 );
 
 router.get(
-  '/search',
+  '/users/search',
   isAuthenticated,
   validateRequest({
     query: userSchemas.searchUsers,
   }),
-  searchUsers
+  userControllers.searchMany
 );
 
 router.get(
-  '/:username',
+  '/users/:username',
   validateRequest({
     params: usernameInput,
     query: userSchemas.getUser,
   }),
-  getUser
-);
-
-router.get(
-  '/:username/chirps',
-  validateRequest({
-    query: userSchemas.getUserChirps,
-    params: usernameInput,
-  }),
-  getUserChirps
-);
-
-router.get(
-  '/:username/timelines/reverse-chronological',
-  validateRequest({
-    query: chirpSchemas.reverseChronologicalTimeline,
-    params: usernameInput,
-  }),
-  getReverseChronologicalTimeline
+  userControllers.findOne
 );
 
 router.post(
-  '/',
+  '/users',
   validateRequest({
     body: userSchemas.signUpUser,
   }),
-  signUpUser
+  userControllers.signUp
 );
 
 router.post(
-  '/login',
+  '/users/login',
   validateRequest({
     body: userSchemas.logInUser,
   }),
-  logInUser
+  userControllers.logIn
 );
 
 router.get(
-  '/:username/following',
+  '/users/:username/following',
   validateRequest({
     params: usernameInput,
-    query: followSchemas.getUserFollowings,
+    query: userSchemas.getUserFollowings,
   }),
-  getUserFollowings
+  userControllers.findManyFollowing
 );
 
 router.get(
-  '/:username/followers',
+  '/users/:username/followers',
   validateRequest({
     params: usernameInput,
-    query: followSchemas.getUserFollowers,
+    query: userSchemas.getUserFollowers,
   }),
-  getUserFollowers
+  userControllers.findManyFollowers
 );
 
 router.get(
-  '/:username/liked-chirps',
+  '/chirps/:chirpId/liking-users',
   validateRequest({
-    params: usernameInput,
-    query: likeSchemas.getLikedChirps,
+    params: chirpIdSchema,
+    query: userSchemas.getLikingUsers,
   }),
-  getLikedChirps
+  userControllers.findManyLiking
 );
 
 export default router;
