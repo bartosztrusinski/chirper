@@ -123,4 +123,5 @@ const ReplyChirp = Chirp.discriminator<IReply, ReplyModel>(
   'reply'
 );
 
-export { Chirp, PostChirp, ReplyChirp };
+export default Chirp;
+export { PostChirp, ReplyChirp };

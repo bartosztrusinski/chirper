@@ -1,5 +1,5 @@
 import { model, Model, Schema, Types } from 'mongoose';
-import { Chirp } from './Chirp';
+import Chirp from './Chirp';
 import User from './User';
 
 export interface ILike {
