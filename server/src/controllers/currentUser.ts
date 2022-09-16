@@ -5,13 +5,13 @@ import {
   UpdatePassword,
   UpdateUsername,
   UserProfile,
+  FindOne,
 } from '../schemas/currentUser';
 import { ResponseBody } from '../schemas';
-import { GetUser } from '../schemas/user';
 import { BadRequestError } from '../utils/errors';
 
 export const getOne = async (
-  req: Request<unknown, ResponseBody, unknown, GetUser>,
+  req: Request<unknown, ResponseBody, unknown, FindOne>,
   res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;

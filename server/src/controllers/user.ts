@@ -6,20 +6,20 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/secrets';
 import Follow, { IFollow } from '../models/Follow';
 import {
-  GetUser,
-  GetUsers,
-  LogInUser,
-  SearchUsers,
-  SignUpUser,
-  GetLikingUsers,
-  GetUserFollowers,
-  GetUserFollowings,
+  FindOne,
+  FindMany,
+  LogIn,
+  SearchMany,
+  SignUp,
+  FindManyLiking,
+  FindManyFollowers,
+  FindManyFollowing,
 } from '../schemas/user';
 import { UsernameInput, ResponseBody, ChirpId } from '../schemas';
 import Like, { ILike } from '../models/Like';
 
 export const findMany = async (
-  req: Request<unknown, ResponseBody, unknown, GetUsers>,
+  req: Request<unknown, ResponseBody, unknown, FindMany>,
   res: Response<ResponseBody>
 ) => {
   const { ids, userFields } = req.query;
@@ -30,7 +30,7 @@ export const findMany = async (
 };
 
 export const findOne = async (
-  req: Request<UsernameInput, ResponseBody, unknown, GetUser>,
+  req: Request<UsernameInput, ResponseBody, unknown, FindOne>,
   res: Response<ResponseBody>
 ) => {
   const { username } = req.params;
@@ -46,7 +46,7 @@ export const findOne = async (
 };
 
 export const searchMany = async (
-  req: Request<unknown, ResponseBody, unknown, SearchUsers>,
+  req: Request<unknown, ResponseBody, unknown, SearchMany>,
   res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;
@@ -82,7 +82,7 @@ export const searchMany = async (
 };
 
 export const signUp = async (
-  req: Request<unknown, ResponseBody, SignUpUser>,
+  req: Request<unknown, ResponseBody, SignUp>,
   res: Response<ResponseBody>
 ) => {
   // verify email
@@ -110,7 +110,7 @@ export const signUp = async (
 };
 
 export const logIn = async (
-  req: Request<unknown, ResponseBody, LogInUser>,
+  req: Request<unknown, ResponseBody, LogIn>,
   res: Response<ResponseBody>
 ) => {
   const { login, password } = req.body;
@@ -144,7 +144,7 @@ interface PopulatedSourceUser {
 }
 
 export const findManyLiking = async (
-  req: Request<ChirpId, ResponseBody, unknown, GetLikingUsers>,
+  req: Request<ChirpId, ResponseBody, unknown, FindManyLiking>,
   res: Response<ResponseBody>
 ) => {
   const { chirpId } = req.params;
@@ -173,7 +173,7 @@ export const findManyLiking = async (
 };
 
 export const findManyFollowing = async (
-  req: Request<UsernameInput, ResponseBody, unknown, GetUserFollowings>,
+  req: Request<UsernameInput, ResponseBody, unknown, FindManyFollowing>,
   res: Response<ResponseBody>
 ) => {
   const { username } = req.params;
@@ -209,7 +209,7 @@ export const findManyFollowing = async (
 };
 
 export const findManyFollowers = async (
-  req: Request<UsernameInput, ResponseBody, unknown, GetUserFollowers>,
+  req: Request<UsernameInput, ResponseBody, unknown, FindManyFollowers>,
   res: Response<ResponseBody>
 ) => {
   const { username } = req.params;

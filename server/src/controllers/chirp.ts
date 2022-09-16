@@ -12,18 +12,18 @@ import Follow from '../models/Follow';
 import User from '../models/User';
 import { ChirpId, UsernameInput, ResponseBody } from '../schemas';
 import {
-  CreateChirp,
-  GetChirp,
-  GetChirps,
-  ReverseChronologicalTimeline,
-  SearchChirps,
-  GetUserChirps,
-  GetLikedChirps,
+  CreateOne,
+  FindOne,
+  FindMany,
+  GetUserTimeline,
+  SearchMany,
+  FindManyByUser,
+  FindManyLiked,
 } from '../schemas/chirp';
 import { BadRequestError } from '../utils/errors';
 
 export const findMany = async (
-  req: Request<unknown, ResponseBody, unknown, GetChirps>,
+  req: Request<unknown, ResponseBody, unknown, FindMany>,
   res: Response<ResponseBody>
 ) => {
   const { ids, userFields, chirpFields, expandAuthor } = req.query;
@@ -38,7 +38,7 @@ export const findMany = async (
 };
 
 export const findOne = async (
-  req: Request<ChirpId, ResponseBody, unknown, GetChirp>,
+  req: Request<ChirpId, ResponseBody, unknown, FindOne>,
   res: Response<ResponseBody>
 ) => {
   const { chirpId } = req.params;
@@ -58,7 +58,7 @@ export const findOne = async (
 };
 
 export const searchMany = async (
-  req: Request<unknown, ResponseBody, unknown, SearchChirps>,
+  req: Request<unknown, ResponseBody, unknown, SearchMany>,
   res: Response<ResponseBody>
 ) => {
   const {
@@ -130,12 +130,7 @@ export const searchMany = async (
 };
 
 export const getUserTimeline = async (
-  req: Request<
-    UsernameInput,
-    ResponseBody,
-    unknown,
-    ReverseChronologicalTimeline
-  >,
+  req: Request<UsernameInput, ResponseBody, unknown, GetUserTimeline>,
   res: Response<ResponseBody>
 ) => {
   const { username } = req.params;
@@ -167,7 +162,7 @@ export const getUserTimeline = async (
 };
 
 export const findManyByUser = async (
-  req: Request<UsernameInput, ResponseBody, unknown, GetUserChirps>,
+  req: Request<UsernameInput, ResponseBody, unknown, FindManyByUser>,
   res: Response<ResponseBody>
 ) => {
   const { username } = req.params;
@@ -206,7 +201,7 @@ export const findManyByUser = async (
 };
 
 export const createOne = async (
-  req: Request<unknown, ResponseBody, CreateChirp>,
+  req: Request<unknown, ResponseBody, CreateOne>,
   res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;
@@ -274,7 +269,7 @@ export const deleteOne = async (
 };
 
 export const findManyLiked = async (
-  req: Request<UsernameInput, ResponseBody, unknown, GetLikedChirps>,
+  req: Request<UsernameInput, ResponseBody, unknown, FindManyLiked>,
   res: Response<ResponseBody>
 ) => {
   const { username } = req.params;

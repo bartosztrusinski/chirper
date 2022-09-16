@@ -21,6 +21,7 @@ export const updateEmail = z.object({
   newEmail: email,
 });
 
+export type FindOne = z.infer<typeof findOne>;
 export type UserProfile = z.infer<typeof updateProfile>;
 export type UpdatePassword = z.infer<typeof updatePassword>;
 export type UpdateUsername = z.infer<typeof updateUsername>;
