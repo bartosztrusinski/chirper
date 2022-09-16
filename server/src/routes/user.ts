@@ -10,7 +10,7 @@ const router = Router();
 router.get(
   '/users',
   validateRequest({
-    query: userSchemas.getUsers,
+    query: userSchemas.findMany,
   }),
   userControllers.findMany
 );
@@ -19,7 +19,7 @@ router.get(
   '/users/search',
   isAuthenticated,
   validateRequest({
-    query: userSchemas.searchUsers,
+    query: userSchemas.searchMany,
   }),
   userControllers.searchMany
 );
@@ -28,7 +28,7 @@ router.get(
   '/users/:username',
   validateRequest({
     params: usernameInput,
-    query: userSchemas.getUser,
+    query: userSchemas.findOne,
   }),
   userControllers.findOne
 );
@@ -36,7 +36,7 @@ router.get(
 router.post(
   '/users',
   validateRequest({
-    body: userSchemas.signUpUser,
+    body: userSchemas.signUp,
   }),
   userControllers.signUp
 );
@@ -44,7 +44,7 @@ router.post(
 router.post(
   '/users/login',
   validateRequest({
-    body: userSchemas.logInUser,
+    body: userSchemas.logIn,
   }),
   userControllers.logIn
 );
@@ -53,7 +53,7 @@ router.get(
   '/users/:username/following',
   validateRequest({
     params: usernameInput,
-    query: userSchemas.getUserFollowings,
+    query: userSchemas.findManyFollowing,
   }),
   userControllers.findManyFollowing
 );
@@ -62,7 +62,7 @@ router.get(
   '/users/:username/followers',
   validateRequest({
     params: usernameInput,
-    query: userSchemas.getUserFollowers,
+    query: userSchemas.findManyFollowers,
   }),
   userControllers.findManyFollowers
 );
@@ -71,7 +71,7 @@ router.get(
   '/chirps/:chirpId/liking-users',
   validateRequest({
     params: chirpIdSchema,
-    query: userSchemas.getLikingUsers,
+    query: userSchemas.findManyLiking,
   }),
   userControllers.findManyLiking
 );

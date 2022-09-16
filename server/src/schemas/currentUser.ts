@@ -1,29 +1,27 @@
 import { z } from 'zod';
 import { profile, password, username, email } from '.';
+import * as userSchemas from './user';
 
-const updateProfileSchema = profile;
+export const findOne = userSchemas.findOne;
 
-const updatePasswordSchema = z.object({
+export const updateProfile = profile;
+
+export const updatePassword = z.object({
   password: z.string().trim(),
   newPassword: password,
 });
 
-const updateUsernameSchema = z.object({
+export const updateUsername = z.object({
   password: z.string().trim(),
   newUsername: username,
 });
 
-const updateEmailSchema = z.object({
+export const updateEmail = z.object({
   password: z.string().trim(),
   newEmail: email,
 });
 
-export const updateProfile = updateProfileSchema;
-export const updatePassword = updatePasswordSchema;
-export const updateUsername = updateUsernameSchema;
-export const updateEmail = updateEmailSchema;
-
-export type UserProfile = z.infer<typeof updateProfileSchema>;
-export type UpdatePassword = z.infer<typeof updatePasswordSchema>;
-export type UpdateUsername = z.infer<typeof updateUsernameSchema>;
-export type UpdateEmail = z.infer<typeof updateEmailSchema>;
+export type UserProfile = z.infer<typeof updateProfile>;
+export type UpdatePassword = z.infer<typeof updatePassword>;
+export type UpdateUsername = z.infer<typeof updateUsername>;
+export type UpdateEmail = z.infer<typeof updateEmail>;

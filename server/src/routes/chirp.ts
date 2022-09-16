@@ -10,7 +10,7 @@ const router = Router();
 router.get(
   '/chirps',
   validateRequest({
-    query: chirpSchemas.getChirps,
+    query: chirpSchemas.findMany,
   }),
   chirpControllers.findMany
 );
@@ -20,7 +20,7 @@ router.get(
   isAuthenticated,
   validateRequest({
     currentUserId: objectId,
-    query: chirpSchemas.searchChirps,
+    query: chirpSchemas.searchMany,
   }),
   chirpControllers.searchMany
 );
@@ -29,7 +29,7 @@ router.get(
   '/chirps/:chirpId',
   validateRequest({
     params: chirpIdSchema,
-    query: chirpSchemas.getChirp,
+    query: chirpSchemas.findOne,
   }),
   chirpControllers.findOne
 );
@@ -39,7 +39,7 @@ router.post(
   isAuthenticated,
   validateRequest({
     currentUserId: objectId,
-    body: chirpSchemas.createChirp,
+    body: chirpSchemas.createOne,
   }),
   chirpControllers.createOne
 );
@@ -58,8 +58,8 @@ router.delete(
 router.get(
   '/users/:username/chirps',
   validateRequest({
-    query: chirpSchemas.getUserChirps,
     params: usernameInput,
+    query: chirpSchemas.findManyByUser,
   }),
   chirpControllers.findManyByUser
 );
@@ -68,7 +68,7 @@ router.get(
   '/users/:username/liked-chirps',
   validateRequest({
     params: usernameInput,
-    query: chirpSchemas.getLikedChirps,
+    query: chirpSchemas.findManyLiked,
   }),
   chirpControllers.findManyLiked
 );
@@ -76,8 +76,8 @@ router.get(
 router.get(
   '/users/:username/timelines/reverse-chronological',
   validateRequest({
-    query: chirpSchemas.reverseChronologicalTimeline,
     params: usernameInput,
+    query: chirpSchemas.getUserTimeline,
   }),
   chirpControllers.getUserTimeline
 );

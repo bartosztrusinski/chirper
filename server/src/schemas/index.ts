@@ -43,7 +43,7 @@ const stringToBoolean = z
 const optionalStringToNumber = z
   .function()
   .args(z.string().optional())
-  .returns(z.number())
+  .returns(z.number().or(z.nan()))
   .implement((str) => {
     if (!str) return NaN;
     return parseInt(str);
@@ -52,7 +52,7 @@ const optionalStringToNumber = z
 const setDefaultIfNaN = (defaultValue: number) =>
   z
     .function()
-    .args(z.number())
+    .args(z.number().or(z.nan()))
     .returns(z.number())
     .implement((value) => {
       if (isNaN(value)) return defaultValue;

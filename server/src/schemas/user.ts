@@ -1,8 +1,6 @@
 import { z } from 'zod';
 import {
-  id,
   userFields,
-  chirpFields,
   limit,
   ids,
   page,
@@ -10,26 +8,15 @@ import {
   email,
   password,
   profile,
-  expandAuthor,
-  includeReplies,
   followingOnly,
-  appendAuthorIfExpanded,
+  id,
 } from '.';
 
-const getUserChirpsSchema = z.object({
-  sinceId: id.optional(),
-  userFields,
-  chirpFields,
-  expandAuthor,
-  includeReplies,
-  limit,
-});
+export const findMany = z.object({ ids, userFields });
 
-const getUsersSchema = z.object({ ids: ids, userFields });
+export const findOne = z.object({ userFields });
 
-const getUserSchema = z.object({ userFields });
-
-const searchUsersSchema = z.object({
+export const searchMany = z.object({
   query: z.string(),
   followingOnly,
   userFields,
@@ -37,30 +24,37 @@ const searchUsersSchema = z.object({
   page,
 });
 
-const signUpUserSchema = z.object({
+export const findManyLiking = z.object({
+  sinceId: id.optional(),
+  userFields,
+  limit,
+});
+
+const findUsersFromFollowsSchema = z.object({
+  sinceId: id.optional(),
+  userFields,
+  limit,
+});
+export const findManyFollowing = findUsersFromFollowsSchema;
+export const findManyFollowers = findUsersFromFollowsSchema;
+
+export const signUp = z.object({
   username,
   email,
   password,
   profile,
 });
 
-const logInUserSchema = z.object({
+export const logIn = z.object({
   login: z.string().trim(),
   password: z.string().trim(),
 });
 
-export const getUserChirps = getUserChirpsSchema.transform(
-  appendAuthorIfExpanded
-);
-export const getUsers = getUsersSchema;
-export const getUser = getUserSchema;
-export const searchUsers = searchUsersSchema;
-export const signUpUser = signUpUserSchema;
-export const logInUser = logInUserSchema;
-
-export type GetUserChirps = z.infer<typeof getUserChirpsSchema>;
-export type GetUsers = z.infer<typeof getUsersSchema>;
-export type GetUser = z.infer<typeof getUserSchema>;
-export type SearchUsers = z.infer<typeof searchUsersSchema>;
-export type SignUpUser = z.infer<typeof signUpUserSchema>;
-export type LogInUser = z.infer<typeof logInUserSchema>;
+export type FindMany = z.infer<typeof findMany>;
+export type FindOne = z.infer<typeof findOne>;
+export type SearchMany = z.infer<typeof searchMany>;
+export type FindManyLiking = z.infer<typeof findManyLiking>;
+export type FindManyFollowing = z.infer<typeof findManyFollowing>;
+export type FindManyFollowers = z.infer<typeof findManyFollowers>;
+export type SignUp = z.infer<typeof signUp>;
+export type LogIn = z.infer<typeof logIn>;

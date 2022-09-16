@@ -13,14 +13,14 @@ import {
   stringToDate,
 } from '.';
 
-const getChirpsSchema = z.object({
-  ids: ids,
+const findManySchema = z.object({
+  ids,
   chirpFields,
   userFields,
   expandAuthor,
 });
 
-const getChirpSchema = z.object({
+const findOneSchema = z.object({
   chirpFields,
   userFields,
   expandAuthor,
@@ -28,7 +28,7 @@ const getChirpSchema = z.object({
 
 const dateQuery = z.string().transform(stringToDate).optional();
 
-const searchChirpsSchema = z.object({
+const searchManySchema = z.object({
   query: z.string(),
   followingOnly,
   sortOrder: z.enum(['relevant', 'popular', 'recent']).default('relevant'),
@@ -43,7 +43,7 @@ const searchChirpsSchema = z.object({
   page,
 });
 
-const reverseChronologicalTimelineSchema = z.object({
+const getUserTimelineSchema = z.object({
   sinceId: id.optional(),
   userFields,
   chirpFields,
@@ -51,7 +51,24 @@ const reverseChronologicalTimelineSchema = z.object({
   limit,
 });
 
-const createChirpSchema = z.object({
+const findManyByUserSchema = z.object({
+  sinceId: id.optional(),
+  userFields,
+  chirpFields,
+  expandAuthor,
+  includeReplies,
+  limit,
+});
+
+const findManyLikedSchema = z.object({
+  sinceId: id.optional(),
+  userFields,
+  chirpFields,
+  expandAuthor,
+  limit,
+});
+
+const createOneSchema = z.object({
   content: z
     .string()
     .trim()
@@ -60,19 +77,24 @@ const createChirpSchema = z.object({
   chirpId: id.optional(),
 });
 
-export const getChirps = getChirpsSchema.transform(appendAuthorIfExpanded);
-export const getChirp = getChirpSchema.transform(appendAuthorIfExpanded);
-export const searchChirps = searchChirpsSchema.transform(
+export const findMany = findManySchema.transform(appendAuthorIfExpanded);
+export const findOne = findOneSchema.transform(appendAuthorIfExpanded);
+export const searchMany = searchManySchema.transform(appendAuthorIfExpanded);
+export const getUserTimeline = getUserTimelineSchema.transform(
   appendAuthorIfExpanded
 );
-export const reverseChronologicalTimeline =
-  reverseChronologicalTimelineSchema.transform(appendAuthorIfExpanded);
-export const createChirp = createChirpSchema;
+export const findManyByUser = findManyByUserSchema.transform(
+  appendAuthorIfExpanded
+);
+export const findManyLiked = findManyLikedSchema.transform(
+  appendAuthorIfExpanded
+);
+export const createOne = createOneSchema;
 
-export type GetChirps = z.infer<typeof getChirpsSchema>;
-export type GetChirp = z.infer<typeof getChirpSchema>;
-export type SearchChirps = z.infer<typeof searchChirpsSchema>;
-export type CreateChirp = z.infer<typeof createChirpSchema>;
-export type ReverseChronologicalTimeline = z.infer<
-  typeof reverseChronologicalTimelineSchema
->;
+export type FindMany = z.infer<typeof findManySchema>;
+export type FindOne = z.infer<typeof findOneSchema>;
+export type SearchMany = z.infer<typeof searchManySchema>;
+export type GetUserTimeline = z.infer<typeof getUserTimelineSchema>;
+export type FindManyByUser = z.infer<typeof findManyByUserSchema>;
+export type FindManyLiked = z.infer<typeof findManyLikedSchema>;
+export type CreateOne = z.infer<typeof createOneSchema>;

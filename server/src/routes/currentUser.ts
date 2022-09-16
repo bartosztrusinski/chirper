@@ -4,7 +4,6 @@ import { confirmPassword, isAuthenticated } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
 import { objectId } from '../schemas';
 import * as currentUserSchemas from '../schemas/currentUser';
-import * as userSchemas from '../schemas/user';
 
 const router = Router();
 
@@ -13,7 +12,7 @@ router.get(
   isAuthenticated,
   validateRequest({
     currentUserId: objectId,
-    query: userSchemas.getUser,
+    query: currentUserSchemas.findOne,
   }),
   currentUserControllers.getOne
 );
