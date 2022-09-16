@@ -241,7 +241,7 @@ const createReply = async (
       parent,
     }
   );
-  return newReply;
+  return { _id: newReply._id };
 };
 
 const createPost = async (userId: Types.ObjectId, content: string) => {
@@ -249,7 +249,7 @@ const createPost = async (userId: Types.ObjectId, content: string) => {
     content,
     author: userId,
   });
-  return newPost;
+  return { _id: newPost._id };
 };
 
 export const deleteOne = async (
@@ -287,12 +287,8 @@ export const findManyLiked = async (
   };
   Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
 
+  const populateChirp = { path: 'chirp', select: chirpFields };
   const populateAuthor = { path: 'author', select: userFields };
-  const populateChirp = {
-    path: 'chirp',
-    select: chirpFields,
-    populate: populateAuthor,
-  };
   Object.assign(populateChirp, expandAuthor && { populate: populateAuthor });
 
   const likes = await Like.find(filter)

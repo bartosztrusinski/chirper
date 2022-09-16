@@ -29,7 +29,7 @@ export const createOne = async (
     chirp: likedChirp._id,
   });
 
-  res.status(200).json({ status: 'success', data: like });
+  res.status(200).json({ status: 'success', data: null });
 };
 
 export const deleteOne = async (

@@ -32,7 +32,7 @@ export const createOne = async (
     targetUser: targetUser._id,
   });
 
-  res.status(200).json({ status: 'success', data: newFollow });
+  res.status(200).json({ status: 'success', data: null });
 };
 
 export const deleteOne = async (
