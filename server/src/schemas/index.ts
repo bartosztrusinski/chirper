@@ -204,7 +204,13 @@ export const password = z
     'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
   );
 
-export const email = z.string().trim().email('Email must be a valid email');
+export const email = z
+  .string()
+  .trim()
+  .regex(
+    /^([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    'Please enter a valid email address'
+  );
 
 export const username = z
   .string()
@@ -240,7 +246,10 @@ export const website = z
   .string()
   .trim()
   .max(100, 'Website URL must be less than 100 characters')
-  .url('Website must be a valid URL')
+  .regex(
+    /^(https?:\/\/)?(www.)?([a-z0-9]+\.)+[a-zA-Z]{2,}\/?(\/[a-zA-Z0-9#-_]+\/?)*$/,
+    'Website URL must be valid'
+  )
   .optional();
 
 export const profile = z.object({
