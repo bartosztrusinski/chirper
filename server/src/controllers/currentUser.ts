@@ -10,7 +10,7 @@ import { ResponseBody } from '../schemas';
 import { GetUser } from '../schemas/user';
 import { BadRequestError } from '../utils/errors';
 
-export const getCurrentUser = async (
+export const getOne = async (
   req: Request<unknown, ResponseBody, unknown, GetUser>,
   res: Response<ResponseBody>
 ) => {
@@ -26,7 +26,7 @@ export const getCurrentUser = async (
   res.status(200).json({ status: 'success', data: currentUser });
 };
 
-export const updateCurrentUserProfile = async (
+export const updateProfile = async (
   req: Request<unknown, ResponseBody, UserProfile>,
   res: Response<ResponseBody>
 ) => {
@@ -51,7 +51,7 @@ export const updateCurrentUserProfile = async (
   res.status(200).json({ status: 'success', data: updatedUser.profile });
 };
 
-export const updateCurrentUserPassword = async (
+export const updatePassword = async (
   req: Request<unknown, ResponseBody, UpdatePassword>,
   res: Response<ResponseBody>
 ) => {
@@ -69,7 +69,7 @@ export const updateCurrentUserPassword = async (
   res.status(200).json({ status: 'success', data: null });
 };
 
-export const updateCurrentUserUsername = async (
+export const updateUsername = async (
   req: Request<unknown, ResponseBody, UpdateUsername>,
   res: Response<ResponseBody>
 ) => {
@@ -87,7 +87,7 @@ export const updateCurrentUserUsername = async (
   res.status(200).json({ status: 'success', data: { newUsername } });
 };
 
-export const updateCurrentUserEmail = async (
+export const updateEmail = async (
   req: Request<unknown, ResponseBody, UpdateEmail>,
   res: Response<ResponseBody>
 ) => {
@@ -106,10 +106,7 @@ export const updateCurrentUserEmail = async (
   res.status(200).json({ status: 'success', data: { newEmail } });
 };
 
-export const deleteCurrentUser = async (
-  req: Request,
-  res: Response<ResponseBody>
-) => {
+export const deleteOne = async (req: Request, res: Response<ResponseBody>) => {
   const { currentUserId } = req;
 
   const currentUser = await User.findById(currentUserId);

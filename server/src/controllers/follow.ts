@@ -1,96 +1,10 @@
 import { Request, Response } from 'express';
-import { FilterQuery } from 'mongoose';
 import { UsernameInput, ResponseBody } from '../schemas';
-import Follow, { IFollow } from '../models/Follow';
-import User, { IUser } from '../models/User';
-import { GetUserFollowers, GetUserFollowings } from '../schemas/follow';
+import Follow from '../models/Follow';
+import User from '../models/User';
 import { BadRequestError } from '../utils/errors';
 
-interface PopulatedTargetUser {
-  targetUser: IUser;
-}
-
-interface PopulatedSourceUser {
-  sourceUser: IUser;
-}
-
-export const getUserFollowings = async (
-  req: Request<UsernameInput, ResponseBody, unknown, GetUserFollowings>,
-  res: Response<ResponseBody>
-) => {
-  const { username } = req.params;
-  const { sinceId, userFields, limit } = req.query;
-
-  const sourceUser = await User.exists({ username });
-  if (!sourceUser) {
-    throw new BadRequestError(
-      'Sorry, we could not find user with that username'
-    );
-  }
-
-  const filter: FilterQuery<IFollow> = {
-    sourceUser: sourceUser._id,
-  };
-  Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
-
-  const populate = {
-    path: 'targetUser',
-    select: userFields,
-  };
-
-  const follows = await Follow.find(filter)
-    .populate<PopulatedTargetUser>(populate)
-    .sort({ _id: -1 })
-    .limit(limit);
-
-  const following = follows.map((follow) => follow.targetUser);
-  const oldestId = follows[follows.length - 1]?._id;
-  const meta = Object.assign({}, oldestId && { oldestId });
-
-  res.status(200).json({ status: 'success', data: following, meta });
-};
-
-export const getUserFollowers = async (
-  req: Request<UsernameInput, ResponseBody, unknown, GetUserFollowers>,
-  res: Response<ResponseBody>
-) => {
-  const { username } = req.params;
-  const { sinceId, userFields, limit } = req.query;
-
-  const targetUser = await User.exists({ username });
-  if (!targetUser) {
-    throw new BadRequestError(
-      'Sorry, we could not find user with that username'
-    );
-  }
-
-  const filter: FilterQuery<IFollow> = {
-    targetUser: targetUser._id,
-  };
-  Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
-
-  const populate = {
-    path: 'sourceUser',
-    select: userFields,
-  };
-
-  const follows = await Follow.find(filter)
-    .populate<PopulatedSourceUser>(populate)
-    .sort({ _id: -1 })
-    .limit(limit);
-
-  const followers = follows.map((follow) => follow.sourceUser);
-  const oldestId = follows[follows.length - 1]?._id;
-  const meta = Object.assign({}, oldestId && { oldestId });
-
-  res.status(200).json({
-    status: 'success',
-    data: followers,
-    meta,
-  });
-};
-
-export const followUser = async (
+export const createOne = async (
   req: Request<unknown, ResponseBody, UsernameInput>,
   res: Response<ResponseBody>
 ) => {
@@ -121,7 +35,7 @@ export const followUser = async (
   res.status(200).json({ status: 'success', data: newFollow });
 };
 
-export const unfollowUser = async (
+export const deleteOne = async (
   req: Request<UsernameInput>,
   res: Response<ResponseBody>
 ) => {

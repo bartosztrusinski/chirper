@@ -1,27 +1,28 @@
 import { Request, Response } from 'express';
 import { FilterQuery, SortOrder, Types } from 'mongoose';
-import { ChirpId, UsernameInput, ResponseBody } from '../schemas';
-import {
-  Chirp,
+import Chirp, {
   IChirp,
   IPost,
   IReply,
   PostChirp,
   ReplyChirp,
 } from '../models/Chirp';
+import Like, { ILike } from '../models/Like';
 import Follow from '../models/Follow';
 import User from '../models/User';
+import { ChirpId, UsernameInput, ResponseBody } from '../schemas';
 import {
   CreateChirp,
   GetChirp,
   GetChirps,
   ReverseChronologicalTimeline,
   SearchChirps,
+  GetUserChirps,
+  GetLikedChirps,
 } from '../schemas/chirp';
-import { GetUserChirps } from '../schemas/user';
 import { BadRequestError } from '../utils/errors';
 
-export const getChirps = async (
+export const findMany = async (
   req: Request<unknown, ResponseBody, unknown, GetChirps>,
   res: Response<ResponseBody>
 ) => {
@@ -36,7 +37,7 @@ export const getChirps = async (
   res.status(200).json({ status: 'success', data: foundChirps });
 };
 
-export const getChirp = async (
+export const findOne = async (
   req: Request<ChirpId, ResponseBody, unknown, GetChirp>,
   res: Response<ResponseBody>
 ) => {
@@ -56,7 +57,7 @@ export const getChirp = async (
   res.status(200).json({ status: 'success', data: foundChirp });
 };
 
-export const searchChirps = async (
+export const searchMany = async (
   req: Request<unknown, ResponseBody, unknown, SearchChirps>,
   res: Response<ResponseBody>
 ) => {
@@ -122,13 +123,13 @@ export const searchChirps = async (
     .select({ score: { $meta: 'textScore' } }) // delete score later
     .populate(populate)
     .sort(sort)
-    .skip(skip) // not the best way to do this
+    .skip(skip)
     .limit(limit);
 
   res.status(200).json({ status: 'success', data: foundChirps });
 };
 
-export const getReverseChronologicalTimeline = async (
+export const getUserTimeline = async (
   req: Request<
     UsernameInput,
     ResponseBody,
@@ -165,7 +166,7 @@ export const getReverseChronologicalTimeline = async (
   res.status(200).json({ status: 'success', data: timelineChirps });
 };
 
-export const getUserChirps = async (
+export const findManyByUser = async (
   req: Request<UsernameInput, ResponseBody, unknown, GetUserChirps>,
   res: Response<ResponseBody>
 ) => {
@@ -204,7 +205,7 @@ export const getUserChirps = async (
   res.status(200).json({ status: 'success', data: foundUsersChirps });
 };
 
-export const createChirp = async (
+export const createOne = async (
   req: Request<unknown, ResponseBody, CreateChirp>,
   res: Response<ResponseBody>
 ) => {
@@ -256,7 +257,7 @@ const createPost = async (userId: Types.ObjectId, content: string) => {
   return newPost;
 };
 
-export const deleteChirp = async (
+export const deleteOne = async (
   req: Request<ChirpId>,
   res: Response<ResponseBody>
 ) => {
@@ -271,3 +272,46 @@ export const deleteChirp = async (
 
   res.status(200).json({ status: 'success', data: null });
 };
+
+export const findManyLiked = async (
+  req: Request<UsernameInput, ResponseBody, unknown, GetLikedChirps>,
+  res: Response<ResponseBody>
+) => {
+  const { username } = req.params;
+  const { sinceId, userFields, chirpFields, expandAuthor, limit } = req.query;
+
+  const existingUser = await User.exists({ username });
+  if (!existingUser) {
+    throw new BadRequestError(
+      'Sorry, we could not find the user you are trying to like'
+    );
+  }
+
+  const filter: FilterQuery<ILike> = {
+    user: existingUser._id,
+  };
+  Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
+
+  const populateAuthor = { path: 'author', select: userFields };
+  const populateChirp = {
+    path: 'chirp',
+    select: chirpFields,
+    populate: populateAuthor,
+  };
+  Object.assign(populateChirp, expandAuthor && { populate: populateAuthor });
+
+  const likes = await Like.find(filter)
+    .populate<PopulatedChirp>(populateChirp)
+    .sort({ _id: -1 })
+    .limit(limit);
+
+  const likedChirps = likes.map((like) => like.chirp);
+  const oldestId = likes[likes.length - 1]?._id;
+  const meta = Object.assign({}, oldestId && { oldestId });
+
+  res.status(200).json({ status: 'success', data: likedChirps, meta });
+};
+
+interface PopulatedChirp {
+  chirp: IChirp;
+}
