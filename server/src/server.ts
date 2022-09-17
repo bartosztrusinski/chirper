@@ -3,7 +3,6 @@ import express, { Application } from 'express';
 import 'express-async-errors';
 import errorHandler from './middleware/error';
 import connectDB from './config/db';
-import { NotFoundError } from './utils/errors';
 import apiRoutes from './routes';
 
 connectDB();
@@ -18,7 +17,8 @@ app.use('/api', apiRoutes);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((req, res, next) => {
-  throw new NotFoundError('Sorry! Route you are looking for does not exist');
+  res.status(404);
+  throw new Error('Sorry! Route you are looking for does not exist');
 });
 
 app.use(errorHandler);

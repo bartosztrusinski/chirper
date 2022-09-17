@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { UsernameInput, ResponseBody } from '../schemas';
 import Follow from '../models/Follow';
 import User from '../models/User';
-import { BadRequestError } from '../utils/errors';
 
 export const createOne = async (
   req: Request<unknown, ResponseBody, UsernameInput>,
@@ -13,18 +12,21 @@ export const createOne = async (
 
   const currentUser = await User.exists({ _id: currentUserId });
   if (!currentUser) {
-    throw new BadRequestError('Sorry, we could not find your account');
+    res.status(400);
+    throw new Error('Sorry, we could not find your account');
   }
 
   const targetUser = await User.exists({ username });
   if (!targetUser) {
-    throw new BadRequestError(
+    res.status(400);
+    throw new Error(
       'Sorry, we could not find the user you are trying to follow'
     );
   }
 
   if (currentUser._id.equals(targetUser._id)) {
-    throw new BadRequestError('Sorry, you cannot follow yourself');
+    res.status(400);
+    throw new Error('Sorry, you cannot follow yourself');
   }
 
   const newFollow = await Follow.create({
@@ -44,7 +46,8 @@ export const deleteOne = async (
 
   const followedUser = await User.exists({ username });
   if (!followedUser) {
-    throw new BadRequestError(
+    res.status(400);
+    throw new Error(
       'Sorry, we could not find the user you are trying to unfollow'
     );
   }
@@ -54,7 +57,8 @@ export const deleteOne = async (
     targetUser: followedUser._id,
   });
   if (!foundFollow) {
-    throw new BadRequestError('You are not following this user');
+    res.status(400);
+    throw new Error('You are not following this user');
   }
 
   await foundFollow.remove();

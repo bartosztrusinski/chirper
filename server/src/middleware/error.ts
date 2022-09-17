@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { StatusCodeError } from '../utils/errors';
 import { ENVIRONMENT } from '../config/secrets';
 
 const errorHandler = (
@@ -9,7 +8,7 @@ const errorHandler = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ) => {
-  const statusCode = err instanceof StatusCodeError ? err.statusCode : 500;
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   res.status(statusCode).json({
     message: err.message,
     status: statusCode,

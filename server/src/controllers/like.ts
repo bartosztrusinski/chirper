@@ -3,7 +3,6 @@ import Chirp from '../models/Chirp';
 import Like from '../models/Like';
 import User from '../models/User';
 import { ChirpId, ResponseBody } from '../schemas';
-import { BadRequestError } from '../utils/errors';
 
 export const createOne = async (
   req: Request<unknown, ResponseBody, ChirpId>,
@@ -14,12 +13,14 @@ export const createOne = async (
 
   const currentUser = await User.exists({ _id: currentUserId });
   if (!currentUser) {
-    throw new BadRequestError('Sorry, we could not find your account');
+    res.status(400);
+    throw new Error('Sorry, we could not find your account');
   }
 
   const likedChirp = await Chirp.exists({ _id: chirpId });
   if (!likedChirp) {
-    throw new BadRequestError(
+    res.status(400);
+    throw new Error(
       'Sorry, we could not find the chirp you are trying to like'
     );
   }
@@ -44,7 +45,8 @@ export const deleteOne = async (
     chirp: chirpId,
   });
   if (!foundLike) {
-    throw new BadRequestError('You have not liked this chirp');
+    res.status(400);
+    throw new Error('You have not liked this chirp');
   }
 
   await foundLike.remove();

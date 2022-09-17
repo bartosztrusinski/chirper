@@ -20,7 +20,6 @@ import {
   FindManyByUser,
   FindManyLiked,
 } from '../schemas/chirp';
-import { BadRequestError } from '../utils/errors';
 
 export const findMany = async (
   req: Request<unknown, ResponseBody, unknown, FindMany>,
@@ -51,7 +50,8 @@ export const findOne = async (
     .populate(populate);
 
   if (!foundChirp) {
-    throw new BadRequestError('Sorry, we could not find that chirp');
+    res.status(400);
+    throw new Error('Sorry, we could not find that chirp');
   }
 
   res.status(200).json({ status: 'success', data: foundChirp });
@@ -83,7 +83,8 @@ export const searchMany = async (
 
   if (followingOnly) {
     if (!req.currentUserId) {
-      throw new BadRequestError('You must be logged in to do that');
+      res.status(400);
+      throw new Error('You must be logged in to do that');
     }
     const follows = await Follow.find({ sourceUser: req.currentUserId });
     const followingIds = follows.map((follow) => follow.targetUser);
@@ -93,7 +94,8 @@ export const searchMany = async (
   if (from) {
     const fromUser = await User.exists({ username: from });
     if (!fromUser) {
-      throw new BadRequestError('Sorry, we could not find that user');
+      res.status(400);
+      throw new Error('Sorry, we could not find that user');
     }
     filter = { ...filter, author: fromUser._id };
   }
@@ -138,7 +140,8 @@ export const getUserTimeline = async (
 
   const timelineUser = await User.exists({ username });
   if (!timelineUser) {
-    throw new BadRequestError('Sorry, we could not find that user');
+    res.status(400);
+    throw new Error('Sorry, we could not find that user');
   }
 
   const follows = await Follow.find({ sourceUser: timelineUser._id });
@@ -177,7 +180,8 @@ export const findManyByUser = async (
 
   const chirpsAuthor = await User.exists({ username });
   if (!chirpsAuthor) {
-    throw new BadRequestError('Sorry, we could not find that user');
+    res.status(400);
+    throw new Error('Sorry, we could not find that user');
   }
 
   const filter: FilterQuery<IChirp> = {
@@ -208,9 +212,11 @@ export const createOne = async (
   const { content, isReply, chirpId } = req.body;
 
   if (!currentUserId) {
-    throw new BadRequestError('Sorry, you must be logged in to chirp');
+    res.status(400);
+    throw new Error('Sorry, you must be logged in to chirp');
   }
 
+  res.status(400);
   const chirp = isReply
     ? await createReply(currentUserId, content, chirpId)
     : await createPost(currentUserId, content);
@@ -225,9 +231,7 @@ const createReply = async (
 ) => {
   const parentChirp = await Chirp.findById(parentId);
   if (!parentChirp) {
-    throw new BadRequestError(
-      'Sorry, we could not find chirp you are replying to'
-    );
+    throw new Error('Sorry, we could not find chirp you are replying to');
   }
 
   const parent = parentChirp._id;
@@ -260,7 +264,8 @@ export const deleteOne = async (
 
   const foundPost = await Chirp.findById(chirpId);
   if (!foundPost) {
-    throw new BadRequestError('Sorry, we could not find that chirp');
+    res.status(400);
+    throw new Error('Sorry, we could not find that chirp');
   }
 
   await foundPost.remove();
@@ -277,9 +282,8 @@ export const findManyLiked = async (
 
   const existingUser = await User.exists({ username });
   if (!existingUser) {
-    throw new BadRequestError(
-      'Sorry, we could not find the user you are trying to like'
-    );
+    res.status(400);
+    throw new Error('Sorry, we could not find the user you are trying to like');
   }
 
   const filter: FilterQuery<ILike> = {

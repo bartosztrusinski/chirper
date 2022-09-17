@@ -8,7 +8,6 @@ import {
   FindOne,
 } from '../schemas/currentUser';
 import { ResponseBody } from '../schemas';
-import { BadRequestError } from '../utils/errors';
 
 export const getOne = async (
   req: Request<unknown, ResponseBody, unknown, FindOne>,
@@ -20,7 +19,8 @@ export const getOne = async (
   const currentUser = await User.findById(currentUserId).select(userFields);
 
   if (!currentUser) {
-    throw new BadRequestError('Sorry, we could not find your account');
+    res.status(400);
+    throw new Error('Sorry, we could not find your account');
   }
 
   res.status(200).json({ status: 'success', data: currentUser });
@@ -35,7 +35,8 @@ export const updateProfile = async (
 
   const currentUser = await User.findById(currentUserId);
   if (!currentUser) {
-    throw new BadRequestError('Sorry, we could not find your account');
+    res.status(400);
+    throw new Error('Sorry, we could not find your account');
   }
 
   currentUser.profile = {
@@ -60,7 +61,8 @@ export const updatePassword = async (
 
   const currentUser = await User.findById(currentUserId);
   if (!currentUser) {
-    throw new BadRequestError('Sorry, we could not find your account');
+    res.status(400);
+    throw new Error('Sorry, we could not find your account');
   }
 
   currentUser.password = newPassword;
@@ -78,7 +80,8 @@ export const updateUsername = async (
 
   const currentUser = await User.findById(currentUserId);
   if (!currentUser) {
-    throw new BadRequestError('Sorry, we could not find your account');
+    res.status(400);
+    throw new Error('Sorry, we could not find your account');
   }
 
   currentUser.username = newUsername;
@@ -97,7 +100,8 @@ export const updateEmail = async (
 
   const currentUser = await User.findById(currentUserId);
   if (!currentUser) {
-    throw new BadRequestError('Sorry, we could not find your account');
+    res.status(400);
+    throw new Error('Sorry, we could not find your account');
   }
 
   currentUser.email = newEmail;
@@ -111,7 +115,8 @@ export const deleteOne = async (req: Request, res: Response<ResponseBody>) => {
 
   const currentUser = await User.findById(currentUserId);
   if (!currentUser) {
-    throw new BadRequestError('Sorry, we could not find your account');
+    res.status(400);
+    throw new Error('Sorry, we could not find your account');
   }
 
   await currentUser.remove();
@@ -124,12 +129,14 @@ export const deleteOne = async (req: Request, res: Response<ResponseBody>) => {
 
 //   const currentUser = await User.findById(req.currentUserId);
 //   if (!currentUser) {
-//     throw new BadRequestError('Sorry, we could not find your account');
+// res.status(400);
+//     throw new Error('Sorry, we could not find your account');
 //   }
 
 //   const isPasswordMatch = await currentUser.isPasswordMatch(password);
 //   if (!isPasswordMatch) {
-//     throw new BadRequestError('Sorry, wrong password!');
+// res.status(400);
+//     throw new Error('Sorry, wrong password!');
 //   }
 
 //   res.status(200).json({ message: 'Password confirmed' });

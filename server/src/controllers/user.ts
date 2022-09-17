@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { FilterQuery, Types } from 'mongoose';
-import { BadRequestError } from '../utils/errors';
 import User, { IUser } from '../models/User';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/secrets';
@@ -39,7 +38,8 @@ export const findOne = async (
   const foundUser = await User.findOne({ username }).select(userFields);
 
   if (!foundUser) {
-    throw new BadRequestError('Sorry, we could not find that user');
+    res.status(400);
+    throw new Error('Sorry, we could not find that user');
   }
 
   res.status(200).json({ status: 'success', data: foundUser });
@@ -56,9 +56,8 @@ export const searchMany = async (
 
   if (followingOnly) {
     if (!currentUserId) {
-      throw new BadRequestError(
-        'You must be logged in to search following users'
-      );
+      res.status(400);
+      throw new Error('You must be logged in to search following users');
     }
     const follows = await Follow.find({ sourceUser: currentUserId });
     const followingIds = follows.map((follow) => follow.targetUser);
@@ -93,7 +92,8 @@ export const signUp = async (
     $or: [{ email }, { username }],
   });
   if (existingUser) {
-    throw new BadRequestError('Username or email has already been taken');
+    res.status(400);
+    throw new Error('Username or email has already been taken');
   }
 
   const newUser = await User.create<Omit<IUser, 'replies' | 'metrics'>>({
@@ -119,12 +119,14 @@ export const logIn = async (
     $or: [{ email: login }, { username: login }],
   });
   if (!existingUser) {
-    throw new BadRequestError('Sorry, we could not find your account');
+    res.status(400);
+    throw new Error('Sorry, we could not find your account');
   }
 
   const isPasswordMatch = await existingUser.isPasswordMatch(password);
   if (!isPasswordMatch) {
-    throw new BadRequestError('Sorry, wrong password!');
+    res.status(400);
+    throw new Error('Sorry, wrong password!');
   }
 
   const authToken = generateAuthToken(existingUser._id);
@@ -181,9 +183,8 @@ export const findManyFollowing = async (
 
   const sourceUser = await User.exists({ username });
   if (!sourceUser) {
-    throw new BadRequestError(
-      'Sorry, we could not find user with that username'
-    );
+    res.status(400);
+    throw new Error('Sorry, we could not find user with that username');
   }
 
   const filter: FilterQuery<IFollow> = {
@@ -217,9 +218,8 @@ export const findManyFollowers = async (
 
   const targetUser = await User.exists({ username });
   if (!targetUser) {
-    throw new BadRequestError(
-      'Sorry, we could not find user with that username'
-    );
+    res.status(400);
+    throw new Error('Sorry, we could not find user with that username');
   }
 
   const filter: FilterQuery<IFollow> = {

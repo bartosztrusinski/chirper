@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import User from '../models/User';
-import { BadRequestError, UnauthorizedError } from '../utils/errors';
 import { JWT_SECRET } from '../config/secrets';
 import Chirp from '../models/Chirp';
 import { ChirpId } from '../schemas';
@@ -19,13 +18,13 @@ export const isAuthenticated = async (
   const authHeader = req.header('authorization');
 
   if (!authHeader) {
-    throw new UnauthorizedError(
-      'Not authorized, no authorization header provided'
-    );
+    res.status(401);
+    throw new Error('Not authorized, no authorization header provided');
   }
 
   if (!authHeader.startsWith('Bearer ')) {
-    throw new UnauthorizedError('Not authorized, invalid authorization header');
+    res.status(401);
+    throw new Error('Not authorized, invalid authorization header');
   }
 
   const authToken = authHeader.split(' ')[1];
@@ -34,7 +33,8 @@ export const isAuthenticated = async (
 
   const currentUser = await User.exists({ _id: currentUserId });
   if (!currentUser) {
-    throw new UnauthorizedError(
+    res.status(401);
+    throw new Error(
       'Not authorized, user with given authorization token not found'
     );
   }
@@ -53,17 +53,18 @@ export const isChirpAuthor = async (
   const { chirpId } = req.params;
 
   if (!currentUserId) {
-    throw new UnauthorizedError(
-      'Not authorized, you must be logged in to do that'
-    );
+    res.status(401);
+    throw new Error('Not authorized, you must be logged in to do that');
   }
 
   const foundChirp = await Chirp.findById(chirpId).select('author');
   if (!foundChirp) {
-    throw new BadRequestError('Sorry, we could not find that chirp');
+    res.status(400);
+    throw new Error('Sorry, we could not find that chirp');
   }
   if (!foundChirp.author.equals(currentUserId)) {
-    throw new UnauthorizedError(
+    res.status(401);
+    throw new Error(
       'Not authorized, you must be the author of the chirp to do that'
     );
   }
@@ -81,12 +82,14 @@ export const confirmPassword = async (
 
   const currentUser = await User.findById(currentUserId).select('password');
   if (!currentUser) {
-    throw new BadRequestError('Sorry, we could not find your account');
+    res.status(400);
+    throw new Error('Sorry, we could not find your account');
   }
 
   const isPasswordMatch = await currentUser.isPasswordMatch(password);
   if (!isPasswordMatch) {
-    throw new BadRequestError('Sorry, wrong password!');
+    res.status(400);
+    throw new Error('Sorry, wrong password!');
   }
 
   next();
