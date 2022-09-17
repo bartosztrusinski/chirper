@@ -1,9 +1,10 @@
 import 'dotenv/config';
 import express, { Application } from 'express';
 import 'express-async-errors';
-import errorHandler from './middleware/error';
 import connectDB from './config/db';
 import apiRoutes from './routes';
+import errorHandler from './middleware/error';
+import notFound from './middleware/notFound';
 
 connectDB();
 
@@ -15,12 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api', apiRoutes);
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((req, res, next) => {
-  res.status(404);
-  throw new Error('Sorry! Route you are looking for does not exist');
-});
-
+app.use(notFound);
 app.use(errorHandler);
 
 app.listen(app.get('port'), () => {
