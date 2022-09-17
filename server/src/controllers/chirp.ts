@@ -114,7 +114,7 @@ export const searchMany = async (
     popular: { 'metrics.likeCount': -1 },
     relevant: { score: { $meta: 'textScore' } },
   };
-  const sort = sortBy[sortOrder];
+  const sort = { ...sortBy[sortOrder], ...sortBy.relevant };
 
   const skip = (page - 1) * limit;
 
