@@ -34,7 +34,7 @@ export const createOne = async (
     targetUser: targetUser._id,
   });
 
-  res.status(200).json({ status: 'success', data: null });
+  res.status(200).json({ data: null });
 };
 
 export const deleteOne = async (
@@ -63,5 +63,5 @@ export const deleteOne = async (
 
   await foundFollow.remove();
 
-  res.status(200).json({ status: 'success', data: null });
+  res.status(200).json({ data: null });
 };

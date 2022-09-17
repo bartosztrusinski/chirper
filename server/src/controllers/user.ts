@@ -25,7 +25,7 @@ export const findMany = async (
 
   const foundUsers = await User.find({ _id: ids }).select(userFields);
 
-  res.status(200).json({ status: 'success', data: foundUsers });
+  res.status(200).json({ data: foundUsers });
 };
 
 export const findOne = async (
@@ -42,7 +42,7 @@ export const findOne = async (
     throw new Error('Sorry, we could not find that user');
   }
 
-  res.status(200).json({ status: 'success', data: foundUser });
+  res.status(200).json({ data: foundUser });
 };
 
 export const searchMany = async (
@@ -77,7 +77,7 @@ export const searchMany = async (
     .skip(skip)
     .limit(limit);
 
-  res.status(200).json({ status: 'success', data: foundUsers });
+  res.status(200).json({ data: foundUsers });
 };
 
 export const signUp = async (
@@ -106,7 +106,7 @@ export const signUp = async (
 
   const authToken = generateAuthToken(_id);
 
-  res.status(201).json({ status: 'success', data: { authToken } });
+  res.status(201).json({ data: { _id, authToken } });
 };
 
 export const logIn = async (
@@ -129,9 +129,11 @@ export const logIn = async (
     throw new Error('Sorry, wrong password!');
   }
 
+  const { _id } = existingUser;
+
   const authToken = generateAuthToken(existingUser._id);
 
-  res.status(200).json({ status: 'success', data: { authToken } });
+  res.status(200).json({ data: { _id, authToken } });
 };
 
 interface PopulatedUser {
@@ -171,7 +173,7 @@ export const findManyLiking = async (
   const oldestId = likes[likes.length - 1]?._id;
   const meta = Object.assign({}, oldestId && { oldestId });
 
-  res.status(200).json({ status: 'success', data: likingUsers, meta });
+  res.status(200).json({ data: likingUsers, meta });
 };
 
 export const findManyFollowing = async (
@@ -202,11 +204,11 @@ export const findManyFollowing = async (
     .sort({ _id: -1 })
     .limit(limit);
 
-  const following = follows.map((follow) => follow.targetUser);
+  const followingUsers = follows.map((follow) => follow.targetUser);
   const oldestId = follows[follows.length - 1]?._id;
   const meta = Object.assign({}, oldestId && { oldestId });
 
-  res.status(200).json({ status: 'success', data: following, meta });
+  res.status(200).json({ data: followingUsers, meta });
 };
 
 export const findManyFollowers = async (
@@ -237,13 +239,12 @@ export const findManyFollowers = async (
     .sort({ _id: -1 })
     .limit(limit);
 
-  const followers = follows.map((follow) => follow.sourceUser);
+  const followersUsers = follows.map((follow) => follow.sourceUser);
   const oldestId = follows[follows.length - 1]?._id;
   const meta = Object.assign({}, oldestId && { oldestId });
 
   res.status(200).json({
-    status: 'success',
-    data: followers,
+    data: followersUsers,
     meta,
   });
 };

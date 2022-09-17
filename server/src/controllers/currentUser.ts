@@ -23,7 +23,7 @@ export const getOne = async (
     throw new Error('Sorry, we could not find your account');
   }
 
-  res.status(200).json({ status: 'success', data: currentUser });
+  res.status(200).json({ data: currentUser });
 };
 
 export const updateProfile = async (
@@ -49,7 +49,7 @@ export const updateProfile = async (
   };
   const updatedUser = await currentUser.save();
 
-  res.status(200).json({ status: 'success', data: updatedUser.profile });
+  res.status(200).json({ data: updatedUser.profile });
 };
 
 export const updatePassword = async (
@@ -68,7 +68,7 @@ export const updatePassword = async (
   currentUser.password = newPassword;
   await currentUser.save();
 
-  res.status(200).json({ status: 'success', data: null });
+  res.status(200).json({ data: null });
 };
 
 export const updateUsername = async (
@@ -87,7 +87,7 @@ export const updateUsername = async (
   currentUser.username = newUsername;
   await currentUser.save();
 
-  res.status(200).json({ status: 'success', data: { newUsername } });
+  res.status(200).json({ data: { newUsername } });
 };
 
 export const updateEmail = async (
@@ -107,7 +107,7 @@ export const updateEmail = async (
   currentUser.email = newEmail;
   await currentUser.save();
 
-  res.status(200).json({ status: 'success', data: { newEmail } });
+  res.status(200).json({ data: { newEmail } });
 };
 
 export const deleteOne = async (req: Request, res: Response<ResponseBody>) => {
@@ -121,7 +121,7 @@ export const deleteOne = async (req: Request, res: Response<ResponseBody>) => {
 
   await currentUser.remove();
 
-  res.status(200).json({ status: 'success', data: null });
+  res.status(200).json({ data: null });
 };
 
 // export const confirmCurrentUserPassword: Handler = async (req, res) => {

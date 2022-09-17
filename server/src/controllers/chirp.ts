@@ -33,7 +33,7 @@ export const findMany = async (
     .select(chirpFields)
     .populate(populate);
 
-  res.status(200).json({ status: 'success', data: foundChirps });
+  res.status(200).json({ data: foundChirps });
 };
 
 export const findOne = async (
@@ -54,7 +54,7 @@ export const findOne = async (
     throw new Error('Sorry, we could not find that chirp');
   }
 
-  res.status(200).json({ status: 'success', data: foundChirp });
+  res.status(200).json({ data: foundChirp });
 };
 
 export const searchMany = async (
@@ -128,7 +128,7 @@ export const searchMany = async (
     .skip(skip)
     .limit(limit);
 
-  res.status(200).json({ status: 'success', data: foundChirps });
+  res.status(200).json({ data: foundChirps });
 };
 
 export const getUserTimeline = async (
@@ -161,7 +161,7 @@ export const getUserTimeline = async (
     .sort({ _id: -1 })
     .limit(limit);
 
-  res.status(200).json({ status: 'success', data: timelineChirps });
+  res.status(200).json({ data: timelineChirps });
 };
 
 export const findManyByUser = async (
@@ -201,7 +201,7 @@ export const findManyByUser = async (
     .sort({ _id: -1 })
     .limit(limit);
 
-  res.status(200).json({ status: 'success', data: foundUsersChirps });
+  res.status(200).json({ data: foundUsersChirps });
 };
 
 export const createOne = async (
@@ -217,11 +217,11 @@ export const createOne = async (
   }
 
   res.status(400);
-  const chirp = isReply
+  const newChirp = isReply
     ? await createReply(currentUserId, content, chirpId)
     : await createPost(currentUserId, content);
 
-  res.status(200).json({ status: 'success', data: chirp });
+  res.status(200).json({ data: newChirp });
 };
 
 const createReply = async (
@@ -270,7 +270,7 @@ export const deleteOne = async (
 
   await foundPost.remove();
 
-  res.status(200).json({ status: 'success', data: null });
+  res.status(200).json({ data: null });
 };
 
 export const findManyLiked = async (
@@ -304,7 +304,7 @@ export const findManyLiked = async (
   const oldestId = likes[likes.length - 1]?._id;
   const meta = Object.assign({}, oldestId && { oldestId });
 
-  res.status(200).json({ status: 'success', data: likedChirps, meta });
+  res.status(200).json({ data: likedChirps, meta });
 };
 
 interface PopulatedChirp {

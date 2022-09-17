@@ -285,7 +285,6 @@ export const responseBody = z.object({
 });
 
 export interface ResponseBody {
-  status: 'success' | 'error' | 'fail';
   data: object | null;
   meta?: object;
 }
