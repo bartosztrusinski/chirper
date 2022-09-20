@@ -7,7 +7,8 @@ import {
   username,
   email,
   password,
-  profile,
+  // profile,
+  name,
   followingOnly,
   id,
 } from '.';
@@ -42,7 +43,7 @@ export const signUp = z.object({
   username,
   email,
   password,
-  profile,
+  name,
 });
 
 export const logIn = z.object({

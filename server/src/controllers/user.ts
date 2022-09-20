@@ -16,6 +16,7 @@ import {
 } from '../schemas/user';
 import { UsernameInput, ResponseBody, ChirpId } from '../schemas';
 import Like, { ILike } from '../models/Like';
+import * as User2 from '../services/user';
 
 export const findMany = async (
   req: Request<unknown, ResponseBody, unknown, FindMany>,
@@ -23,7 +24,8 @@ export const findMany = async (
 ) => {
   const { ids, userFields } = req.query;
 
-  const foundUsers = await User.find({ _id: ids }).select(userFields);
+  // const foundUsers = await User.find({ _id: ids }).select(userFields);
+  const foundUsers = await User2.findMany({ _id: ids }, userFields);
 
   res.status(200).json({ data: foundUsers });
 };
@@ -35,12 +37,13 @@ export const findOne = async (
   const { username } = req.params;
   const { userFields } = req.query;
 
-  const foundUser = await User.findOne({ username }).select(userFields);
+  // const foundUser = await User.findOne({ username }).select(userFields);
 
-  if (!foundUser) {
-    res.status(400);
-    throw new Error('Sorry, we could not find that user');
-  }
+  // if (!foundUser) {
+  //   res.status(400);
+  //   throw new Error('Sorry, we could not find that user');
+  // }
+  const foundUser = await User2.findOne(username, userFields);
 
   res.status(200).json({ data: foundUser });
 };
@@ -70,12 +73,19 @@ export const searchMany = async (
 
   const skip = (page - 1) * limit;
 
-  const foundUsers = await User.find(filter)
-    .select(userFields)
-    .select({ score: { $meta: 'textScore' } }) // delete score later
-    .sort(sort)
-    .skip(skip)
-    .limit(limit);
+  // const foundUsers = await User.find(filter)
+  //   .select(userFields)
+  //   .select({ score: { $meta: 'textScore' } }) // delete score later
+  //   .sort(sort)
+  //   .skip(skip)
+  //   .limit(limit);
+  const foundUsers = await User2.findMany(
+    filter,
+    userFields,
+    sort,
+    limit,
+    skip
+  );
 
   res.status(200).json({ data: foundUsers });
 };
@@ -85,28 +95,31 @@ export const signUp = async (
   res: Response<ResponseBody>
 ) => {
   // verify email
-  const { username, email, password, profile } = req.body;
+  const { username, email, password, name } = req.body;
 
   //dont let mongoose send ugly duplicate key error
-  const existingUser = await User.exists({
-    $or: [{ email }, { username }],
-  });
-  if (existingUser) {
-    res.status(400);
-    throw new Error('Username or email has already been taken');
-  }
+  // const existingUser = await User.exists({
+  //   $or: [{ email }, { username }],
+  // });
+  // if (existingUser) {
+  //   res.status(400);
+  //   throw new Error('Username or email has already been taken');
+  // }
 
-  const newUser = await User.create<Omit<IUser, 'replies' | 'metrics'>>({
-    username,
-    email,
-    password,
-    profile,
-  });
-  const { _id } = newUser;
+  await User2.handleDuplicate(username, email);
 
-  const authToken = generateAuthToken(_id);
+  // const newUser = await User.create<Omit<IUser, 'replies' | 'metrics'>>({
+  //   username,
+  //   email,
+  //   password,
+  //   profile,
+  // });
+  // const { _id } = newUser;
+  const newUserId = await User2.createOne(username, name, email, password);
 
-  res.status(201).json({ data: { _id, authToken } });
+  const authToken = generateAuthToken(newUserId);
+
+  res.status(201).json({ data: { _id: newUserId, authToken } });
 };
 
 export const logIn = async (
@@ -115,15 +128,17 @@ export const logIn = async (
 ) => {
   const { login, password } = req.body;
 
-  const existingUser = await User.findOne({
-    $or: [{ email: login }, { username: login }],
-  });
-  if (!existingUser) {
-    res.status(400);
-    throw new Error('Sorry, we could not find your account');
-  }
+  // const existingUser = await User.findOne({
+  //   $or: [{ email: login }, { username: login }],
+  // });
+  // if (!existingUser) {
+  //   res.status(400);
+  //   throw new Error('Sorry, we could not find your account');
+  // }
+  res.status(400);
+  const existingUser = await User2.findOne(login);
 
-  const isPasswordMatch = await existingUser.isPasswordMatch(password);
+  const isPasswordMatch = await existingUser.isPasswordMatch(password); // middleware?
   if (!isPasswordMatch) {
     res.status(400);
     throw new Error('Sorry, wrong password!');
@@ -154,23 +169,31 @@ export const findManyLiking = async (
   const { chirpId } = req.params;
   const { sinceId, userFields, limit } = req.query;
 
-  const filter: FilterQuery<ILike> = {
-    chirp: chirpId,
-  };
-  Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
+  // const filter: FilterQuery<ILike> = {
+  //   chirp: chirpId,
+  // };
+  // Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
 
-  const populate = {
-    path: 'user',
-    select: userFields,
-  };
+  // const populate = {
+  //   path: 'user',
+  //   select: userFields,
+  // };
 
-  const likes = await Like.find(filter)
-    .populate<PopulatedUser>(populate)
-    .sort({ _id: -1 })
-    .limit(limit);
+  const { likingUsersIds, oldestId } = await User2.findLikingUsersIds(
+    chirpId,
+    limit,
+    sinceId
+  );
 
-  const likingUsers = likes.map((like) => like.user);
-  const oldestId = likes[likes.length - 1]?._id;
+  const likingUsers = await User2.findMany({ _id: likingUsersIds }, userFields);
+
+  // const likes = await Like.find(filter)
+  //   .populate<PopulatedUser>(populate)
+  //   .sort({ _id: -1 })
+  //   .limit(limit);
+
+  // const likingUsers = likes.map((like) => like.user);
+  // const oldestId = likes[likes.length - 1]?._id;
   const meta = Object.assign({}, oldestId && { oldestId });
 
   res.status(200).json({ data: likingUsers, meta });
@@ -183,32 +206,45 @@ export const findManyFollowing = async (
   const { username } = req.params;
   const { sinceId, userFields, limit } = req.query;
 
-  const sourceUser = await User.exists({ username });
-  if (!sourceUser) {
-    res.status(400);
-    throw new Error('Sorry, we could not find user with that username');
-  }
+  // const sourceUser = await User.exists({ username });
+  // if (!sourceUser) {
+  //   res.status(400);
+  //   throw new Error('Sorry, we could not find user with that username');
+  // }
+  res.status(400);
+  const sourceUserId = await User2.exists(username);
 
-  const filter: FilterQuery<IFollow> = {
-    sourceUser: sourceUser._id,
-  };
-  Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
+  // const filter: FilterQuery<IFollow> = {
+  //   sourceUser: sourceUserId,
+  // };
+  // Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
 
-  const populate = {
-    path: 'targetUser',
-    select: userFields,
-  };
+  // const populate = {
+  //   path: 'targetUser',
+  //   select: userFields,
+  // };
 
-  const follows = await Follow.find(filter)
-    .populate<PopulatedTargetUser>(populate)
-    .sort({ _id: -1 })
-    .limit(limit);
+  const { followedUsersIds, oldestId } = await User2.findFollowedUsersIds(
+    sourceUserId,
+    limit,
+    sinceId
+  );
 
-  const followingUsers = follows.map((follow) => follow.targetUser);
-  const oldestId = follows[follows.length - 1]?._id;
+  const followedUsers = await User2.findMany(
+    { _id: followedUsersIds },
+    userFields
+  );
+
+  // const follows = await Follow.find(filter)
+  //   .populate<PopulatedTargetUser>(populate)
+  //   .sort({ _id: -1 })
+  //   .limit(limit);
+
+  // const followingUsers = follows.map((follow) => follow.targetUser);
+  // const oldestId = follows[follows.length - 1]?._id;
   const meta = Object.assign({}, oldestId && { oldestId });
 
-  res.status(200).json({ data: followingUsers, meta });
+  res.status(200).json({ data: followedUsers, meta });
 };
 
 export const findManyFollowers = async (
@@ -218,35 +254,45 @@ export const findManyFollowers = async (
   const { username } = req.params;
   const { sinceId, userFields, limit } = req.query;
 
-  const targetUser = await User.exists({ username });
-  if (!targetUser) {
-    res.status(400);
-    throw new Error('Sorry, we could not find user with that username');
-  }
+  // const targetUser = await User.exists({ username });
+  // if (!targetUser) {
+  //   res.status(400);
+  //   throw new Error('Sorry, we could not find user with that username');
+  // }
+  res.status(400);
+  const targetUserId = await User2.exists(username);
 
-  const filter: FilterQuery<IFollow> = {
-    targetUser: targetUser._id,
-  };
-  Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
+  // const filter: FilterQuery<IFollow> = {
+  //   targetUser: targetUser._id,
+  // };
+  // Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
 
-  const populate = {
-    path: 'sourceUser',
-    select: userFields,
-  };
+  // const populate = {
+  //   path: 'sourceUser',
+  //   select: userFields,
+  // };
 
-  const follows = await Follow.find(filter)
-    .populate<PopulatedSourceUser>(populate)
-    .sort({ _id: -1 })
-    .limit(limit);
+  const { followingUsersIds, oldestId } = await User2.findFollowingUsersIds(
+    targetUserId,
+    limit,
+    sinceId
+  );
 
-  const followersUsers = follows.map((follow) => follow.sourceUser);
-  const oldestId = follows[follows.length - 1]?._id;
+  const followingUsers = await User2.findMany(
+    { _id: followingUsersIds },
+    userFields
+  );
+
+  // const follows = await Follow.find(filter)
+  //   .populate<PopulatedSourceUser>(populate)
+  //   .sort({ _id: -1 })
+  //   .limit(limit);
+
+  // const followersUsers = follows.map((follow) => follow.sourceUser);
+  // const oldestId = follows[follows.length - 1]?._id;
   const meta = Object.assign({}, oldestId && { oldestId });
 
-  res.status(200).json({
-    data: followersUsers,
-    meta,
-  });
+  res.status(200).json({ data: followingUsers, meta });
 };
 
 const generateAuthToken = (currentUserId: Types.ObjectId) => {

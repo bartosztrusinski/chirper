@@ -9,7 +9,7 @@ const PAGE_DEFAULT = 1;
 const PAGE_MIN = 1;
 const PAGE_MAX = Math.floor(Number.MAX_SAFE_INTEGER / LIMIT_MAX);
 
-const CHIRP_DEFAULT_FIELD = 'content';
+export const CHIRP_DEFAULT_FIELD = 'content';
 const CHIRP_ALLOWED_FIELDS = [
   'content',
   'author',
@@ -21,7 +21,7 @@ const CHIRP_ALLOWED_FIELDS = [
   'createdAt',
 ];
 
-const USER_DEFAULT_FIELD = 'username';
+export const USER_DEFAULT_FIELD = 'username';
 const USER_ALLOWED_FIELDS = [
   'username',
   'profile',
@@ -204,6 +204,8 @@ export const password = z
     'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
   );
 
+export type Password = z.infer<typeof password>;
+
 export const email = z
   .string()
   .trim()
@@ -211,6 +213,8 @@ export const email = z
     /^([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     'Please enter a valid email address'
   );
+
+export type Email = z.infer<typeof email>;
 
 export const username = z
   .string()
@@ -222,11 +226,15 @@ export const username = z
     'Username must only contain letters, numbers, and underscores'
   );
 
+export type Username = z.infer<typeof username>;
+
 export const name = z
   .string()
   .trim()
   .max(50, 'Profile name must be less than 50 characters')
   .regex(/^[^<>]*$/, 'Profile name cannot include invalid characters');
+
+export type Name = z.infer<typeof name>;
 
 export const bio = z
   .string()
@@ -260,6 +268,8 @@ export const profile = z.object({
   picture: z.string().optional(),
   header: z.string().optional(),
 });
+
+export type Profile = z.infer<typeof profile>;
 
 const metrics = z.object({
   chirpCount: z.number().int().min(0).default(0),

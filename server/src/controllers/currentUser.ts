@@ -8,6 +8,8 @@ import {
   FindOne,
 } from '../schemas/currentUser';
 import { ResponseBody } from '../schemas';
+import * as User2 from '../services/user';
+import * as CurrentUser2 from '../services/currentUser';
 
 export const getOne = async (
   req: Request<unknown, ResponseBody, unknown, FindOne>,
@@ -16,12 +18,18 @@ export const getOne = async (
   const { currentUserId } = req;
   const { userFields } = req.query;
 
-  const currentUser = await User.findById(currentUserId).select(userFields);
-
-  if (!currentUser) {
-    res.status(400);
+  res.status(400);
+  if (!currentUserId) {
     throw new Error('Sorry, we could not find your account');
   }
+
+  // const currentUser = await User.findById(currentUserId).select(userFields);
+  const currentUser = await User2.findOne(currentUserId, userFields);
+
+  // if (!currentUser) {
+  //   res.status(400);
+  //   throw new Error('Sorry, we could not find your account');
+  // }
 
   res.status(200).json({ data: currentUser });
 };
@@ -33,13 +41,27 @@ export const updateProfile = async (
   const { currentUserId } = req;
   const { name, picture, header, bio, location, website } = req.body;
 
-  const currentUser = await User.findById(currentUserId);
-  if (!currentUser) {
-    res.status(400);
+  //   res.status(400);
+  // const currentUser = await User.findById(currentUserId);
+  // if (!currentUser) {
+  //   res.status(400);
+  //   throw new Error('Sorry, we could not find your account');
+  // }
+
+  // currentUser.profile = {
+  //   name,
+  //   picture,
+  //   header,
+  //   bio,
+  //   location,
+  //   website,
+  // };
+  res.status(400);
+  if (!currentUserId) {
     throw new Error('Sorry, we could not find your account');
   }
 
-  currentUser.profile = {
+  const profile = {
     name,
     picture,
     header,
@@ -47,9 +69,13 @@ export const updateProfile = async (
     location,
     website,
   };
-  const updatedUser = await currentUser.save();
+  // const updatedUser = await currentUser.save();
+  const updatedProfile = await CurrentUser2.updateProfile(
+    currentUserId,
+    profile
+  );
 
-  res.status(200).json({ data: updatedUser.profile });
+  res.status(200).json({ data: updatedProfile });
 };
 
 export const updatePassword = async (
@@ -59,14 +85,20 @@ export const updatePassword = async (
   const { currentUserId } = req;
   const { newPassword } = req.body;
 
-  const currentUser = await User.findById(currentUserId);
-  if (!currentUser) {
-    res.status(400);
+  // const currentUser = await User.findById(currentUserId);
+  // if (!currentUser) {
+  //   res.status(400);
+  //   throw new Error('Sorry, we could not find your account');
+  // }
+
+  res.status(400);
+  if (!currentUserId) {
     throw new Error('Sorry, we could not find your account');
   }
 
-  currentUser.password = newPassword;
-  await currentUser.save();
+  // currentUser.password = newPassword;
+  // await currentUser.save();
+  await CurrentUser2.updatePassword(currentUserId, newPassword);
 
   res.status(200).json({ data: null });
 };
@@ -78,14 +110,20 @@ export const updateUsername = async (
   const { currentUserId } = req;
   const { newUsername } = req.body;
 
-  const currentUser = await User.findById(currentUserId);
-  if (!currentUser) {
-    res.status(400);
+  // const currentUser = await User.findById(currentUserId);
+  // if (!currentUser) {
+  //   res.status(400);
+  //   throw new Error('Sorry, we could not find your account');
+  // }
+
+  res.status(400);
+  if (!currentUserId) {
     throw new Error('Sorry, we could not find your account');
   }
 
-  currentUser.username = newUsername;
-  await currentUser.save();
+  // currentUser.username = newUsername;
+  // await currentUser.save();
+  await CurrentUser2.updateUsername(currentUserId, newUsername);
 
   res.status(200).json({ data: { newUsername } });
 };
@@ -98,14 +136,19 @@ export const updateEmail = async (
   const { currentUserId } = req;
   const { newEmail } = req.body;
 
-  const currentUser = await User.findById(currentUserId);
-  if (!currentUser) {
-    res.status(400);
+  // const currentUser = await User.findById(currentUserId);
+  // if (!currentUser) {
+  //   res.status(400);
+  //   throw new Error('Sorry, we could not find your account');
+  // }
+  res.status(400);
+  if (!currentUserId) {
     throw new Error('Sorry, we could not find your account');
   }
 
-  currentUser.email = newEmail;
-  await currentUser.save();
+  // currentUser.email = newEmail;
+  // await currentUser.save();
+  await CurrentUser2.updateEmail(currentUserId, newEmail);
 
   res.status(200).json({ data: { newEmail } });
 };
@@ -113,13 +156,19 @@ export const updateEmail = async (
 export const deleteOne = async (req: Request, res: Response<ResponseBody>) => {
   const { currentUserId } = req;
 
-  const currentUser = await User.findById(currentUserId);
-  if (!currentUser) {
-    res.status(400);
+  res.status(400);
+  if (!currentUserId) {
     throw new Error('Sorry, we could not find your account');
   }
 
-  await currentUser.remove();
+  // const currentUser = await User.findById(currentUserId);
+  // if (!currentUser) {
+  //   res.status(400);
+  //   throw new Error('Sorry, we could not find your account');
+  // }
+
+  // await currentUser.remove();
+  await CurrentUser2.deleteOne(currentUserId);
 
   res.status(200).json({ data: null });
 };
