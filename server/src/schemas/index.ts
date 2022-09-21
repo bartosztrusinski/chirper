@@ -147,7 +147,7 @@ export const expandAuthor = z
   .default('false')
   .transform(stringToBoolean);
 
-export const followingOnly = z
+export const followedOnly = z
   .string()
   .default('false')
   .transform(stringToBoolean);
@@ -294,7 +294,10 @@ export const responseBody = z.object({
   meta: z.object({}),
 });
 
+export type ResponseData = object | null;
+export type ResponseMeta = Record<string, unknown>;
+
 export interface ResponseBody {
-  data: object | null;
-  meta?: object;
+  data: ResponseData;
+  meta?: ResponseMeta;
 }

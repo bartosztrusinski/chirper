@@ -9,7 +9,7 @@ import {
   password,
   // profile,
   name,
-  followingOnly,
+  followedOnly,
   id,
 } from '.';
 
@@ -19,7 +19,7 @@ export const findOne = z.object({ userFields });
 
 export const searchMany = z.object({
   query: z.string(),
-  followingOnly,
+  followedOnly,
   userFields,
   limit,
   page,

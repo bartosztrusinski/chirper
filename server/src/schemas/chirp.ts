@@ -7,7 +7,7 @@ import {
   id,
   page,
   appendAuthorIfExpanded,
-  followingOnly,
+  followedOnly,
   expandAuthor,
   includeReplies,
   stringToDate,
@@ -30,7 +30,7 @@ const dateQuery = z.string().transform(stringToDate).optional();
 
 const searchManySchema = z.object({
   query: z.string(),
-  followingOnly,
+  followedOnly,
   sortOrder: z.enum(['relevant', 'popular', 'recent']).default('relevant'),
   from: z.string().optional(),
   includeReplies,
@@ -42,6 +42,10 @@ const searchManySchema = z.object({
   limit,
   page,
 });
+
+const sortOrder = z.enum(['relevant', 'popular', 'recent']).default('relevant');
+
+export type SortOrder = z.infer<typeof sortOrder>;
 
 const getUserTimelineSchema = z.object({
   sinceId: id.optional(),
@@ -73,8 +77,7 @@ const createOneSchema = z.object({
     .string()
     .trim()
     .max(140, 'Chirp content must be less than 140 characters'),
-  isReply: z.boolean().default(false),
-  chirpId: id.optional(),
+  parentId: id.optional(),
 });
 
 export const findMany = findManySchema.transform(appendAuthorIfExpanded);
