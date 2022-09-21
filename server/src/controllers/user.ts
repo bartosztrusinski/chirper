@@ -1,9 +1,6 @@
 import { Request, Response } from 'express';
-import { FilterQuery, Types } from 'mongoose';
-import User, { IUser } from '../models/User';
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../config/secrets';
-import Follow, { IFollow } from '../models/Follow';
+import { FilterQuery } from 'mongoose';
+import { IUser } from '../models/User';
 import {
   FindOne,
   FindMany,
@@ -15,8 +12,11 @@ import {
   FindManyFollowing,
 } from '../schemas/user';
 import { UsernameInput, ResponseBody, ChirpId } from '../schemas';
-import Like, { ILike } from '../models/Like';
-import * as User2 from '../services/user';
+import * as UserService from '../services/user';
+import * as ChirpService from '../services/chirp';
+import createResponse from '../utils/createResponse';
+import calculateSkip from '../utils/calculateSkip';
+import generateAuthToken from '../utils/generateAuthToken';
 
 export const findMany = async (
   req: Request<unknown, ResponseBody, unknown, FindMany>,
@@ -24,10 +24,9 @@ export const findMany = async (
 ) => {
   const { ids, userFields } = req.query;
 
-  // const foundUsers = await User.find({ _id: ids }).select(userFields);
-  const foundUsers = await User2.findMany({ _id: ids }, userFields);
+  const foundUsers = await UserService.findMany({ _id: ids }, userFields);
 
-  res.status(200).json({ data: foundUsers });
+  res.status(200).json(createResponse(foundUsers));
 };
 
 export const findOne = async (
@@ -37,15 +36,11 @@ export const findOne = async (
   const { username } = req.params;
   const { userFields } = req.query;
 
-  // const foundUser = await User.findOne({ username }).select(userFields);
+  res.status(400);
 
-  // if (!foundUser) {
-  //   res.status(400);
-  //   throw new Error('Sorry, we could not find that user');
-  // }
-  const foundUser = await User2.findOne(username, userFields);
+  const foundUser = await UserService.findOne(username, userFields);
 
-  res.status(200).json({ data: foundUser });
+  res.status(200).json(createResponse(foundUser));
 };
 
 export const searchMany = async (
@@ -53,114 +48,27 @@ export const searchMany = async (
   res: Response<ResponseBody>
 ) => {
   const { currentUserId } = req;
-  const { query, followingOnly, userFields, limit, page } = req.query;
+  const { query, followedOnly, userFields, limit, page } = req.query;
 
-  let filter: FilterQuery<IUser> = { $text: { $search: query } };
+  const filter: FilterQuery<IUser> = { $text: { $search: query } };
 
-  if (followingOnly) {
-    if (!currentUserId) {
-      res.status(400);
-      throw new Error('You must be logged in to search following users');
-    }
-    const follows = await Follow.find({ sourceUser: currentUserId });
-    const followingIds = follows.map((follow) => follow.targetUser);
-    filter = { ...filter, _id: followingIds };
+  if (followedOnly && currentUserId) {
+    const { followedUsersIds } = await UserService.findFollowedUsersIds(
+      currentUserId
+    );
+    filter._id = followedUsersIds;
   }
 
-  const sort: { [key: string]: { $meta: 'textScore' } } = {
-    score: { $meta: 'textScore' },
-  };
-
-  const skip = (page - 1) * limit;
-
-  // const foundUsers = await User.find(filter)
-  //   .select(userFields)
-  //   .select({ score: { $meta: 'textScore' } }) // delete score later
-  //   .sort(sort)
-  //   .skip(skip)
-  //   .limit(limit);
-  const foundUsers = await User2.findMany(
+  const foundUsers = await UserService.findMany(
     filter,
     userFields,
-    sort,
+    { score: { $meta: 'textScore' } },
     limit,
-    skip
+    calculateSkip(page, limit)
   );
 
-  res.status(200).json({ data: foundUsers });
+  res.status(200).json(createResponse(foundUsers));
 };
-
-export const signUp = async (
-  req: Request<unknown, ResponseBody, SignUp>,
-  res: Response<ResponseBody>
-) => {
-  // verify email
-  const { username, email, password, name } = req.body;
-
-  //dont let mongoose send ugly duplicate key error
-  // const existingUser = await User.exists({
-  //   $or: [{ email }, { username }],
-  // });
-  // if (existingUser) {
-  //   res.status(400);
-  //   throw new Error('Username or email has already been taken');
-  // }
-
-  await User2.handleDuplicate(username, email);
-
-  // const newUser = await User.create<Omit<IUser, 'replies' | 'metrics'>>({
-  //   username,
-  //   email,
-  //   password,
-  //   profile,
-  // });
-  // const { _id } = newUser;
-  const newUserId = await User2.createOne(username, name, email, password);
-
-  const authToken = generateAuthToken(newUserId);
-
-  res.status(201).json({ data: { _id: newUserId, authToken } });
-};
-
-export const logIn = async (
-  req: Request<unknown, ResponseBody, LogIn>,
-  res: Response<ResponseBody>
-) => {
-  const { login, password } = req.body;
-
-  // const existingUser = await User.findOne({
-  //   $or: [{ email: login }, { username: login }],
-  // });
-  // if (!existingUser) {
-  //   res.status(400);
-  //   throw new Error('Sorry, we could not find your account');
-  // }
-  res.status(400);
-  const existingUser = await User2.findOne(login);
-
-  const isPasswordMatch = await existingUser.isPasswordMatch(password); // middleware?
-  if (!isPasswordMatch) {
-    res.status(400);
-    throw new Error('Sorry, wrong password!');
-  }
-
-  const { _id } = existingUser;
-
-  const authToken = generateAuthToken(existingUser._id);
-
-  res.status(200).json({ data: { _id, authToken } });
-};
-
-interface PopulatedUser {
-  user: IUser;
-}
-interface PopulatedTargetUser {
-  targetUser: IUser;
-}
-
-interface PopulatedSourceUser {
-  sourceUser: IUser;
-}
 
 export const findManyLiking = async (
   req: Request<ChirpId, ResponseBody, unknown, FindManyLiking>,
@@ -169,34 +77,18 @@ export const findManyLiking = async (
   const { chirpId } = req.params;
   const { sinceId, userFields, limit } = req.query;
 
-  // const filter: FilterQuery<ILike> = {
-  //   chirp: chirpId,
-  // };
-  // Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
-
-  // const populate = {
-  //   path: 'user',
-  //   select: userFields,
-  // };
-
-  const { likingUsersIds, oldestId } = await User2.findLikingUsersIds(
+  const { likingUsersIds, oldestId } = await ChirpService.findLikingUsersIds(
     chirpId,
     limit,
     sinceId
   );
 
-  const likingUsers = await User2.findMany({ _id: likingUsersIds }, userFields);
+  const likingUsers = await UserService.findMany(
+    { _id: likingUsersIds },
+    userFields
+  );
 
-  // const likes = await Like.find(filter)
-  //   .populate<PopulatedUser>(populate)
-  //   .sort({ _id: -1 })
-  //   .limit(limit);
-
-  // const likingUsers = likes.map((like) => like.user);
-  // const oldestId = likes[likes.length - 1]?._id;
-  const meta = Object.assign({}, oldestId && { oldestId });
-
-  res.status(200).json({ data: likingUsers, meta });
+  res.status(200).json(createResponse(likingUsers, { oldestId }));
 };
 
 export const findManyFollowing = async (
@@ -206,45 +98,22 @@ export const findManyFollowing = async (
   const { username } = req.params;
   const { sinceId, userFields, limit } = req.query;
 
-  // const sourceUser = await User.exists({ username });
-  // if (!sourceUser) {
-  //   res.status(400);
-  //   throw new Error('Sorry, we could not find user with that username');
-  // }
   res.status(400);
-  const sourceUserId = await User2.exists(username);
 
-  // const filter: FilterQuery<IFollow> = {
-  //   sourceUser: sourceUserId,
-  // };
-  // Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
+  const sourceUserId = await UserService.exists(username);
 
-  // const populate = {
-  //   path: 'targetUser',
-  //   select: userFields,
-  // };
-
-  const { followedUsersIds, oldestId } = await User2.findFollowedUsersIds(
+  const { followedUsersIds, oldestId } = await UserService.findFollowedUsersIds(
     sourceUserId,
     limit,
     sinceId
   );
 
-  const followedUsers = await User2.findMany(
+  const followedUsers = await UserService.findMany(
     { _id: followedUsersIds },
     userFields
   );
 
-  // const follows = await Follow.find(filter)
-  //   .populate<PopulatedTargetUser>(populate)
-  //   .sort({ _id: -1 })
-  //   .limit(limit);
-
-  // const followingUsers = follows.map((follow) => follow.targetUser);
-  // const oldestId = follows[follows.length - 1]?._id;
-  const meta = Object.assign({}, oldestId && { oldestId });
-
-  res.status(200).json({ data: followedUsers, meta });
+  res.status(200).json(createResponse(followedUsers, { oldestId }));
 };
 
 export const findManyFollowers = async (
@@ -254,49 +123,62 @@ export const findManyFollowers = async (
   const { username } = req.params;
   const { sinceId, userFields, limit } = req.query;
 
-  // const targetUser = await User.exists({ username });
-  // if (!targetUser) {
-  //   res.status(400);
-  //   throw new Error('Sorry, we could not find user with that username');
-  // }
   res.status(400);
-  const targetUserId = await User2.exists(username);
 
-  // const filter: FilterQuery<IFollow> = {
-  //   targetUser: targetUser._id,
-  // };
-  // Object.assign(filter, sinceId && { _id: { $lt: sinceId } });
+  const targetUserId = await UserService.exists(username);
 
-  // const populate = {
-  //   path: 'sourceUser',
-  //   select: userFields,
-  // };
+  const { followingUsersIds, oldestId } =
+    await UserService.findFollowingUsersIds(targetUserId, limit, sinceId);
 
-  const { followingUsersIds, oldestId } = await User2.findFollowingUsersIds(
-    targetUserId,
-    limit,
-    sinceId
-  );
-
-  const followingUsers = await User2.findMany(
+  const followingUsers = await UserService.findMany(
     { _id: followingUsersIds },
     userFields
   );
 
-  // const follows = await Follow.find(filter)
-  //   .populate<PopulatedSourceUser>(populate)
-  //   .sort({ _id: -1 })
-  //   .limit(limit);
-
-  // const followersUsers = follows.map((follow) => follow.sourceUser);
-  // const oldestId = follows[follows.length - 1]?._id;
-  const meta = Object.assign({}, oldestId && { oldestId });
-
-  res.status(200).json({ data: followingUsers, meta });
+  res.status(200).json(createResponse(followingUsers, { oldestId }));
 };
 
-const generateAuthToken = (currentUserId: Types.ObjectId) => {
-  return jwt.sign({ currentUserId }, JWT_SECRET, {
-    expiresIn: '7d',
-  });
+export const signUp = async (
+  req: Request<unknown, ResponseBody, SignUp>,
+  res: Response<ResponseBody>
+) => {
+  // verify email
+  const { username, email, password, name } = req.body;
+
+  res.status(400);
+
+  await UserService.handleDuplicate(username, email);
+
+  const newUserId = await UserService.createOne(
+    username,
+    name,
+    email,
+    password
+  );
+
+  const authToken = generateAuthToken(newUserId);
+
+  res.status(201).json(createResponse({ _id: newUserId, authToken }));
+};
+
+export const logIn = async (
+  req: Request<unknown, ResponseBody, LogIn>,
+  res: Response<ResponseBody>
+) => {
+  const { login, password } = req.body;
+
+  res.status(400);
+
+  const userId = await UserService.confirmPassword(login, password);
+  // const existingUser = await UserService.findOne(login, 'password');
+
+  // const isPasswordMatch = await existingUser.isPasswordMatch(password); // middleware?
+  // if (!isPasswordMatch) {
+  //   res.status(400);
+  //   throw new Error('Sorry, wrong password!');
+  // }
+
+  const authToken = generateAuthToken(userId);
+
+  res.status(200).json(createResponse({ _id: userId, authToken }));
 };
