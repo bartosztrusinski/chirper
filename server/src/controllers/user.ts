@@ -67,7 +67,9 @@ export const searchMany = async (
     calculateSkip(page, limit)
   );
 
-  res.status(200).json(createResponse(foundUsers));
+  const nextPage = foundUsers.length ? page + 1 : undefined;
+
+  res.status(200).json(createResponse(foundUsers, { nextPage }));
 };
 
 export const findManyLiking = async (
@@ -77,7 +79,7 @@ export const findManyLiking = async (
   const { chirpId } = req.params;
   const { sinceId, userFields, limit } = req.query;
 
-  const { likingUsersIds, oldestId } = await ChirpService.findLikingUsersIds(
+  const { likingUsersIds, nextPage } = await ChirpService.findLikingUsersIds(
     chirpId,
     limit,
     sinceId
@@ -88,7 +90,7 @@ export const findManyLiking = async (
     userFields
   );
 
-  res.status(200).json(createResponse(likingUsers, { oldestId }));
+  res.status(200).json(createResponse(likingUsers, { nextPage }));
 };
 
 export const findManyFollowing = async (
@@ -102,7 +104,7 @@ export const findManyFollowing = async (
 
   const sourceUser = await UserService.findOne(username);
 
-  const { followedUsersIds, oldestId } = await UserService.findFollowedUsersIds(
+  const { followedUsersIds, nextPage } = await UserService.findFollowedUsersIds(
     sourceUser._id,
     limit,
     sinceId
@@ -113,7 +115,7 @@ export const findManyFollowing = async (
     userFields
   );
 
-  res.status(200).json(createResponse(followedUsers, { oldestId }));
+  res.status(200).json(createResponse(followedUsers, { nextPage }));
 };
 
 export const findManyFollowers = async (
@@ -127,7 +129,7 @@ export const findManyFollowers = async (
 
   const targetUser = await UserService.findOne(username);
 
-  const { followingUsersIds, oldestId } =
+  const { followingUsersIds, nextPage } =
     await UserService.findFollowingUsersIds(targetUser._id, limit, sinceId);
 
   const followingUsers = await UserService.findMany(
@@ -135,7 +137,7 @@ export const findManyFollowers = async (
     userFields
   );
 
-  res.status(200).json(createResponse(followingUsers, { oldestId }));
+  res.status(200).json(createResponse(followingUsers, { nextPage }));
 };
 
 export const signUp = async (
@@ -170,13 +172,6 @@ export const logIn = async (
   res.status(400);
 
   const userId = await UserService.confirmPassword(login, password);
-  // const existingUser = await UserService.findOne(login, 'password');
-
-  // const isPasswordMatch = await existingUser.isPasswordMatch(password); // middleware?
-  // if (!isPasswordMatch) {
-  //   res.status(400);
-  //   throw new Error('Sorry, wrong password!');
-  // }
 
   const authToken = generateAuthToken(userId);
 

@@ -119,8 +119,8 @@ export const findFollowedUsersIds = async (
 
   const follows = await query;
   const followedUsersIds = follows.map((follow) => follow.targetUser);
-  const oldestId = follows[follows.length - 1]?._id;
-  return { followedUsersIds, oldestId };
+  const nextPage = follows[follows.length - 1]?._id;
+  return { followedUsersIds, nextPage };
 };
 
 export const findFollowingUsersIds = async (
@@ -134,8 +134,8 @@ export const findFollowingUsersIds = async (
   }
   const follows = await Follow.find(filter).sort({ _id: -1 }).limit(limit);
   const followingUsersIds = follows.map((follow) => follow.sourceUser);
-  const oldestId = follows[follows.length - 1]?._id;
-  return { followingUsersIds, oldestId };
+  const nextPage = follows[follows.length - 1]?._id;
+  return { followingUsersIds, nextPage };
 };
 
 export const findLikedChirpsIds = async (
@@ -150,8 +150,8 @@ export const findLikedChirpsIds = async (
 
   const likes = await Like.find(filter).sort({ _id: -1 }).limit(limit);
   const likedChirpsIds = likes.map((like) => like.chirp);
-  const oldestId = likes[likes.length - 1]?._id;
-  return { likedChirpsIds, oldestId };
+  const nextPage = likes[likes.length - 1]?._id;
+  return { likedChirpsIds, nextPage };
 };
 
 export const confirmPassword = async (

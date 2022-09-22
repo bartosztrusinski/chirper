@@ -105,7 +105,9 @@ export const searchMany = async (
     calculateSkip(page, limit)
   );
 
-  res.status(200).json(createResponse(foundChirps));
+  const nextPage = foundChirps.length ? page + 1 : undefined;
+
+  res.status(200).json(createResponse(foundChirps, { nextPage }));
 };
 
 export const getUserTimeline = async (
@@ -134,7 +136,9 @@ export const getUserTimeline = async (
     limit
   );
 
-  res.status(200).json(createResponse(timelineChirps));
+  const nextPage = timelineChirps[timelineChirps.length - 1]?._id;
+
+  res.status(200).json(createResponse(timelineChirps, { nextPage }));
 };
 
 export const findManyByUser = async (
@@ -167,7 +171,9 @@ export const findManyByUser = async (
     limit
   );
 
-  res.status(200).json(createResponse(foundUsersChirps));
+  const nextPage = foundUsersChirps[foundUsersChirps.length - 1]?._id;
+
+  res.status(200).json(createResponse(foundUsersChirps, { nextPage }));
 };
 
 export const findManyLiked = async (
@@ -181,7 +187,7 @@ export const findManyLiked = async (
 
   const existingUser = await UserService.findOne(username);
 
-  const { likedChirpsIds, oldestId } = await UserService.findLikedChirpsIds(
+  const { likedChirpsIds, nextPage } = await UserService.findLikedChirpsIds(
     existingUser._id,
     limit,
     sinceId
@@ -193,7 +199,7 @@ export const findManyLiked = async (
     expandAuthor ? createChirpPopulate(userFields) : []
   );
 
-  res.status(200).json(createResponse(likedChirps, { oldestId }));
+  res.status(200).json(createResponse(likedChirps, { nextPage }));
 };
 
 export const createOne = async (

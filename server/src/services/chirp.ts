@@ -95,6 +95,6 @@ export const findLikingUsersIds = async (
 
   const likes = await Like.find(filter).sort({ _id: -1 }).limit(limit);
   const likingUsersIds = likes.map((like) => like.user);
-  const oldestId = likes[likes.length - 1]?._id;
-  return { likingUsersIds, oldestId };
+  const nextPage = likes[likes.length - 1]?._id;
+  return { likingUsersIds, nextPage };
 };
