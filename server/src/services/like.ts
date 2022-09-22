@@ -23,3 +23,13 @@ export const deleteOne = async (
   const like = await findOne(user, chirp);
   await like.remove();
 };
+
+export const handleDuplicate = async (
+  user: Types.ObjectId,
+  chirp: Types.ObjectId
+) => {
+  const like = await findOne(user, chirp);
+  if (like) {
+    throw new Error('Sorry, you have already liked this chirp');
+  }
+};

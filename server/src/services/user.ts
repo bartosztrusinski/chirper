@@ -7,19 +7,117 @@ import {
   Name,
   Password,
   Username,
+  Profile,
   USER_DEFAULT_FIELD,
 } from '../schemas';
 
+export const findMany = async (
+  filter: FilterQuery<IUser>,
+  select = USER_DEFAULT_FIELD,
+  sort?: { [key: string]: SortOrder | { $meta: 'textScore' } },
+  limit?: number,
+  skip?: number
+) => {
+  const query = User.find(filter)
+    .select(select)
+    // .select({ score: { $meta: 'textScore' } })
+    .sort(sort);
+  if (limit) query.limit(limit);
+  if (skip) query.skip(skip);
+  const users = await query;
+  return users;
+};
+
+export const findOne = async (
+  id: Types.ObjectId | Username | Email,
+  select = USER_DEFAULT_FIELD
+) => {
+  const filter =
+    id instanceof Types.ObjectId
+      ? { _id: id }
+      : { $or: [{ username: id }, { email: id }] };
+  const user = await User.findOne(filter).select(select);
+  if (!user) {
+    throw new Error('Sorry, we could not find that user');
+  }
+  return user;
+};
+
+export const handleDuplicate = async (username: Username, email: Email) => {
+  const usernameTaken = await findOne(username);
+  if (usernameTaken) {
+    throw new Error('Username  has already been taken');
+  }
+  const emailTaken = await findOne(email);
+  if (emailTaken) {
+    throw new Error('Email has already been taken');
+  }
+};
+
+export const createOne = async (
+  username: Username,
+  name: Name,
+  email: Email,
+  password: Password
+) => {
+  const newUser = await User.create({
+    username,
+    email,
+    password,
+    profile: { name },
+  });
+  return newUser._id;
+};
+
+export const deleteOne = async (id: Types.ObjectId) => {
+  const user = await findOne(id);
+  await user.remove();
+};
+
+export const updateProfile = async (id: Types.ObjectId, profile: Profile) => {
+  const user = await findOne(id);
+  user.profile = profile;
+  const updatedUser = await user.save();
+  return updatedUser.profile;
+};
+
+export const updatePassword = async (
+  id: Types.ObjectId,
+  password: Password
+) => {
+  const user = await findOne(id);
+  user.password = password;
+  await user.save();
+};
+
+export const updateUsername = async (
+  id: Types.ObjectId,
+  username: Username
+) => {
+  const user = await findOne(id);
+  user.username = username;
+  await user.save();
+};
+
+export const updateEmail = async (id: Types.ObjectId, email: Email) => {
+  const user = await findOne(id);
+  user.email = email;
+  await user.save();
+};
+
 export const findFollowedUsersIds = async (
   user: Types.ObjectId,
-  limit: number,
+  limit?: number,
   sinceId?: Types.ObjectId
 ) => {
   const filter: FilterQuery<IFollow> = { sourceUser: user };
   if (sinceId) {
     filter._id = { $lt: sinceId };
   }
-  const follows = await Follow.find(filter).sort({ _id: -1 }).limit(limit);
+  const query = Follow.find(filter).sort({ _id: -1 });
+  if (limit) query.limit(limit);
+
+  const follows = await query;
   const followedUsersIds = follows.map((follow) => follow.targetUser);
   const oldestId = follows[follows.length - 1]?._id;
   return { followedUsersIds, oldestId };
@@ -56,77 +154,16 @@ export const findLikedChirpsIds = async (
   return { likedChirpsIds, oldestId };
 };
 
-export const exists = async (username: string) => {
-  const user = await User.exists({ username });
-  if (!user) {
-    throw new Error('Sorry, we could not find that user');
-  }
-  return user._id;
-};
-
-export const handleDuplicate = async (username: Username, email: Email) => {
-  const user = await User.exists({ $or: [{ username }, { email }] });
-  if (user) {
-    throw new Error('Username or email has already been taken');
-  }
-};
-
-export const findMany = async (
-  filter: FilterQuery<IUser>,
-  select = USER_DEFAULT_FIELD,
-  sort?: { [key: string]: SortOrder | { $meta: 'textScore' } },
-  limit?: number,
-  skip?: number
-) => {
-  const query = User.find(filter).select(select).sort(sort);
-  if (limit) query.limit(limit);
-  if (skip) query.skip(skip);
-  const users = await query;
-  return users;
-};
-
-export const findOne = async (
+export const confirmPassword = async (
   id: Types.ObjectId | Username | Email,
-  select = USER_DEFAULT_FIELD
-) => {
-  const filter =
-    id instanceof Types.ObjectId
-      ? { _id: id }
-      : { $or: [{ username: id }, { email: id }] };
-  const user = await User.findOne(filter).select(select);
-  if (!user) {
-    throw new Error('Sorry, we could not find that user');
-  }
-  return user;
-};
-
-export const createOne = async (
-  username: Username,
-  name: Name,
-  email: Email,
   password: Password
 ) => {
-  const newUser = await User.create({
-    username,
-    email,
-    password,
-    profile: { name },
-  });
-  return newUser._id;
-};
+  const user = await findOne(id, 'password');
 
-export const findLikingUsersIds = async (
-  chirp: Types.ObjectId,
-  limit: number,
-  sinceId?: Types.ObjectId
-) => {
-  const filter: FilterQuery<ILike> = { chirp };
-  if (sinceId) {
-    filter._id = { $lt: sinceId };
+  const isPasswordMatch = await user.isPasswordMatch(password);
+  if (!isPasswordMatch) {
+    throw new Error('Sorry, wrong password!');
   }
 
-  const likes = await Like.find(filter).sort({ _id: -1 }).limit(limit);
-  const likingUsersIds = likes.map((like) => like.user);
-  const oldestId = likes[likes.length - 1]?._id;
-  return { likingUsersIds, oldestId };
+  return user._id;
 };

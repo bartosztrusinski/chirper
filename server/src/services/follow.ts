@@ -10,23 +10,26 @@ export const findOne = async (filter: FilterQuery<IFollow>) => {
 };
 
 export const createOne = async (
-  sourceUserId: Types.ObjectId,
-  targetUserId: Types.ObjectId
+  sourceUser: Types.ObjectId,
+  targetUser: Types.ObjectId
 ) => {
-  await Follow.create({
-    sourceUser: sourceUserId,
-    targetUser: targetUserId,
-  });
+  await Follow.create({ sourceUser, targetUser });
 };
 
 export const deleteOne = async (
-  sourceUserId: Types.ObjectId,
-  targetUserId: Types.ObjectId
+  sourceUser: Types.ObjectId,
+  targetUser: Types.ObjectId
 ) => {
-  const follow = await findOne({
-    sourceUser: sourceUserId,
-    targetUser: targetUserId,
-  });
-
+  const follow = await findOne({ sourceUser, targetUser });
   await follow.remove();
+};
+
+export const handleDuplicate = async (
+  sourceUser: Types.ObjectId,
+  targetUser: Types.ObjectId
+) => {
+  const follow = await findOne({ sourceUser, targetUser });
+  if (follow) {
+    throw new Error('Sorry, you are already following this user');
+  }
 };
