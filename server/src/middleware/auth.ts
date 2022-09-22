@@ -1,67 +1,59 @@
 import { Request, Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import User from '../models/User';
-import { JWT_SECRET } from '../config/secrets';
-import Chirp from '../models/Chirp';
 import { ChirpId } from '../schemas';
+import * as UserService from '../services/user';
+import * as ChirpService from '../services/chirp';
+import parseAuthHeader from '../utils/parseAuthHeader';
 
-interface AuthPayload extends JwtPayload {
-  currentUserId: Types.ObjectId;
-}
-
-export const isAuthenticated = async (
+export const authenticate = async (
   req: Request<unknown, unknown, unknown, unknown>,
   res: Response,
   next: NextFunction
 ) => {
   const authHeader = req.header('authorization');
 
-  if (!authHeader) {
-    res.status(401);
-    throw new Error('Not authorized, no authorization header provided');
-  }
+  res.status(401);
 
-  if (!authHeader.startsWith('Bearer ')) {
-    res.status(401);
-    throw new Error('Not authorized, invalid authorization header');
-  }
+  const currentUserId = parseAuthHeader(authHeader);
 
-  const authToken = authHeader.split(' ')[1];
-
-  const { currentUserId } = jwt.verify(authToken, JWT_SECRET) as AuthPayload;
-
-  const currentUser = await User.exists({ _id: currentUserId });
-  if (!currentUser) {
-    res.status(401);
-    throw new Error(
-      'Not authorized, user with given authorization token not found'
-    );
-  }
+  const currentUser = await UserService.findOne(currentUserId);
 
   req.currentUserId = currentUser._id;
 
   next();
 };
 
-export const isChirpAuthor = async (
+export const authenticateAllowGuest = async (
+  req: Request<unknown, unknown, unknown, unknown>,
+  res: Response,
+  next: NextFunction
+) => {
+  const authHeader = req.header('authorization');
+
+  res.status(401);
+
+  try {
+    const currentUserId = parseAuthHeader(authHeader);
+    const currentUser = await UserService.findOne(currentUserId);
+
+    req.currentUserId = currentUser._id;
+  } catch (err) {
+    return next();
+  }
+
+  next();
+};
+
+export const authorize = async (
   req: Request<ChirpId, unknown, unknown, unknown>,
   res: Response,
   next: NextFunction
 ) => {
-  const { currentUserId } = req;
+  const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
   const { chirpId } = req.params;
 
-  if (!currentUserId) {
-    res.status(401);
-    throw new Error('Not authorized, you must be logged in to do that');
-  }
+  const foundChirp = await ChirpService.findOne(chirpId, 'author');
 
-  const foundChirp = await Chirp.findById(chirpId).select('author');
-  if (!foundChirp) {
-    res.status(400);
-    throw new Error('Sorry, we could not find that chirp');
-  }
   if (!foundChirp.author.equals(currentUserId)) {
     res.status(401);
     throw new Error(
@@ -72,25 +64,16 @@ export const isChirpAuthor = async (
   next();
 };
 
-export const confirmPassword = async (
+export const passwordAuthenticate = async (
   req: Request<unknown, unknown, { password: string }, unknown>,
   res: Response,
   next: NextFunction
 ) => {
-  const { currentUserId } = req;
+  const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
   const { password } = req.body;
 
-  const currentUser = await User.findById(currentUserId).select('password');
-  if (!currentUser) {
-    res.status(400);
-    throw new Error('Sorry, we could not find your account');
-  }
-
-  const isPasswordMatch = await currentUser.isPasswordMatch(password);
-  if (!isPasswordMatch) {
-    res.status(400);
-    throw new Error('Sorry, wrong password!');
-  }
+  res.status(400);
+  await UserService.confirmPassword(currentUserId, password);
 
   next();
 };

@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import * as userControllers from '../controllers/user';
-import { isAuthenticated } from '../middleware/auth';
+import { authenticateAllowGuest } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
-import { chirpIdSchema, usernameInput } from '../schemas';
+import { chirpIdSchema, objectId, usernameInput } from '../schemas';
 import * as userSchemas from '../schemas/user';
 
 const router = Router();
@@ -17,8 +17,9 @@ router.get(
 
 router.get(
   '/users/search',
-  isAuthenticated,
+  authenticateAllowGuest,
   validateRequest({
+    currentUserId: objectId.optional(),
     query: userSchemas.searchMany,
   }),
   userControllers.searchMany

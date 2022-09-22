@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as currentUserControllers from '../controllers/currentUser';
-import { confirmPassword, isAuthenticated } from '../middleware/auth';
+import { passwordAuthenticate, authenticate } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
 import { objectId } from '../schemas';
 import * as currentUserSchemas from '../schemas/currentUser';
@@ -9,7 +9,7 @@ const router = Router();
 
 router.get(
   '/',
-  isAuthenticated,
+  authenticate,
   validateRequest({
     currentUserId: objectId,
     query: currentUserSchemas.findOne,
@@ -19,7 +19,7 @@ router.get(
 
 router.put(
   '/profile',
-  isAuthenticated,
+  authenticate,
   validateRequest({
     currentUserId: objectId,
     body: currentUserSchemas.updateProfile,
@@ -29,44 +29,44 @@ router.put(
 
 router.put(
   '/password',
-  isAuthenticated,
+  authenticate,
   validateRequest({
     currentUserId: objectId,
     body: currentUserSchemas.updatePassword,
   }),
-  confirmPassword,
+  passwordAuthenticate,
   currentUserControllers.updatePassword
 );
 
 router.put(
   '/username',
-  isAuthenticated,
+  authenticate,
   validateRequest({
     currentUserId: objectId,
     body: currentUserSchemas.updateUsername,
   }),
-  confirmPassword,
+  passwordAuthenticate,
   currentUserControllers.updateUsername
 );
 
 router.put(
   '/email',
-  isAuthenticated,
+  authenticate,
   validateRequest({
     currentUserId: objectId,
     body: currentUserSchemas.updateEmail,
   }),
-  confirmPassword,
+  passwordAuthenticate,
   currentUserControllers.updateEmail
 );
 
 router.delete(
   '/',
-  isAuthenticated,
+  authenticate,
   validateRequest({
     currentUserId: objectId,
   }),
-  confirmPassword,
+  passwordAuthenticate,
   currentUserControllers.deleteOne
 );
 

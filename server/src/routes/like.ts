@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as likeControllers from '../controllers/like';
-import { isAuthenticated } from '../middleware/auth';
+import { authenticate } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
 import { chirpIdSchema, objectId } from '../schemas';
 
@@ -8,7 +8,7 @@ const router = Router();
 
 router.post(
   '/likes',
-  isAuthenticated,
+  authenticate,
   validateRequest({
     currentUserId: objectId,
     body: chirpIdSchema,
@@ -18,7 +18,7 @@ router.post(
 
 router.delete(
   '/likes/:chirpId',
-  isAuthenticated,
+  authenticate,
   validateRequest({
     currentUserId: objectId,
     params: chirpIdSchema,

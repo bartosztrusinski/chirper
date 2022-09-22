@@ -1,6 +1,10 @@
 import { Router } from 'express';
 import * as chirpControllers from '../controllers/chirp';
-import { isAuthenticated, isChirpAuthor } from '../middleware/auth';
+import {
+  authenticate,
+  authenticateAllowGuest,
+  authorize,
+} from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
 import { chirpIdSchema, objectId, usernameInput } from '../schemas';
 import * as chirpSchemas from '../schemas/chirp';
@@ -17,9 +21,9 @@ router.get(
 
 router.get(
   '/chirps/search',
-  isAuthenticated,
+  authenticateAllowGuest,
   validateRequest({
-    currentUserId: objectId,
+    currentUserId: objectId.optional(),
     query: chirpSchemas.searchMany,
   }),
   chirpControllers.searchMany
@@ -36,7 +40,7 @@ router.get(
 
 router.post(
   '/chirps',
-  isAuthenticated,
+  authenticate,
   validateRequest({
     currentUserId: objectId,
     body: chirpSchemas.createOne,
@@ -46,12 +50,12 @@ router.post(
 
 router.delete(
   '/chirps/:chirpId',
-  isAuthenticated,
+  authenticate,
   validateRequest({
     currentUserId: objectId,
     params: chirpIdSchema,
   }),
-  isChirpAuthor,
+  authorize,
   chirpControllers.deleteOne
 );
 
