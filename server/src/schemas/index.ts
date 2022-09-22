@@ -1,34 +1,6 @@
 import { Types } from 'mongoose';
 import { z } from 'zod';
-
-const LIMIT_MIN = 1;
-const LIMIT_MAX = 100;
-const LIMIT_DEFAULT = 10;
-
-const PAGE_DEFAULT = 1;
-const PAGE_MIN = 1;
-const PAGE_MAX = Math.floor(Number.MAX_SAFE_INTEGER / LIMIT_MAX);
-
-export const CHIRP_DEFAULT_FIELD = 'content';
-const CHIRP_ALLOWED_FIELDS = [
-  'content',
-  'author',
-  'replies',
-  'post',
-  'parent',
-  'metrics',
-  '_id',
-  'createdAt',
-];
-
-export const USER_DEFAULT_FIELD = 'username';
-const USER_ALLOWED_FIELDS = [
-  'username',
-  'profile',
-  'metrics',
-  '_id',
-  'createdAt',
-];
+import config from '../config/request';
 
 // type ObjectId = z.infer<typeof objectId>;
 export type UsernameInput = z.infer<typeof usernameInput>;
@@ -66,7 +38,7 @@ const clamp = (min: number, max: number) =>
     .returns(z.number())
     .implement((value) => Math.min(Math.max(value, min), max));
 
-const parseFields = (...allowedFields: string[]) =>
+const parseFields = (allowedFields: string[]) =>
   z
     .function()
     .args(z.string())
@@ -119,15 +91,20 @@ export const stringToDate = z
     return new Date(parsedDate);
   });
 
-export const id = z.string().transform(stringToId);
+export const id = z
+  .string({
+    required_error: 'Id is required',
+    invalid_type_error: 'Id must be a string',
+  })
+  .transform(stringToId);
 
 export const ids = z
   .array(id, {
     invalid_type_error: 'Ids must be an array',
     required_error: 'Ids is required',
   })
-  .min(1, 'You must provide at least one id')
-  .max(100, 'You can only provide up to 100 ids');
+  .nonempty({ message: 'You must provide at least one id' })
+  .max(config.limit.max, `You can only provide up to ${config.limit.max} ids`);
 
 export const chirpIdSchema = z.object({
   chirpId: id,
@@ -156,31 +133,32 @@ export const limit = z
   .string()
   .optional()
   .transform(optionalStringToNumber)
-  .transform(setDefaultIfNaN(LIMIT_DEFAULT))
-  .transform(clamp(LIMIT_MIN, LIMIT_MAX));
+  .transform(setDefaultIfNaN(config.limit.default))
+  .transform(clamp(config.limit.min, config.limit.max));
 
 export const page = z
   .string()
   .optional()
   .transform(optionalStringToNumber)
-  .transform(setDefaultIfNaN(PAGE_DEFAULT))
-  .transform(clamp(PAGE_MIN, PAGE_MAX));
+  .transform(setDefaultIfNaN(config.page.default))
+  .transform(clamp(config.page.min, config.page.max));
 
 export const chirpFields = z
   .string()
   .optional()
-  .transform(addDefaultField(CHIRP_DEFAULT_FIELD))
-  .transform(parseFields(...CHIRP_ALLOWED_FIELDS));
+  .transform(addDefaultField(config.chirp.fields.default))
+  .transform(parseFields(config.chirp.fields.allowed));
 
 export const userFields = z
   .string()
   .optional()
-  .transform(addDefaultField(USER_DEFAULT_FIELD))
-  .transform(parseFields(...USER_ALLOWED_FIELDS));
+  .transform(addDefaultField(config.user.fields.default))
+  .transform(parseFields(config.user.fields.allowed));
 
 export const usernameInput = z.object({
   username: z.string({
     invalid_type_error: 'Username must be a string',
+    required_error: 'Username is required',
   }),
 });
 
@@ -195,10 +173,19 @@ export const appendAuthorIfExpanded = z
   });
 
 export const password = z
-  .string()
+  .string({
+    required_error: 'Password is required',
+    invalid_type_error: 'Password must be a string',
+  })
   .trim()
-  .min(8, 'Password must be at least 8 characters')
-  .max(64, 'Password must be less than 64 characters')
+  .min(
+    config.user.password.min,
+    `Password must be at least ${config.user.password.min} characters`
+  )
+  .max(
+    config.user.password.max,
+    `Password cannot exceed ${config.user.password.max} characters`
+  )
   .regex(
     /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)[^\s<>]*$/,
     'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
@@ -207,7 +194,10 @@ export const password = z
 export type Password = z.infer<typeof password>;
 
 export const email = z
-  .string()
+  .string({
+    required_error: 'Email is required',
+    invalid_type_error: 'Email must be a string',
+  })
   .trim()
   .regex(
     /^([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -217,10 +207,19 @@ export const email = z
 export type Email = z.infer<typeof email>;
 
 export const username = z
-  .string()
+  .string({
+    required_error: 'Username is required',
+    invalid_type_error: 'Username must be a string',
+  })
   .trim()
-  .min(5, 'Username must be at least 5 characters')
-  .max(50, 'Username must be less than 50 characters')
+  .min(
+    config.user.username.min,
+    `Username must be at least ${config.user.username.min} characters`
+  )
+  .max(
+    config.user.username.max,
+    `Username cannot exceed ${config.user.username.max} characters`
+  )
   .regex(
     /^[a-zA-Z0-9_]+$/,
     'Username must only contain letters, numbers, and underscores'
@@ -228,32 +227,52 @@ export const username = z
 
 export type Username = z.infer<typeof username>;
 
+export const query = z.string({
+  required_error: 'Query is required',
+  invalid_type_error: 'Query must be a string',
+});
+
 export const name = z
-  .string()
+  .string({
+    required_error: 'Name is required',
+    invalid_type_error: 'Name must be a string',
+  })
   .trim()
-  .max(50, 'Profile name must be less than 50 characters')
+  .max(
+    config.user.name.max,
+    `Profile name cannot exceed ${config.user.name.max} characters`
+  )
   .regex(/^[^<>]*$/, 'Profile name cannot include invalid characters');
 
 export type Name = z.infer<typeof name>;
 
 export const bio = z
-  .string()
+  .string({ invalid_type_error: 'Bio must be a string' })
   .trim()
-  .max(160, 'Description must be less than 160 characters')
+  .max(
+    config.user.bio.max,
+    `Description cannot exceed ${config.user.bio.max} characters`
+  )
   .regex(/^[^<>]*$/, 'Description cannot include invalid characters')
   .optional();
 
 export const location = z
-  .string()
+  .string({ invalid_type_error: 'Location must be a string' })
   .trim()
-  .max(30, 'Location must be less than 30 characters')
+  .max(
+    config.user.location.max,
+    `Location cannot exceed ${config.user.location.max} characters`
+  )
   .regex(/^[^<>]*$/, 'Location cannot include invalid characters')
   .optional();
 
 export const website = z
-  .string()
+  .string({ invalid_type_error: 'Website must be a string' })
   .trim()
-  .max(100, 'Website URL must be less than 100 characters')
+  .max(
+    config.user.website.max,
+    `Website URL cannot exceed ${config.user.website.max} characters`
+  )
   .regex(
     /^(https?:\/\/)?(www.)?([a-z0-9]+\.)+[a-zA-Z]{2,}\/?(\/[a-zA-Z0-9#-_]+\/?)*$/,
     'Website URL must be valid'
@@ -288,15 +307,21 @@ const user = z.object({
 
 type User = z.infer<typeof user>;
 
-export const responseBody = z.object({
-  status: z.enum(['success', 'error', 'fail']),
-  data: z.any(),
-  meta: z.object({}),
-});
+// export const responseBody = z.object({
+//   data: z.object({}),
+//   meta: z.object({}),
+// });
+
+export const sortOrder = z
+  .enum(['relevant', 'popular', 'recent'])
+  .default('relevant');
+
+export type SortOrder = z.infer<typeof sortOrder>;
 
 export type ResponseData = object | null;
 export type ResponseMeta = Record<string, unknown>;
 
+// success response?
 export interface ResponseBody {
   data: ResponseData;
   meta?: ResponseMeta;

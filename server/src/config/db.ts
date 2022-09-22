@@ -1,9 +1,9 @@
 import { connect, connection } from 'mongoose';
-import { MONGODB_URI } from './secrets';
+import config from './general';
 
 const connectDB = async () => {
   try {
-    await connect(MONGODB_URI);
+    await connect(config.db.uri);
     console.log(`MongoDB Connected: ${connection.host}`);
     listenForErrors();
   } catch (error) {

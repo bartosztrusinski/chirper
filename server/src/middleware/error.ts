@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
-import { ENVIRONMENT } from '../config/secrets';
+import config from '../config/general';
 
 interface MessageResponse {
   message: string;
@@ -38,7 +38,7 @@ const errorHandler = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ) => {
-  const stack = ENVIRONMENT === 'production' ? '🥞' : error.stack;
+  const stack = config.app.environment === 'production' ? '🥞' : error.stack;
   const { message, statusCode } = ErrorParser.parse(error, res.statusCode);
 
   res.status(statusCode).json({

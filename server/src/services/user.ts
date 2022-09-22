@@ -2,18 +2,12 @@ import { FilterQuery, SortOrder, Types } from 'mongoose';
 import Follow, { IFollow } from '../models/Follow';
 import Like, { ILike } from '../models/Like';
 import User, { IUser } from '../models/User';
-import {
-  Email,
-  Name,
-  Password,
-  Username,
-  Profile,
-  USER_DEFAULT_FIELD,
-} from '../schemas';
+import { Email, Name, Password, Username, Profile } from '../schemas';
+import config from '../config/request';
 
 export const findMany = async (
   filter: FilterQuery<IUser>,
-  select = USER_DEFAULT_FIELD,
+  select = config.user.fields.default,
   sort?: { [key: string]: SortOrder | { $meta: 'textScore' } },
   limit?: number,
   skip?: number
@@ -30,7 +24,7 @@ export const findMany = async (
 
 export const findOne = async (
   id: Types.ObjectId | Username | Email,
-  select = USER_DEFAULT_FIELD
+  select = config.user.fields.default
 ) => {
   const filter =
     id instanceof Types.ObjectId
@@ -46,7 +40,7 @@ export const findOne = async (
 export const handleDuplicate = async (username: Username, email: Email) => {
   const usernameTaken = await findOne(username);
   if (usernameTaken) {
-    throw new Error('Username  has already been taken');
+    throw new Error('Username has already been taken');
   }
   const emailTaken = await findOne(email);
   if (emailTaken) {

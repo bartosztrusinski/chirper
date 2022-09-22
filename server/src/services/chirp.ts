@@ -7,11 +7,11 @@ import Chirp, {
   ReplyChirp,
 } from '../models/Chirp';
 import Like, { ILike } from '../models/Like';
-import { CHIRP_DEFAULT_FIELD } from '../schemas';
+import config from '../config/request';
 
 export const findMany = async (
   filter: FilterQuery<IChirp>,
-  select = CHIRP_DEFAULT_FIELD,
+  select = config.chirp.fields.default,
   populate: PopulateOptions[] = [],
   sort?: { [key: string]: SortOrder | { $meta: 'textScore' } },
   limit?: number,
@@ -30,7 +30,7 @@ export const findMany = async (
 
 export const findOne = async (
   id: Types.ObjectId,
-  select = CHIRP_DEFAULT_FIELD,
+  select = config.chirp.fields.default,
   populate: PopulateOptions[] = []
 ) => {
   const chirp = await Chirp.findById(id).select(select).populate(populate);

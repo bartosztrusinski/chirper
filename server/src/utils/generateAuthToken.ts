@@ -1,9 +1,9 @@
 import { Types } from 'mongoose';
-import { JWT_SECRET } from '../config/secrets';
 import jwt from 'jsonwebtoken';
+import config from '../config/general';
 
 const generateAuthToken = (userId: Types.ObjectId) => {
-  return jwt.sign({ currentUserId: userId }, JWT_SECRET, {
+  return jwt.sign({ currentUserId: userId }, config.jwt.secret, {
     expiresIn: '7d',
   });
 };
