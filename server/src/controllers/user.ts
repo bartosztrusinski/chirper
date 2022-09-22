@@ -100,10 +100,10 @@ export const findManyFollowing = async (
 
   res.status(400);
 
-  const sourceUserId = await UserService.exists(username);
+  const sourceUser = await UserService.findOne(username);
 
   const { followedUsersIds, oldestId } = await UserService.findFollowedUsersIds(
-    sourceUserId,
+    sourceUser._id,
     limit,
     sinceId
   );
@@ -125,10 +125,10 @@ export const findManyFollowers = async (
 
   res.status(400);
 
-  const targetUserId = await UserService.exists(username);
+  const targetUser = await UserService.findOne(username);
 
   const { followingUsersIds, oldestId } =
-    await UserService.findFollowingUsersIds(targetUserId, limit, sinceId);
+    await UserService.findFollowingUsersIds(targetUser._id, limit, sinceId);
 
   const followingUsers = await UserService.findMany(
     { _id: followingUsersIds },

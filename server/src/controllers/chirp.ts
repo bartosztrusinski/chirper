@@ -87,8 +87,8 @@ export const searchMany = async (
   }
 
   if (from) {
-    const fromUserId = await UserService.exists(from);
-    filter.author = fromUserId;
+    const fromUser = await UserService.findOne(from);
+    filter.author = fromUser._id;
   }
 
   const createdAt: { $gte?: Date; $lte?: Date } = {};
@@ -117,11 +117,11 @@ export const getUserTimeline = async (
 
   res.status(400);
 
-  const timelineUserId = await UserService.exists(username);
+  const timelineUser = await UserService.findOne(username);
   const { followedUsersIds } = await UserService.findFollowedUsersIds(
-    timelineUserId
+    timelineUser._id
   );
-  const timelineChirpsAuthorsIds = [...followedUsersIds, timelineUserId];
+  const timelineChirpsAuthorsIds = [...followedUsersIds, timelineUser._id];
 
   const filter: FilterQuery<IChirp> = { author: timelineChirpsAuthorsIds };
   if (sinceId) filter._id = { $lt: sinceId };
@@ -153,9 +153,9 @@ export const findManyByUser = async (
 
   res.status(400);
 
-  const chirpsAuthorId = await UserService.exists(username);
+  const chirpsAuthor = await UserService.findOne(username);
 
-  const filter: FilterQuery<IChirp> = { author: chirpsAuthorId };
+  const filter: FilterQuery<IChirp> = { author: chirpsAuthor._id };
   if (sinceId) filter._id = { $lt: sinceId };
   if (!includeReplies) filter.kind = 'post';
 
@@ -179,10 +179,10 @@ export const findManyLiked = async (
 
   res.status(400);
 
-  const existingUserId = await UserService.exists(username);
+  const existingUser = await UserService.findOne(username);
 
   const { likedChirpsIds, oldestId } = await UserService.findLikedChirpsIds(
-    existingUserId,
+    existingUser._id,
     limit,
     sinceId
   );

@@ -13,15 +13,15 @@ export const createOne = async (
 
   res.status(400);
 
-  const targetUserId = await UserService.exists(username);
+  const targetUser = await UserService.findOne(username);
 
-  await FollowService.handleDuplicate(currentUserId, targetUserId);
+  await FollowService.handleDuplicate(currentUserId, targetUser._id);
 
-  if (currentUserId.equals(targetUserId)) {
+  if (currentUserId.equals(targetUser._id)) {
     throw new Error('Sorry, you cannot follow yourself');
   }
 
-  await FollowService.createOne(currentUserId, targetUserId);
+  await FollowService.createOne(currentUserId, targetUser._id);
 
   res.status(200).json({ data: null });
 };
@@ -35,8 +35,8 @@ export const deleteOne = async (
 
   res.status(400);
 
-  const targetUserId = await UserService.exists(username);
-  await FollowService.deleteOne(currentUserId, targetUserId);
+  const targetUser = await UserService.findOne(username);
+  await FollowService.deleteOne(currentUserId, targetUser._id);
 
   res.status(200).json({ data: null });
 };
