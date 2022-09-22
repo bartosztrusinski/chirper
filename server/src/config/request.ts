@@ -2,13 +2,13 @@ const limit = {
   default: 10,
   min: 1,
   max: 100,
-};
+} as const;
 
 const page = {
   default: 1,
   min: 1,
   max: Math.floor(Number.MAX_SAFE_INTEGER / limit.max),
-};
+} as const;
 
 const user = {
   fields: {
@@ -35,7 +35,7 @@ const user = {
   website: {
     max: 100,
   },
-};
+} as const;
 
 const chirp = {
   fields: {
@@ -51,13 +51,20 @@ const chirp = {
       'createdAt',
     ],
   },
-};
+  content: {
+    max: 140,
+  },
+  sort: {
+    default: 'relevant',
+    allowed: ['relevant', 'recent', 'popular'],
+  },
+} as const;
 
 const config = {
   limit,
   page,
   user,
   chirp,
-};
+} as const;
 
 export default config;

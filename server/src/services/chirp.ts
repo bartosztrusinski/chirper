@@ -11,7 +11,7 @@ import config from '../config/request';
 
 export const findMany = async (
   filter: FilterQuery<IChirp>,
-  select = config.chirp.fields.default,
+  select: string = config.chirp.fields.default,
   populate: PopulateOptions[] = [],
   sort?: { [key: string]: SortOrder | { $meta: 'textScore' } },
   limit?: number,
@@ -30,7 +30,7 @@ export const findMany = async (
 
 export const findOne = async (
   id: Types.ObjectId,
-  select = config.chirp.fields.default,
+  select: string = config.chirp.fields.default,
   populate: PopulateOptions[] = []
 ) => {
   const chirp = await Chirp.findById(id).select(select).populate(populate);

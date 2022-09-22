@@ -1,5 +1,5 @@
 import { SortValues } from 'mongoose';
-import { SortOrder } from '../schemas/chirp';
+import { SortOrder } from '../schemas/';
 
 interface SortQuery {
   [key: string]: SortValues | { $meta: 'textScore' };

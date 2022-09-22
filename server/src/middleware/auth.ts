@@ -4,6 +4,7 @@ import { ChirpId } from '../schemas';
 import * as UserService from '../services/user';
 import * as ChirpService from '../services/chirp';
 import parseAuthHeader from '../utils/parseAuthHeader';
+import { DeleteOne } from '../schemas/currentUser';
 
 export const authenticate = async (
   req: Request<unknown, unknown, unknown, unknown>,
@@ -65,7 +66,7 @@ export const authorize = async (
 };
 
 export const passwordAuthenticate = async (
-  req: Request<unknown, unknown, { password: string }, unknown>,
+  req: Request<unknown, unknown, DeleteOne, unknown>,
   res: Response,
   next: NextFunction
 ) => {

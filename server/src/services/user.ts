@@ -7,7 +7,7 @@ import config from '../config/request';
 
 export const findMany = async (
   filter: FilterQuery<IUser>,
-  select = config.user.fields.default,
+  select: string = config.user.fields.default,
   sort?: { [key: string]: SortOrder | { $meta: 'textScore' } },
   limit?: number,
   skip?: number
@@ -24,7 +24,7 @@ export const findMany = async (
 
 export const findOne = async (
   id: Types.ObjectId | Username | Email,
-  select = config.user.fields.default
+  select: string = config.user.fields.default
 ) => {
   const filter =
     id instanceof Types.ObjectId

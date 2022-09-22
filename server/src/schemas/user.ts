@@ -7,8 +7,8 @@ import {
   username,
   email,
   password,
-  // profile,
   name,
+  query,
   followedOnly,
   id,
 } from '.';
@@ -18,7 +18,7 @@ export const findMany = z.object({ ids, userFields });
 export const findOne = z.object({ userFields });
 
 export const searchMany = z.object({
-  query: z.string(),
+  query,
   followedOnly,
   userFields,
   limit,
@@ -47,8 +47,18 @@ export const signUp = z.object({
 });
 
 export const logIn = z.object({
-  login: z.string().trim(),
-  password: z.string().trim(),
+  login: z
+    .string({
+      invalid_type_error: 'Login must be a string',
+      required_error: 'Login is required',
+    })
+    .trim(),
+  password: z
+    .string({
+      invalid_type_error: 'Password must be a string',
+      required_error: 'Password is required',
+    })
+    .trim(),
 });
 
 export type FindMany = z.infer<typeof findMany>;

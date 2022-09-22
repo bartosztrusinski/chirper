@@ -65,6 +65,7 @@ router.delete(
   authenticate,
   validateRequest({
     currentUserId: objectId,
+    body: currentUserSchemas.deleteOne,
   }),
   passwordAuthenticate,
   currentUserControllers.deleteOne

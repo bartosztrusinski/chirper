@@ -38,7 +38,7 @@ const clamp = (min: number, max: number) =>
     .returns(z.number())
     .implement((value) => Math.min(Math.max(value, min), max));
 
-const parseFields = (allowedFields: string[]) =>
+const parseFields = (allowedFields: readonly string[]) =>
   z
     .function()
     .args(z.string())
@@ -313,8 +313,16 @@ type User = z.infer<typeof user>;
 // });
 
 export const sortOrder = z
-  .enum(['relevant', 'popular', 'recent'])
-  .default('relevant');
+  .enum(config.chirp.sort.allowed, {
+    errorMap: () => {
+      return {
+        message: `Sort order should be one of: ${config.chirp.sort.allowed.join(
+          ', '
+        )}`,
+      };
+    },
+  })
+  .default(config.chirp.sort.default);
 
 export type SortOrder = z.infer<typeof sortOrder>;
 
@@ -326,3 +334,14 @@ export interface ResponseBody {
   data: ResponseData;
   meta?: ResponseMeta;
 }
+
+export const content = z
+  .string({
+    required_error: 'Content is required',
+    invalid_type_error: 'Content must be a string',
+  })
+  .trim()
+  .max(
+    config.chirp.content.max,
+    `Chirp content cannot exceed ${config.chirp.content.max} characters`
+  );
