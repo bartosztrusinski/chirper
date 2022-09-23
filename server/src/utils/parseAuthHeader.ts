@@ -1,10 +1,7 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { Types } from 'mongoose';
 import config from '../config/general';
-
-interface AuthPayload extends JwtPayload {
-  currentUserId: string;
-}
+import AuthPayload from '../types/AuthPayload';
 
 const parseAuthHeader = (authHeader: string | undefined) => {
   if (!authHeader) {

@@ -1,12 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { z } from 'zod';
-
-export interface RequestValidators {
-  body?: z.AnyZodObject;
-  params?: z.AnyZodObject;
-  query?: z.AnyZodObject | z.ZodEffects<z.AnyZodObject>;
-  currentUserId?: z.ZodTypeAny;
-}
+import RequestValidators from '../types/RequestValidators';
 
 export const validateRequest =
   (validators: RequestValidators) =>

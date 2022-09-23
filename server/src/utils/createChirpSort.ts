@@ -1,11 +1,7 @@
-import { SortValues } from 'mongoose';
-import { SortOrder } from '../schemas/';
+import { ChirpSortOrder } from '../types/chirp';
+import SortQuery from '../types/SortQuery';
 
-interface SortQuery {
-  [key: string]: SortValues | { $meta: 'textScore' };
-}
-
-const createChirpSortQuery = (sortOrder: SortOrder) => {
+const createChirpSortQuery = (sortOrder: ChirpSortOrder) => {
   const sortBy: Record<string, SortQuery> = {
     recent: { createdAt: -1 },
     popular: { 'metrics.likeCount': -1 },
