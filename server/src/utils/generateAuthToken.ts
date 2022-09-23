@@ -4,7 +4,7 @@ import config from '../config/general';
 
 const generateAuthToken = (userId: Types.ObjectId) => {
   return jwt.sign({ currentUserId: userId }, config.jwt.secret, {
-    expiresIn: '7d',
+    expiresIn: config.jwt.expiresIn,
   });
 };
 

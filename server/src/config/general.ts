@@ -2,7 +2,7 @@ const environment =
   process.env.NODE_ENV === 'production' ? 'production' : 'development';
 
 const defaults = {
-  port: 3000,
+  port: '3000',
   dbUri: 'mongodb://localhost:27017/db',
   jwtSecret: 'someRandomSecret',
 };
@@ -32,7 +32,8 @@ const config = {
   },
   jwt: {
     secret: jwtSecret[environment] || defaults.jwtSecret,
+    expiresIn: '7d',
   },
-};
+} as const;
 
 export default config;
