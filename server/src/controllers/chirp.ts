@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { FilterQuery, Types } from 'mongoose';
 import { IChirp } from '../models/Chirp';
-import { ChirpId, UsernameInput, ResponseBody } from '../schemas';
+import { ChirpIdObject, UsernameObject } from '../types/request';
 import {
   CreateOne,
   FindOne,
@@ -10,17 +10,18 @@ import {
   SearchMany,
   FindManyByUser,
   FindManyLiked,
-} from '../schemas/chirp';
+} from '../types/chirp';
 import * as ChirpService from '../services/chirp';
 import * as UserService from '../services/user';
 import calculateSkip from '../utils/calculateSkip';
 import createChirpSort from '../utils/createChirpSort';
-import createResponse from '../utils/createResponse';
+import createSuccessResponse from '../utils/createSuccessResponse';
 import createChirpPopulate from '../utils/createChirpPopulate';
+import SuccessResponse from '../types/SuccessResponse';
 
 export const findMany = async (
-  req: Request<unknown, ResponseBody, unknown, FindMany>,
-  res: Response<ResponseBody>
+  req: Request<unknown, SuccessResponse, unknown, FindMany>,
+  res: Response<SuccessResponse>
 ) => {
   const { ids, userFields, chirpFields, expandAuthor } = req.query;
 
@@ -30,12 +31,12 @@ export const findMany = async (
     expandAuthor ? createChirpPopulate(userFields) : []
   );
 
-  res.status(200).json(createResponse(foundChirps));
+  res.status(200).json(createSuccessResponse(foundChirps));
 };
 
 export const findOne = async (
-  req: Request<ChirpId, ResponseBody, unknown, FindOne>,
-  res: Response<ResponseBody>
+  req: Request<ChirpIdObject, SuccessResponse, unknown, FindOne>,
+  res: Response<SuccessResponse>
 ) => {
   const { chirpId } = req.params;
   const { userFields, chirpFields, expandAuthor } = req.query;
@@ -48,12 +49,12 @@ export const findOne = async (
     expandAuthor ? createChirpPopulate(userFields) : []
   );
 
-  res.status(200).json(createResponse(foundChirp));
+  res.status(200).json(createSuccessResponse(foundChirp));
 };
 
 export const searchMany = async (
-  req: Request<unknown, ResponseBody, unknown, SearchMany>,
-  res: Response<ResponseBody>
+  req: Request<unknown, SuccessResponse, unknown, SearchMany>,
+  res: Response<SuccessResponse>
 ) => {
   const {
     query,
@@ -107,12 +108,12 @@ export const searchMany = async (
 
   const nextPage = foundChirps.length ? page + 1 : undefined;
 
-  res.status(200).json(createResponse(foundChirps, { nextPage }));
+  res.status(200).json(createSuccessResponse(foundChirps, { nextPage }));
 };
 
 export const getUserTimeline = async (
-  req: Request<UsernameInput, ResponseBody, unknown, GetUserTimeline>,
-  res: Response<ResponseBody>
+  req: Request<UsernameObject, SuccessResponse, unknown, GetUserTimeline>,
+  res: Response<SuccessResponse>
 ) => {
   const { username } = req.params;
   const { sinceId, expandAuthor, chirpFields, userFields, limit } = req.query;
@@ -138,12 +139,12 @@ export const getUserTimeline = async (
 
   const nextPage = timelineChirps[timelineChirps.length - 1]?._id;
 
-  res.status(200).json(createResponse(timelineChirps, { nextPage }));
+  res.status(200).json(createSuccessResponse(timelineChirps, { nextPage }));
 };
 
 export const findManyByUser = async (
-  req: Request<UsernameInput, ResponseBody, unknown, FindManyByUser>,
-  res: Response<ResponseBody>
+  req: Request<UsernameObject, SuccessResponse, unknown, FindManyByUser>,
+  res: Response<SuccessResponse>
 ) => {
   const { username } = req.params;
   const {
@@ -173,12 +174,12 @@ export const findManyByUser = async (
 
   const nextPage = foundUsersChirps[foundUsersChirps.length - 1]?._id;
 
-  res.status(200).json(createResponse(foundUsersChirps, { nextPage }));
+  res.status(200).json(createSuccessResponse(foundUsersChirps, { nextPage }));
 };
 
 export const findManyLiked = async (
-  req: Request<UsernameInput, ResponseBody, unknown, FindManyLiked>,
-  res: Response<ResponseBody>
+  req: Request<UsernameObject, SuccessResponse, unknown, FindManyLiked>,
+  res: Response<SuccessResponse>
 ) => {
   const { username } = req.params;
   const { sinceId, userFields, chirpFields, expandAuthor, limit } = req.query;
@@ -199,12 +200,12 @@ export const findManyLiked = async (
     expandAuthor ? createChirpPopulate(userFields) : []
   );
 
-  res.status(200).json(createResponse(likedChirps, { nextPage }));
+  res.status(200).json(createSuccessResponse(likedChirps, { nextPage }));
 };
 
 export const createOne = async (
-  req: Request<unknown, ResponseBody, CreateOne>,
-  res: Response<ResponseBody>
+  req: Request<unknown, SuccessResponse, CreateOne>,
+  res: Response<SuccessResponse>
 ) => {
   const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
   const { content, parentId } = req.body;
@@ -217,12 +218,12 @@ export const createOne = async (
     parentId
   );
 
-  res.status(200).json(createResponse(newChirp));
+  res.status(200).json(createSuccessResponse(newChirp));
 };
 
 export const deleteOne = async (
-  req: Request<ChirpId>,
-  res: Response<ResponseBody>
+  req: Request<ChirpIdObject>,
+  res: Response<SuccessResponse>
 ) => {
   const { chirpId } = req.params;
 
@@ -230,5 +231,5 @@ export const deleteOne = async (
 
   await ChirpService.deleteOne(chirpId);
 
-  res.status(200).json(createResponse(null));
+  res.status(200).json(createSuccessResponse(null));
 };

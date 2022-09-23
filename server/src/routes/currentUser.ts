@@ -2,8 +2,8 @@ import { Router } from 'express';
 import * as currentUserControllers from '../controllers/currentUser';
 import { passwordAuthenticate, authenticate } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
-import { objectId } from '../schemas';
-import * as currentUserSchemas from '../schemas/currentUser';
+import { objectId } from '../schemas/request';
+import * as currentUserSchemas from '../schemas/user';
 
 const router = Router();
 
@@ -14,7 +14,7 @@ router.get(
     currentUserId: objectId,
     query: currentUserSchemas.findOne,
   }),
-  currentUserControllers.getOne
+  currentUserControllers.findOne
 );
 
 router.put(

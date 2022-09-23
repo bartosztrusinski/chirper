@@ -2,7 +2,7 @@ import { Router } from 'express';
 import * as userControllers from '../controllers/user';
 import { authenticateAllowGuest } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
-import { chirpIdSchema, objectId, usernameInput } from '../schemas';
+import { chirpIdObject, objectId, usernameObject } from '../schemas/request';
 import * as userSchemas from '../schemas/user';
 
 const router = Router();
@@ -28,7 +28,7 @@ router.get(
 router.get(
   '/users/:username',
   validateRequest({
-    params: usernameInput,
+    params: usernameObject,
     query: userSchemas.findOne,
   }),
   userControllers.findOne
@@ -53,25 +53,25 @@ router.post(
 router.get(
   '/users/:username/following',
   validateRequest({
-    params: usernameInput,
+    params: usernameObject,
+    query: userSchemas.findManyFollowed,
+  }),
+  userControllers.findManyFollowed
+);
+
+router.get(
+  '/users/:username/followers',
+  validateRequest({
+    params: usernameObject,
     query: userSchemas.findManyFollowing,
   }),
   userControllers.findManyFollowing
 );
 
 router.get(
-  '/users/:username/followers',
-  validateRequest({
-    params: usernameInput,
-    query: userSchemas.findManyFollowers,
-  }),
-  userControllers.findManyFollowers
-);
-
-router.get(
   '/chirps/:chirpId/liking-users',
   validateRequest({
-    params: chirpIdSchema,
+    params: chirpIdObject,
     query: userSchemas.findManyLiking,
   }),
   userControllers.findManyLiking

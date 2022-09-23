@@ -2,7 +2,7 @@ import { Router } from 'express';
 import * as followControllers from '../controllers/follow';
 import { authenticate } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
-import { objectId, usernameInput } from '../schemas';
+import { objectId, usernameObject } from '../schemas/request';
 
 const router = Router();
 
@@ -11,7 +11,7 @@ router.post(
   authenticate,
   validateRequest({
     currentUserId: objectId,
-    body: usernameInput,
+    body: usernameObject,
   }),
   followControllers.createOne
 );
@@ -21,7 +21,7 @@ router.delete(
   authenticate,
   validateRequest({
     currentUserId: objectId,
-    params: usernameInput,
+    params: usernameObject,
   }),
   followControllers.deleteOne
 );

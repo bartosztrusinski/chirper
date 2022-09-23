@@ -2,7 +2,7 @@ import { Router } from 'express';
 import * as likeControllers from '../controllers/like';
 import { authenticate } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
-import { chirpIdSchema, objectId } from '../schemas';
+import { chirpIdObject, objectId } from '../schemas/request';
 
 const router = Router();
 
@@ -11,7 +11,7 @@ router.post(
   authenticate,
   validateRequest({
     currentUserId: objectId,
-    body: chirpIdSchema,
+    body: chirpIdObject,
   }),
   likeControllers.createOne
 );
@@ -21,7 +21,7 @@ router.delete(
   authenticate,
   validateRequest({
     currentUserId: objectId,
-    params: chirpIdSchema,
+    params: chirpIdObject,
   }),
   likeControllers.deleteOne
 );

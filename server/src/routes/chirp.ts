@@ -6,7 +6,7 @@ import {
   authorize,
 } from '../middleware/auth';
 import { validateRequest } from '../middleware/validation';
-import { chirpIdSchema, objectId, usernameInput } from '../schemas';
+import { chirpIdObject, objectId, usernameObject } from '../schemas/request';
 import * as chirpSchemas from '../schemas/chirp';
 
 const router = Router();
@@ -32,7 +32,7 @@ router.get(
 router.get(
   '/chirps/:chirpId',
   validateRequest({
-    params: chirpIdSchema,
+    params: chirpIdObject,
     query: chirpSchemas.findOne,
   }),
   chirpControllers.findOne
@@ -53,7 +53,7 @@ router.delete(
   authenticate,
   validateRequest({
     currentUserId: objectId,
-    params: chirpIdSchema,
+    params: chirpIdObject,
   }),
   authorize,
   chirpControllers.deleteOne
@@ -62,7 +62,7 @@ router.delete(
 router.get(
   '/users/:username/chirps',
   validateRequest({
-    params: usernameInput,
+    params: usernameObject,
     query: chirpSchemas.findManyByUser,
   }),
   chirpControllers.findManyByUser
@@ -71,7 +71,7 @@ router.get(
 router.get(
   '/users/:username/liked-chirps',
   validateRequest({
-    params: usernameInput,
+    params: usernameObject,
     query: chirpSchemas.findManyLiked,
   }),
   chirpControllers.findManyLiked
@@ -80,7 +80,7 @@ router.get(
 router.get(
   '/users/:username/timelines/reverse-chronological',
   validateRequest({
-    params: usernameInput,
+    params: usernameObject,
     query: chirpSchemas.getUserTimeline,
   }),
   chirpControllers.getUserTimeline

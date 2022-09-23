@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
-import { UsernameInput, ResponseBody } from '../schemas';
+import { UsernameObject } from '../types/request';
 import * as FollowService from '../services/follow';
 import * as UserService from '../services/user';
+import SuccessResponse from '../types/SuccessResponse';
 
 export const createOne = async (
-  req: Request<unknown, ResponseBody, UsernameInput>,
-  res: Response<ResponseBody>
+  req: Request<unknown, SuccessResponse, UsernameObject>,
+  res: Response<SuccessResponse>
 ) => {
   const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
   const { username } = req.body;
@@ -27,8 +28,8 @@ export const createOne = async (
 };
 
 export const deleteOne = async (
-  req: Request<UsernameInput>,
-  res: Response<ResponseBody>
+  req: Request<UsernameObject>,
+  res: Response<SuccessResponse>
 ) => {
   const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
   const { username } = req.params;

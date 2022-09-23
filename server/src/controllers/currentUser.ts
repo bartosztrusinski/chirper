@@ -5,15 +5,15 @@ import {
   UpdateUsername,
   UserProfile,
   FindOne,
-} from '../schemas/currentUser';
-import { ResponseBody } from '../schemas';
+} from '../types/user';
+import SuccessResponse from '../types/SuccessResponse';
 import * as UserService from '../services/user';
 import { Types } from 'mongoose';
-import createResponse from '../utils/createResponse';
+import createSuccessResponse from '../utils/createSuccessResponse';
 
-export const getOne = async (
-  req: Request<unknown, ResponseBody, unknown, FindOne>,
-  res: Response<ResponseBody>
+export const findOne = async (
+  req: Request<unknown, SuccessResponse, unknown, FindOne>,
+  res: Response<SuccessResponse>
 ) => {
   const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
   const { userFields } = req.query;
@@ -22,12 +22,12 @@ export const getOne = async (
 
   const currentUser = await UserService.findOne(currentUserId, userFields);
 
-  res.status(200).json(createResponse(currentUser));
+  res.status(200).json(createSuccessResponse(currentUser));
 };
 
 export const updateProfile = async (
-  req: Request<unknown, ResponseBody, UserProfile>,
-  res: Response<ResponseBody>
+  req: Request<unknown, SuccessResponse, UserProfile>,
+  res: Response<SuccessResponse>
 ) => {
   const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
   const profile = req.body;
@@ -39,12 +39,12 @@ export const updateProfile = async (
     profile
   );
 
-  res.status(200).json(createResponse(updatedProfile));
+  res.status(200).json(createSuccessResponse(updatedProfile));
 };
 
 export const updatePassword = async (
-  req: Request<unknown, ResponseBody, UpdatePassword>,
-  res: Response<ResponseBody>
+  req: Request<unknown, SuccessResponse, UpdatePassword>,
+  res: Response<SuccessResponse>
 ) => {
   const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
   const { newPassword } = req.body;
@@ -53,12 +53,12 @@ export const updatePassword = async (
 
   await UserService.updatePassword(currentUserId, newPassword);
 
-  res.status(200).json(createResponse(null));
+  res.status(200).json(createSuccessResponse(null));
 };
 
 export const updateUsername = async (
-  req: Request<unknown, ResponseBody, UpdateUsername>,
-  res: Response<ResponseBody>
+  req: Request<unknown, SuccessResponse, UpdateUsername>,
+  res: Response<SuccessResponse>
 ) => {
   const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
   const { newUsername } = req.body;
@@ -67,12 +67,12 @@ export const updateUsername = async (
 
   await UserService.updateUsername(currentUserId, newUsername);
 
-  res.status(200).json(createResponse({ newUsername }));
+  res.status(200).json(createSuccessResponse({ newUsername }));
 };
 
 export const updateEmail = async (
-  req: Request<unknown, ResponseBody, UpdateEmail>,
-  res: Response<ResponseBody>
+  req: Request<unknown, SuccessResponse, UpdateEmail>,
+  res: Response<SuccessResponse>
 ) => {
   // verify new email
   const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
@@ -82,17 +82,20 @@ export const updateEmail = async (
 
   await UserService.updateEmail(currentUserId, newEmail);
 
-  res.status(200).json(createResponse({ newEmail }));
+  res.status(200).json(createSuccessResponse({ newEmail }));
 };
 
-export const deleteOne = async (req: Request, res: Response<ResponseBody>) => {
+export const deleteOne = async (
+  req: Request,
+  res: Response<SuccessResponse>
+) => {
   const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
 
   res.status(400);
 
   await UserService.deleteOne(currentUserId);
 
-  res.status(200).json(createResponse(null));
+  res.status(200).json(createSuccessResponse(null));
 };
 
 // export const confirmCurrentUserPassword: Handler = async (req, res) => {

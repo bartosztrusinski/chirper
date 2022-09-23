@@ -8,30 +8,31 @@ import {
   SearchMany,
   SignUp,
   FindManyLiking,
-  FindManyFollowers,
   FindManyFollowing,
-} from '../schemas/user';
-import { UsernameInput, ResponseBody, ChirpId } from '../schemas';
+  FindManyFollowed,
+} from '../types/user';
+import { UsernameObject, ChirpIdObject } from '../types/request';
 import * as UserService from '../services/user';
 import * as ChirpService from '../services/chirp';
-import createResponse from '../utils/createResponse';
+import createSuccessResponse from '../utils/createSuccessResponse';
 import calculateSkip from '../utils/calculateSkip';
 import generateAuthToken from '../utils/generateAuthToken';
+import SuccessResponse from '../types/SuccessResponse';
 
 export const findMany = async (
-  req: Request<unknown, ResponseBody, unknown, FindMany>,
-  res: Response<ResponseBody>
+  req: Request<unknown, SuccessResponse, unknown, FindMany>,
+  res: Response<SuccessResponse>
 ) => {
   const { ids, userFields } = req.query;
 
   const foundUsers = await UserService.findMany({ _id: ids }, userFields);
 
-  res.status(200).json(createResponse(foundUsers));
+  res.status(200).json(createSuccessResponse(foundUsers));
 };
 
 export const findOne = async (
-  req: Request<UsernameInput, ResponseBody, unknown, FindOne>,
-  res: Response<ResponseBody>
+  req: Request<UsernameObject, SuccessResponse, unknown, FindOne>,
+  res: Response<SuccessResponse>
 ) => {
   const { username } = req.params;
   const { userFields } = req.query;
@@ -40,12 +41,12 @@ export const findOne = async (
 
   const foundUser = await UserService.findOne(username, userFields);
 
-  res.status(200).json(createResponse(foundUser));
+  res.status(200).json(createSuccessResponse(foundUser));
 };
 
 export const searchMany = async (
-  req: Request<unknown, ResponseBody, unknown, SearchMany>,
-  res: Response<ResponseBody>
+  req: Request<unknown, SuccessResponse, unknown, SearchMany>,
+  res: Response<SuccessResponse>
 ) => {
   const { currentUserId } = req;
   const { query, followedOnly, userFields, limit, page } = req.query;
@@ -69,12 +70,12 @@ export const searchMany = async (
 
   const nextPage = foundUsers.length ? page + 1 : undefined;
 
-  res.status(200).json(createResponse(foundUsers, { nextPage }));
+  res.status(200).json(createSuccessResponse(foundUsers, { nextPage }));
 };
 
 export const findManyLiking = async (
-  req: Request<ChirpId, ResponseBody, unknown, FindManyLiking>,
-  res: Response<ResponseBody>
+  req: Request<ChirpIdObject, SuccessResponse, unknown, FindManyLiking>,
+  res: Response<SuccessResponse>
 ) => {
   const { chirpId } = req.params;
   const { sinceId, userFields, limit } = req.query;
@@ -90,12 +91,12 @@ export const findManyLiking = async (
     userFields
   );
 
-  res.status(200).json(createResponse(likingUsers, { nextPage }));
+  res.status(200).json(createSuccessResponse(likingUsers, { nextPage }));
 };
 
-export const findManyFollowing = async (
-  req: Request<UsernameInput, ResponseBody, unknown, FindManyFollowing>,
-  res: Response<ResponseBody>
+export const findManyFollowed = async (
+  req: Request<UsernameObject, SuccessResponse, unknown, FindManyFollowed>,
+  res: Response<SuccessResponse>
 ) => {
   const { username } = req.params;
   const { sinceId, userFields, limit } = req.query;
@@ -115,12 +116,12 @@ export const findManyFollowing = async (
     userFields
   );
 
-  res.status(200).json(createResponse(followedUsers, { nextPage }));
+  res.status(200).json(createSuccessResponse(followedUsers, { nextPage }));
 };
 
-export const findManyFollowers = async (
-  req: Request<UsernameInput, ResponseBody, unknown, FindManyFollowers>,
-  res: Response<ResponseBody>
+export const findManyFollowing = async (
+  req: Request<UsernameObject, SuccessResponse, unknown, FindManyFollowing>,
+  res: Response<SuccessResponse>
 ) => {
   const { username } = req.params;
   const { sinceId, userFields, limit } = req.query;
@@ -137,12 +138,12 @@ export const findManyFollowers = async (
     userFields
   );
 
-  res.status(200).json(createResponse(followingUsers, { nextPage }));
+  res.status(200).json(createSuccessResponse(followingUsers, { nextPage }));
 };
 
 export const signUp = async (
-  req: Request<unknown, ResponseBody, SignUp>,
-  res: Response<ResponseBody>
+  req: Request<unknown, SuccessResponse, SignUp>,
+  res: Response<SuccessResponse>
 ) => {
   // verify email
   const { username, email, password, name } = req.body;
@@ -160,12 +161,12 @@ export const signUp = async (
 
   const authToken = generateAuthToken(newUserId);
 
-  res.status(201).json(createResponse({ _id: newUserId, authToken }));
+  res.status(201).json(createSuccessResponse({ _id: newUserId, authToken }));
 };
 
 export const logIn = async (
-  req: Request<unknown, ResponseBody, LogIn>,
-  res: Response<ResponseBody>
+  req: Request<unknown, SuccessResponse, LogIn>,
+  res: Response<SuccessResponse>
 ) => {
   const { login, password } = req.body;
 
@@ -175,5 +176,5 @@ export const logIn = async (
 
   const authToken = generateAuthToken(userId);
 
-  res.status(200).json(createResponse({ _id: userId, authToken }));
+  res.status(200).json(createSuccessResponse({ _id: userId, authToken }));
 };

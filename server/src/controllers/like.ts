@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
-import { ChirpId, ResponseBody } from '../schemas';
+import { ChirpIdObject } from '../types/request';
 import * as ChirpService from '../services/chirp';
 import * as LikeService from '../services/like';
+import SuccessResponse from '../types/SuccessResponse';
 
 export const createOne = async (
-  req: Request<unknown, ResponseBody, ChirpId>,
-  res: Response<ResponseBody>
+  req: Request<unknown, SuccessResponse, ChirpIdObject>,
+  res: Response<SuccessResponse>
 ) => {
   const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
   const { chirpId } = req.body;
@@ -23,8 +24,8 @@ export const createOne = async (
 };
 
 export const deleteOne = async (
-  req: Request<ChirpId>,
-  res: Response<ResponseBody>
+  req: Request<ChirpIdObject>,
+  res: Response<SuccessResponse>
 ) => {
   const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
   const { chirpId } = req.params;
