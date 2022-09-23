@@ -1,35 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import { ZodError } from 'zod';
 import config from '../config/general';
+import ErrorResponse from '../types/ErrorResponse';
+import parseError from '../utils/parseError';
 
-interface MessageResponse {
-  message: string;
-}
-interface ErrorResponse extends MessageResponse {
-  stack?: string;
-}
-
-class ErrorParser {
-  public static parse(error: Error, statusCode: number) {
-    if (error instanceof ZodError) {
-      return this.parseZodError(error);
-    }
-    return this.parseError(error, statusCode);
-  }
-
-  private static parseZodError(error: ZodError) {
-    return {
-      message: error.issues.map((issue) => issue.message).join(', '),
-      statusCode: 422,
-    };
-  }
-  private static parseError(error: Error, statusCode: number) {
-    return {
-      message: error.message,
-      statusCode: statusCode === 200 ? 500 : statusCode,
-    };
-  }
-}
+const env = config.app.environment;
 
 const errorHandler = (
   error: Error,
@@ -38,8 +12,8 @@ const errorHandler = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ) => {
-  const stack = config.app.environment === 'production' ? '🥞' : error.stack;
-  const { message, statusCode } = ErrorParser.parse(error, res.statusCode);
+  const stack = env === 'production' ? '🥞' : error.stack;
+  const { message, statusCode } = parseError(error, res.statusCode);
 
   res.status(statusCode).json({
     message,
