@@ -1,4 +1,4 @@
-import { FilterQuery, PopulateOptions, SortOrder, Types } from 'mongoose';
+import { FilterQuery, PopulateOptions, Types } from 'mongoose';
 import Chirp, {
   IChirp,
   IPost,
@@ -8,12 +8,15 @@ import Chirp, {
 } from '../models/Chirp';
 import Like, { ILike } from '../models/Like';
 import config from '../config/request';
+import SortQuery from '../types/SortQuery';
+
+const defaultField = config.chirp.fields.default;
 
 export const findMany = async (
   filter: FilterQuery<IChirp>,
-  select: string = config.chirp.fields.default,
+  select: string = defaultField,
   populate: PopulateOptions[] = [],
-  sort?: { [key: string]: SortOrder | { $meta: 'textScore' } },
+  sort?: SortQuery,
   limit?: number,
   skip?: number
 ) => {
@@ -22,21 +25,26 @@ export const findMany = async (
     // .select({ score: { $meta: 'textScore' } })
     .populate(populate)
     .sort(sort);
+
   if (limit) query.limit(limit);
   if (skip) query.skip(skip);
+
   const chirps = await query;
+
   return chirps;
 };
 
 export const findOne = async (
   id: Types.ObjectId,
-  select: string = config.chirp.fields.default,
+  select: string = defaultField,
   populate: PopulateOptions[] = []
 ) => {
   const chirp = await Chirp.findById(id).select(select).populate(populate);
+
   if (!chirp) {
     throw new Error('Sorry, we could not find that chirp');
   }
+
   return chirp;
 };
 
@@ -56,6 +64,7 @@ const createReply = async (
     post,
     parent,
   });
+
   return reply._id;
 };
 
@@ -64,6 +73,7 @@ const createPost = async (content: string, author: Types.ObjectId) => {
     content,
     author,
   });
+
   return post._id;
 };
 
@@ -75,6 +85,7 @@ export const createOne = async (
   const chirpId = parentId
     ? await createReply(content, author, parentId)
     : await createPost(content, author);
+
   return chirpId;
 };
 
@@ -89,12 +100,12 @@ export const findLikingUsersIds = async (
   sinceId?: Types.ObjectId
 ) => {
   const filter: FilterQuery<ILike> = { chirp };
-  if (sinceId) {
-    filter._id = { $lt: sinceId };
-  }
+  if (sinceId) filter._id = { $lt: sinceId };
 
   const likes = await Like.find(filter).sort({ _id: -1 }).limit(limit);
+
   const likingUsersIds = likes.map((like) => like.user);
   const nextPage = likes[likes.length - 1]?._id;
+
   return { likingUsersIds, nextPage };
 };
