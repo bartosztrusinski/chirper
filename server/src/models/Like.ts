@@ -1,15 +1,9 @@
-import { model, Model, Schema, Types } from 'mongoose';
-import Chirp from './Chirp';
-import User from './User';
+import { model, Schema } from 'mongoose';
+import { Like, LikeModel } from '../types/like';
+import * as ChirpService from '../services/chirp';
+import * as UserService from '../services/user';
 
-export interface ILike {
-  user: Types.ObjectId;
-  chirp: Types.ObjectId;
-}
-
-type LikeModel = Model<ILike>;
-
-const likeSchema = new Schema<ILike, LikeModel>(
+const likeSchema = new Schema<Like, LikeModel>(
   {
     user: {
       type: Schema.Types.ObjectId,
@@ -25,26 +19,19 @@ const likeSchema = new Schema<ILike, LikeModel>(
   { timestamps: true }
 );
 
+likeSchema.index({ user: 1, chirp: 1 }, { unique: true });
+
 likeSchema.post('save', async function incrementMetrics() {
-  await Chirp.findByIdAndUpdate(this.chirp, {
-    $inc: { 'metrics.likeCount': 1 },
-  });
-  await User.findByIdAndUpdate(this.user, {
-    $inc: { 'metrics.likedChirpCount': 1 },
-  });
+  if (!this.isNew) return;
+  await ChirpService.incrementMetrics(this.chirp, 'likeCount');
+  await UserService.incrementMetrics(this.user, 'likedChirpCount');
 });
 
 likeSchema.post('remove', async function decrementMetrics() {
-  await Chirp.findByIdAndUpdate(this.chirp, {
-    $inc: { 'metrics.likeCount': -1 },
-  });
-  await User.findByIdAndUpdate(this.user, {
-    $inc: { 'metrics.likedChirpCount': -1 },
-  });
+  await ChirpService.decrementMetrics(this.chirp, 'likeCount');
+  await UserService.decrementMetrics(this.user, 'likedChirpCount');
 });
 
-likeSchema.index({ user: 1, chirp: 1 }, { unique: true });
-
-const Like = model<ILike>('Like', likeSchema);
+const Like = model<Like>('Like', likeSchema);
 
 export default Like;

@@ -1,14 +1,8 @@
-import { model, Model, Schema, Types } from 'mongoose';
-import User from './User';
+import { model, Schema } from 'mongoose';
+import * as UserService from '../services/user';
+import { Follow, FollowModel } from '../types/follow';
 
-export interface IFollow {
-  sourceUser: Types.ObjectId;
-  targetUser: Types.ObjectId;
-}
-
-type FollowModel = Model<IFollow>;
-
-const followSchema = new Schema<IFollow, FollowModel>(
+const followSchema = new Schema<Follow, FollowModel>(
   {
     sourceUser: {
       type: Schema.Types.ObjectId,
@@ -24,26 +18,19 @@ const followSchema = new Schema<IFollow, FollowModel>(
   { timestamps: true }
 );
 
+followSchema.index({ sourceUser: 1, targetUser: 1 }, { unique: true });
+
 followSchema.post('save', async function incrementMetrics() {
-  await User.findByIdAndUpdate(this.sourceUser, {
-    $inc: { 'metrics.followingCount': 1 },
-  });
-  await User.findByIdAndUpdate(this.targetUser, {
-    $inc: { 'metrics.followersCount': 1 },
-  });
+  if (!this.isNew) return;
+  await UserService.incrementMetrics(this.sourceUser, 'followingCount');
+  await UserService.incrementMetrics(this.targetUser, 'followersCount');
 });
 
 followSchema.post('remove', async function decrementMetrics() {
-  await User.findByIdAndUpdate(this.sourceUser, {
-    $inc: { 'metrics.followingCount': -1 },
-  });
-  await User.findByIdAndUpdate(this.targetUser, {
-    $inc: { 'metrics.followersCount': -1 },
-  });
+  await UserService.decrementMetrics(this.sourceUser, 'followingCount');
+  await UserService.decrementMetrics(this.targetUser, 'followersCount');
 });
 
-followSchema.index({ sourceUser: 1, targetUser: 1 }, { unique: true });
-
-const Follow = model<IFollow>('Follow', followSchema);
+const Follow = model<Follow>('Follow', followSchema);
 
 export default Follow;

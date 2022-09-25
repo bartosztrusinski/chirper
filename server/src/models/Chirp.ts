@@ -1,27 +1,21 @@
-import { Schema, Types, model, Model, HydratedDocument } from 'mongoose';
-import Like from './Like';
-import User, { HydratedUser } from './User';
+import { Schema, model } from 'mongoose';
+import * as UserService from '../services/user';
+import * as ChirpService from '../services/chirp';
+import * as LikeService from '../services/like';
+import {
+  ChirpModel,
+  Chirp,
+  Reply,
+  ReplyModel,
+  Post,
+  PostModel,
+} from '../types/chirp';
 
-export interface IChirp {
-  content: string;
-  author: Types.ObjectId;
-  replies: Types.ObjectId[];
-  metrics: IChirpMetrics;
-}
-
-interface IChirpMetrics {
-  likeCount: number;
-}
-
-type ChirpModel = Model<IChirp>;
-
-const chirpSchema = new Schema<IChirp, ChirpModel>(
+const chirpSchema = new Schema<Chirp, ChirpModel>(
   {
     content: {
       type: String,
       required: [true, 'Chirp content is required'],
-      maxLength: [140, 'Chirp must be less than 140 characters'],
-      trim: true,
     },
     author: {
       type: Schema.Types.ObjectId,
@@ -44,55 +38,9 @@ const chirpSchema = new Schema<IChirp, ChirpModel>(
   { timestamps: true, discriminatorKey: 'kind' }
 );
 
-export type HydratedChirp = HydratedDocument<IChirp>;
-export type HydratedReply = HydratedDocument<IReply>;
+const postSchema = new Schema<Post, PostModel>({});
 
-export interface PopulatedReplies {
-  replies: HydratedReply[];
-}
-
-export interface PopulatedAuthor {
-  author: HydratedUser;
-}
-
-chirpSchema.post('save', async function incrementMetrics() {
-  await User.findByIdAndUpdate(this.author, {
-    $inc: { 'metrics.chirpCount': 1 },
-  });
-});
-
-chirpSchema.post('remove', async function removeDependencies() {
-  await User.findByIdAndUpdate(this.author, {
-    $inc: { 'metrics.chirpCount': -1 },
-  });
-
-  const { replies } = await this.populate<PopulatedReplies>('replies');
-  const likes = await Like.find({ chirp: this._id });
-  await Promise.all([...likes, ...replies].map((doc) => doc.remove()));
-});
-
-chirpSchema.index({ content: 'text' });
-
-const Chirp = model<IChirp, ChirpModel>('Chirp', chirpSchema);
-
-export type IPost = IChirp;
-type PostModel = Model<IPost>;
-const postSchema = new Schema<IPost, PostModel>({});
-
-const PostChirp = Chirp.discriminator<IPost, PostModel>(
-  'Post',
-  postSchema,
-  'post'
-);
-
-export interface IReply extends IChirp {
-  post: Types.ObjectId;
-  parent: Types.ObjectId;
-}
-
-type ReplyModel = Model<IReply>;
-
-const replySchema = new Schema<IReply, ReplyModel>({
+const replySchema = new Schema<Reply, ReplyModel>({
   post: {
     type: Schema.Types.ObjectId,
     ref: 'Post',
@@ -105,22 +53,40 @@ const replySchema = new Schema<IReply, ReplyModel>({
   },
 });
 
+chirpSchema.index({ content: 'text' });
+
+chirpSchema.post('save', async function incrementMetrics() {
+  if (!this.isNew) return;
+  await UserService.incrementMetrics(this.author, 'chirpCount');
+});
+
+chirpSchema.post('remove', async function removeDependencies() {
+  await UserService.decrementMetrics(this.author, 'chirpCount');
+  await ChirpService.deleteMany({ _id: this.replies });
+  await LikeService.deleteMany({ chirp: this._id });
+});
+
 replySchema.post('save', async function pushToParent() {
-  await Chirp.findByIdAndUpdate(this.parent, {
-    $push: { replies: this._id },
-  });
+  if (!this.isNew) return;
+  await ChirpService.pushReply(this.parent, this._id);
 });
 
 replySchema.post('remove', async function pullFromParent() {
-  await Chirp.findByIdAndUpdate(this.parent, {
-    $pull: { replies: this._id },
-  });
+  await ChirpService.pullReply(this.parent, this._id);
 });
 
-const ReplyChirp = Chirp.discriminator<IReply, ReplyModel>(
+const Chirp = model<Chirp, ChirpModel>('Chirp', chirpSchema);
+
+const ReplyChirp = Chirp.discriminator<Reply, ReplyModel>(
   'Reply',
   replySchema,
   'reply'
+);
+
+const PostChirp = Chirp.discriminator<Post, PostModel>(
+  'Post',
+  postSchema,
+  'post'
 );
 
 export default Chirp;

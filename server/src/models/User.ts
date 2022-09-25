@@ -1,116 +1,52 @@
-import { Schema, model, Model, HydratedDocument } from 'mongoose';
+import { Schema, model } from 'mongoose';
+import * as FollowService from '../services/follow';
+import * as LikeService from '../services/like';
+import { Profile, User, UserMethods, UserModel } from '../types/user';
 import bcrypt from 'bcryptjs';
-import Follow from './Follow';
-import Like from './Like';
-interface IUserProfile {
-  name: string;
-  picture?: string;
-  header?: string;
-  bio?: string;
-  location?: string;
-  website?: string;
-}
+import generateHash from '../utils/generateHash';
+import { IsPasswordMatch } from '../types/IsPasswordMatch';
 
-interface IUserMetrics {
-  followersCount: number;
-  followingCount: number;
-  chirpCount: number;
-  likedChirpCount: number;
-}
-
-const userProfileSchema = new Schema<IUserProfile>(
+const userProfileSchema = new Schema<Profile>(
   {
     name: {
       type: String,
       required: [true, 'Profile name is required'],
-      max: [50, 'Profile name must be less than 50 characters'],
-      match: [/^[^<>]*$/, 'Profile name cannot include invalid characters'],
-      trim: true,
-    },
-    picture: {
-      type: String,
-      trim: true,
-    },
-    header: {
-      type: String,
-      trim: true,
-    },
-    bio: {
-      type: String,
-      max: [160, 'Description must be less than 160 characters'],
-      match: [/^[^<>]*$/, 'Description cannot include invalid characters'],
-      trim: true,
-    },
-    location: {
-      type: String,
-      max: [30, 'Location must be less than 30 characters'],
-      match: [/^[^<>]*$/, 'Location cannot include invalid characters'],
-      trim: true,
-    },
-    website: {
-      type: String,
-      max: [100, 'Website URL must be less than 100 characters'],
-      match: [
-        /^(https?:\/\/)?(www.)?([a-z0-9]+\.)+[a-zA-Z]{2,}\/?(\/[a-zA-Z0-9#-_]+\/?)*$/,
-        'Website URL must be valid',
-      ],
-      trim: true,
+
+      picture: {
+        type: String,
+      },
+      header: {
+        type: String,
+      },
+      bio: {
+        type: String,
+      },
+      location: {
+        type: String,
+      },
+      website: {
+        type: String,
+      },
     },
   },
   { _id: false }
 );
 
-export interface IUser {
-  username: string;
-  email: string;
-  password: string;
-  profile: IUserProfile;
-  metrics: IUserMetrics;
-}
-
-export interface IUserMethods {
-  isPasswordMatch: IsPasswordMatch;
-}
-type IsPasswordMatch = (candidatePassword: string) => Promise<boolean>;
-
-type UserModel = Model<IUser, Record<string, unknown>, IUserMethods>;
-
-export type HydratedUser = HydratedDocument<IUser, IUserMethods>;
-
-const userSchema = new Schema<IUser, UserModel, IUserMethods>(
+const userSchema = new Schema<User, UserModel, UserMethods>(
   {
     username: {
       type: String,
       required: [true, 'Username is required'],
       unique: true,
-      minLength: [5, 'Username must be at least 5 characters'],
-      maxLength: [50, 'Username must be less than 50 characters'],
-      match: [
-        /^[A-Za-z0-9_]*$/,
-        'Username can only contain letters, numbers and "_"',
-      ],
-      trim: true,
     },
     email: {
       type: String,
       required: [true, 'Email is required'],
       unique: true,
-      match: [
-        /^([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        'Please enter a valid email address',
-      ],
-      trim: true,
     },
     password: {
       type: String,
       required: [true, 'Password is required'],
-      minLength: [8, 'Password must be at least 8 characters'],
-      maxLength: [64, 'Password must be less than 64 characters'],
-      match: [
-        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)[^\s<>]*$/,
-        'Password must contain at least one uppercase, one lowercase, and one number characters',
-      ],
-      trim: true,
     },
     profile: {
       type: userProfileSchema,
@@ -138,11 +74,12 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
   { timestamps: true }
 );
 
-const generateHash = async (input: string): Promise<string> => {
-  const salt = await bcrypt.genSalt(10);
-  const hashedInput = bcrypt.hash(input, salt);
-  return hashedInput;
-};
+userSchema.index({ username: 'text', 'profile.name': 'text' });
+
+userSchema.method('isPasswordMatch', function (this: User, candidatePassword) {
+  const isMatch = bcrypt.compare(candidatePassword, this.password);
+  return isMatch;
+} as IsPasswordMatch);
 
 userSchema.pre('save', async function hashPassword(next) {
   if (!this.isModified('password')) return next();
@@ -152,25 +89,12 @@ userSchema.pre('save', async function hashPassword(next) {
 });
 
 userSchema.post('remove', async function removeDependencies() {
-  const follows = await Follow.find({
+  await FollowService.deleteMany({
     $or: [{ sourceUser: this._id }, { targetUser: this._id }],
   });
-  const likes = await Like.find({ user: this._id });
-  await Promise.all([...likes, ...follows].map((doc) => doc.remove()));
+  await LikeService.deleteMany({ user: this._id });
 });
 
-const isPasswordMatch: IsPasswordMatch = function (
-  this: IUser,
-  candidatePassword
-) {
-  const isMatch = bcrypt.compare(candidatePassword, this.password);
-  return isMatch;
-};
-
-userSchema.method('isPasswordMatch', isPasswordMatch);
-
-userSchema.index({ username: 'text', 'profile.name': 'text' });
-
-const User = model<IUser, UserModel>('User', userSchema);
+const User = model<User, UserModel>('User', userSchema);
 
 export default User;
