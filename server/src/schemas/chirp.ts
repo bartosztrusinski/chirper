@@ -8,6 +8,7 @@ import {
   followedOnly,
   query,
   sinceId,
+  objectId,
   stringId,
 } from './request';
 import {
@@ -51,9 +52,33 @@ export const chirpSortOrder = z
   })
   .default(config.chirp.sort.default);
 
-const content = createInputSchema('content').max(
+export const content = createInputSchema('content').max(
   config.chirp.content.max,
   `Chirp content cannot exceed ${config.chirp.content.max} characters`
+);
+
+export const author = objectId;
+
+export const replies = z.array(objectId);
+
+export const metrics = z.object({
+  likeCount: z.number().int().min(0).default(0),
+});
+
+export const chirp = z.object({
+  content,
+  author,
+  replies,
+  metrics,
+});
+
+export const post = chirp;
+
+export const reply = z.object(chirp.shape).merge(
+  z.object({
+    parent: objectId,
+    post: objectId,
+  })
 );
 
 export const _findMany = z.object({
