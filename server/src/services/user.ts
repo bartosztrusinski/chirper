@@ -1,21 +1,31 @@
 import { FilterQuery, Types } from 'mongoose';
-import Follow, { IFollow } from '../models/Follow';
-import Like, { ILike } from '../models/Like';
-import User, { IUser } from '../models/User';
-import { Email, Name, Password, Username, Profile } from '../types/user';
+import * as FollowService from './follow';
+import * as LikeService from './like';
+import UserModel from '../models/User';
+import {
+  Email,
+  Name,
+  Password,
+  Username,
+  Profile,
+  MetricsField,
+  User,
+} from '../types/user';
 import config from '../config/request';
 import SortQuery from '../types/SortQuery';
+import { Follow } from '../types/follow';
+import { Like } from '../types/like';
 
-const defaultField = config.user.fields.default;
+const defaultFields = config.user.fields.default;
 
 export const findMany = async (
-  filter: FilterQuery<IUser>,
-  select: string = defaultField,
+  filter: FilterQuery<User>,
+  select: string = defaultFields,
   sort?: SortQuery,
   limit?: number,
   skip?: number
 ) => {
-  const query = User.find(filter)
+  const query = UserModel.find(filter)
     .select(select)
     // .select({ score: { $meta: 'textScore' } })
     .sort(sort);
@@ -30,14 +40,14 @@ export const findMany = async (
 
 export const findOne = async (
   id: Types.ObjectId | Username | Email,
-  select: string = defaultField
+  select: string = defaultFields
 ) => {
   const filter =
     id instanceof Types.ObjectId
       ? { _id: id }
       : { $or: [{ username: id }, { email: id }] };
 
-  const user = await User.findOne(filter).select(select);
+  const user = await UserModel.findOne(filter).select(select);
 
   if (!user) {
     throw new Error('Sorry, we could not find that user');
@@ -64,7 +74,7 @@ export const createOne = async (
   email: Email,
   password: Password
 ) => {
-  const newUser = await User.create({
+  const newUser = await UserModel.create({
     username,
     email,
     password,
@@ -118,13 +128,15 @@ export const findFollowedUsersIds = async (
   limit?: number,
   sinceId?: Types.ObjectId
 ) => {
-  const filter: FilterQuery<IFollow> = { sourceUser: user };
+  const filter: FilterQuery<Follow> = { sourceUser: user };
   if (sinceId) filter._id = { $lt: sinceId };
 
-  const query = Follow.find(filter).sort({ _id: -1 });
-  if (limit) query.limit(limit);
-
-  const follows = await query;
+  const follows = await FollowService.findMany(
+    filter,
+    'targetUser',
+    { _id: -1 },
+    limit
+  );
 
   const followedUsersIds = follows.map((follow) => follow.targetUser);
   const nextPage = follows[follows.length - 1]?._id;
@@ -137,10 +149,15 @@ export const findFollowingUsersIds = async (
   limit: number,
   sinceId?: Types.ObjectId
 ) => {
-  const filter: FilterQuery<IFollow> = { targetUser: user };
+  const filter: FilterQuery<Follow> = { targetUser: user };
   if (sinceId) filter._id = { $lt: sinceId };
 
-  const follows = await Follow.find(filter).sort({ _id: -1 }).limit(limit);
+  const follows = await FollowService.findMany(
+    filter,
+    'sourceUser',
+    { _id: -1 },
+    limit
+  );
 
   const followingUsersIds = follows.map((follow) => follow.sourceUser);
   const nextPage = follows[follows.length - 1]?._id;
@@ -153,10 +170,10 @@ export const findLikedChirpsIds = async (
   limit: number,
   sinceId?: Types.ObjectId
 ) => {
-  const filter: FilterQuery<ILike> = { user };
+  const filter: FilterQuery<Like> = { user };
   if (sinceId) filter._id = { $lt: sinceId };
 
-  const likes = await Like.find(filter).sort({ _id: -1 }).limit(limit);
+  const likes = await LikeService.findMany(filter, 'chirp', { _id: -1 }, limit);
 
   const likedChirpsIds = likes.map((like) => like.chirp);
   const nextPage = likes[likes.length - 1]?._id;
@@ -176,4 +193,28 @@ export const confirmPassword = async (
   }
 
   return user._id;
+};
+
+export const incrementMetrics = async (
+  id: Types.ObjectId,
+  ...metricsFields: MetricsField[]
+) => {
+  const user = await findOne(id, 'metrics');
+  const uniqueMetricsFields = [...new Set(metricsFields)];
+
+  uniqueMetricsFields.forEach((field) => user.metrics[field]++);
+
+  await user.save();
+};
+
+export const decrementMetrics = async (
+  id: Types.ObjectId,
+  ...metricsFields: MetricsField[]
+) => {
+  const user = await findOne(id, 'metrics');
+  const uniqueMetricsFields = [...new Set(metricsFields)];
+
+  uniqueMetricsFields.forEach((field) => user.metrics[field]--);
+
+  await user.save();
 };

@@ -1,8 +1,15 @@
 import { FilterQuery, Types } from 'mongoose';
-import Follow, { IFollow } from '../models/Follow';
+import config from '../config/request';
+import FollowModel from '../models/Follow';
+import { Follow } from '../types/follow';
+import SortQuery from '../types/SortQuery';
 
-export const findOne = async (filter: FilterQuery<IFollow>) => {
-  const follow = await Follow.findOne(filter).select('sourceUser targetUser');
+const defaultFields = config.follow.fields.default;
+
+export const findOne = async (filter: FilterQuery<Follow>) => {
+  const follow = await FollowModel.findOne(filter).select(
+    'sourceUser targetUser'
+  );
 
   if (!follow) {
     throw new Error('Sorry, we could not find the follow you are looking for');
@@ -11,11 +18,28 @@ export const findOne = async (filter: FilterQuery<IFollow>) => {
   return follow;
 };
 
+export const findMany = async (
+  filter: FilterQuery<Follow>,
+  select: string = defaultFields,
+  sort?: SortQuery,
+  limit?: number,
+  skip?: number
+) => {
+  const query = FollowModel.find(filter).select(select).sort(sort);
+
+  if (limit) query.limit(limit);
+  if (skip) query.skip(skip);
+
+  const follows = await query;
+
+  return follows;
+};
+
 export const createOne = async (
   sourceUser: Types.ObjectId,
   targetUser: Types.ObjectId
 ) => {
-  await Follow.create({ sourceUser, targetUser });
+  await FollowModel.create({ sourceUser, targetUser });
 };
 
 export const deleteOne = async (
@@ -34,4 +58,9 @@ export const handleDuplicate = async (
   if (follow) {
     throw new Error('Sorry, you are already following this user');
   }
+};
+
+export const deleteMany = async (filter: FilterQuery<Follow>) => {
+  const follows = await findMany(filter);
+  await Promise.all(follows.map((follow) => follow.remove()));
 };
