@@ -60,11 +60,25 @@ const chirp = {
   },
 } as const;
 
+const follow = {
+  fields: {
+    default: 'targetUser sourceUser',
+  },
+} as const;
+
+const like = {
+  fields: {
+    default: 'chirp user',
+  },
+} as const;
+
 const config = {
   limit,
   page,
   user,
   chirp,
+  follow,
+  like,
 } as const;
 
 export default config;
