@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { FilterQuery, Types } from 'mongoose';
-import { IChirp } from '../models/Chirp';
+import { Chirp } from '../types/chirp';
 import { ChirpIdObject, UsernameObject } from '../types/request';
 import {
   CreateOne,
@@ -47,6 +47,7 @@ export const findOne = async (
     chirpId,
     chirpFields,
     expandAuthor ? createChirpPopulate(userFields) : []
+    // expandReplies ? createChirpPopulate(chirpFields) : [] ??????????
   );
 
   res.status(200).json(createSuccessResponse(foundChirp));
@@ -74,7 +75,7 @@ export const searchMany = async (
 
   res.status(400);
 
-  const filter: FilterQuery<IChirp> = {
+  const filter: FilterQuery<Chirp> = {
     $text: { $search: query },
   };
 
@@ -126,7 +127,7 @@ export const getUserTimeline = async (
   );
   const timelineChirpsAuthorsIds = [...followedUsersIds, timelineUser._id];
 
-  const filter: FilterQuery<IChirp> = { author: timelineChirpsAuthorsIds };
+  const filter: FilterQuery<Chirp> = { author: timelineChirpsAuthorsIds };
   if (sinceId) filter._id = { $lt: sinceId };
 
   const timelineChirps = await ChirpService.findMany(
@@ -160,7 +161,7 @@ export const findManyByUser = async (
 
   const chirpsAuthor = await UserService.findOne(username);
 
-  const filter: FilterQuery<IChirp> = { author: chirpsAuthor._id };
+  const filter: FilterQuery<Chirp> = { author: chirpsAuthor._id };
   if (sinceId) filter._id = { $lt: sinceId };
   if (!includeReplies) filter.kind = 'post';
 

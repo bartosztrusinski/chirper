@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { FilterQuery } from 'mongoose';
-import { IUser } from '../models/User';
 import {
   FindOne,
   FindMany,
@@ -10,6 +9,7 @@ import {
   FindManyLiking,
   FindManyFollowing,
   FindManyFollowed,
+  User,
 } from '../types/user';
 import { UsernameObject, ChirpIdObject } from '../types/request';
 import * as UserService from '../services/user';
@@ -51,7 +51,7 @@ export const searchMany = async (
   const { currentUserId } = req;
   const { query, followedOnly, userFields, limit, page } = req.query;
 
-  const filter: FilterQuery<IUser> = { $text: { $search: query } };
+  const filter: FilterQuery<User> = { $text: { $search: query } };
 
   if (followedOnly && currentUserId) {
     const { followedUsersIds } = await UserService.findFollowedUsersIds(
