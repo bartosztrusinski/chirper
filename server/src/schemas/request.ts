@@ -10,7 +10,7 @@ import {
   setDefaultIfNaN,
   stringToBoolean,
   stringToId,
-} from './util';
+} from '../utils/zodFunctions';
 
 export const query = createInputSchema('query');
 

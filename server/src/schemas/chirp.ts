@@ -18,7 +18,7 @@ import {
   parseFields,
   stringToBoolean,
   stringToDate,
-} from './util';
+} from '../utils/zodFunctions';
 
 const from = createInputSchema('from').optional();
 

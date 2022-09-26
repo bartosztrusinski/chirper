@@ -10,7 +10,7 @@ import {
   followedOnly,
   usernameInput,
 } from './request';
-import { createInputSchema } from './util';
+import { createInputSchema } from '../utils/zodFunctions';
 
 const passwordInput = createInputSchema('password');
 
