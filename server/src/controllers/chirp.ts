@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { FilterQuery, Types } from 'mongoose';
 import { Chirp } from '../types/chirp';
-import { ChirpIdObject, UsernameObject } from '../types/request';
+import { ChirpIdObject, UsernameObject } from '../types/general';
 import {
   CreateOne,
   FindOne,
@@ -17,7 +17,7 @@ import calculateSkip from '../utils/calculateSkip';
 import createChirpSort from '../utils/createChirpSort';
 import createSuccessResponse from '../utils/createSuccessResponse';
 import createChirpPopulate from '../utils/createChirpPopulate';
-import SuccessResponse from '../types/SuccessResponse';
+import { SuccessResponse } from '../types/general';
 
 export const findMany = async (
   req: Request<unknown, SuccessResponse, unknown, FindMany>,

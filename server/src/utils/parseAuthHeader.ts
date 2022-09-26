@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { Types } from 'mongoose';
 import config from '../config/general';
-import AuthPayload from '../types/AuthPayload';
+import { AuthPayload } from '../types/general';
 
 const parseAuthHeader = (authHeader: string | undefined) => {
   if (!authHeader) {

@@ -12,7 +12,7 @@ import {
   User,
 } from '../types/user';
 import config from '../config/request';
-import SortQuery from '../types/SortQuery';
+import { SortQuery } from '../types/general';
 import { Follow } from '../types/follow';
 import { Like } from '../types/like';
 

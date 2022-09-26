@@ -4,7 +4,7 @@ import * as UserService from '../services/user';
 import * as ChirpService from '../services/chirp';
 import parseAuthHeader from '../utils/parseAuthHeader';
 import { DeleteOne } from '../types/user';
-import { ChirpIdObject } from '../types/request';
+import { ChirpIdObject } from '../types/general';
 
 export const authenticate = async (
   req: Request<unknown, unknown, unknown, unknown>,

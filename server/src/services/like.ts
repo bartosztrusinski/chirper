@@ -2,7 +2,7 @@ import { FilterQuery, Types } from 'mongoose';
 import config from '../config/request';
 import LikeModel from '../models/Like';
 import { Like } from '../types/like';
-import SortQuery from '../types/SortQuery';
+import { SortQuery } from '../types/general';
 
 const defaultFields = config.like.fields.default;
 

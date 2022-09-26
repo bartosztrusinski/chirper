@@ -4,7 +4,7 @@ import * as LikeService from '../services/like';
 import { Profile, User, UserMethods, UserModel } from '../types/user';
 import bcrypt from 'bcryptjs';
 import generateHash from '../utils/generateHash';
-import { IsPasswordMatch } from '../types/IsPasswordMatch';
+import { IsPasswordMatch } from '../types/general';
 
 const userProfileSchema = new Schema<Profile>(
   {

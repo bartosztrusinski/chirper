@@ -6,7 +6,7 @@ import {
   UserProfile,
   FindOne,
 } from '../types/user';
-import SuccessResponse from '../types/SuccessResponse';
+import { SuccessResponse } from '../types/general';
 import * as UserService from '../services/user';
 import { Types } from 'mongoose';
 import createSuccessResponse from '../utils/createSuccessResponse';

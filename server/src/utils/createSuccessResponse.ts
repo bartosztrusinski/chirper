@@ -1,4 +1,4 @@
-import SuccessResponse from '../types/SuccessResponse';
+import { SuccessResponse } from '../types/general';
 
 const createSuccessResponse = (
   data: SuccessResponse['data'],

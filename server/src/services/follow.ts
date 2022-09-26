@@ -2,7 +2,7 @@ import { FilterQuery, Types } from 'mongoose';
 import config from '../config/request';
 import FollowModel from '../models/Follow';
 import { Follow } from '../types/follow';
-import SortQuery from '../types/SortQuery';
+import { SortQuery } from '../types/general';
 
 const defaultFields = config.follow.fields.default;
 

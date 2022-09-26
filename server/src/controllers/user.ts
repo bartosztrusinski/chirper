@@ -11,13 +11,13 @@ import {
   FindManyFollowed,
   User,
 } from '../types/user';
-import { UsernameObject, ChirpIdObject } from '../types/request';
+import { UsernameObject, ChirpIdObject } from '../types/general';
 import * as UserService from '../services/user';
 import * as ChirpService from '../services/chirp';
 import createSuccessResponse from '../utils/createSuccessResponse';
 import calculateSkip from '../utils/calculateSkip';
 import generateAuthToken from '../utils/generateAuthToken';
-import SuccessResponse from '../types/SuccessResponse';
+import { SuccessResponse } from '../types/general';
 
 export const findMany = async (
   req: Request<unknown, SuccessResponse, unknown, FindMany>,

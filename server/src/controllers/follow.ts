@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
-import { UsernameObject } from '../types/request';
+import { UsernameObject } from '../types/general';
 import * as FollowService from '../services/follow';
 import * as UserService from '../services/user';
-import SuccessResponse from '../types/SuccessResponse';
+import { SuccessResponse } from '../types/general';
 
 export const createOne = async (
   req: Request<unknown, SuccessResponse, UsernameObject>,

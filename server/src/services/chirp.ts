@@ -1,6 +1,6 @@
 import { FilterQuery, PopulateOptions, Types } from 'mongoose';
 import config from '../config/request';
-import SortQuery from '../types/SortQuery';
+import { SortQuery } from '../types/general';
 import { Chirp, MetricsField, Post, Reply } from '../types/chirp';
 import * as LikeService from './like';
 import ChirpModel, { PostChirp, ReplyChirp } from '../models/Chirp';
