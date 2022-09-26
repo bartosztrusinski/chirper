@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import * as likeControllers from './like.controllers';
-import { authenticate } from '../../middleware/auth';
-import { validateRequest } from '../../middleware/validation';
-import { chirpIdObject, objectId } from '../../schemas/request';
+import { authenticate, validateRequest } from '../../middlewares';
+import { chirpIdObject, objectId } from '../../schemas';
 
 const router = Router();
 

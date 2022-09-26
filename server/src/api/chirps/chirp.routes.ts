@@ -4,9 +4,9 @@ import {
   authenticate,
   authenticateAllowGuest,
   authorize,
-} from '../../middleware/auth';
-import { validateRequest } from '../../middleware/validation';
-import { chirpIdObject, objectId, usernameObject } from '../../schemas/request';
+  validateRequest,
+} from '../../middlewares';
+import { chirpIdObject, objectId, usernameObject } from '../../schemas';
 import * as chirpSchemas from './chirp.schemas';
 
 const router = Router();

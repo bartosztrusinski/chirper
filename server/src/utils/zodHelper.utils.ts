@@ -1,13 +1,13 @@
 import { Types } from 'mongoose';
 import { z } from 'zod';
 
-export const stringToBoolean = z
+const stringToBoolean = z
   .function()
   .args(z.string())
   .returns(z.boolean())
   .implement((str) => str === 'true');
 
-export const optionalStringToNumber = z
+const optionalStringToNumber = z
   .function()
   .args(z.string().optional())
   .returns(z.number().or(z.nan()))
@@ -16,7 +16,7 @@ export const optionalStringToNumber = z
     return parseInt(str);
   });
 
-export const setDefaultIfNaN = (defaultValue: number) =>
+const setDefaultIfNaN = (defaultValue: number) =>
   z
     .function()
     .args(z.number().or(z.nan()))
@@ -26,14 +26,14 @@ export const setDefaultIfNaN = (defaultValue: number) =>
       return value;
     });
 
-export const clamp = (min: number, max: number) =>
+const clamp = (min: number, max: number) =>
   z
     .function()
     .args(z.number())
     .returns(z.number())
     .implement((value) => Math.min(Math.max(value, min), max));
 
-export const parseFields = (allowedFields: readonly string[]) =>
+const parseFields = (allowedFields: readonly string[]) =>
   z
     .function()
     .args(z.string())
@@ -46,7 +46,7 @@ export const parseFields = (allowedFields: readonly string[]) =>
         .reduce((fields, currentField) => fields + currentField + ' ', '');
     });
 
-export const addDefaultField = (defaultField: string) =>
+const addDefaultField = (defaultField: string) =>
   z
     .function()
     .args(z.string().optional())
@@ -56,7 +56,7 @@ export const addDefaultField = (defaultField: string) =>
       return `${fields},${defaultField}`;
     });
 
-export const stringToId = z
+const stringToId = z
   .function()
   .args(z.string(), z.any())
   .implement((str, ctx: z.RefinementCtx) => {
@@ -71,7 +71,7 @@ export const stringToId = z
     }
   });
 
-export const stringToDate = z
+const stringToDate = z
   .function()
   .args(z.string(), z.any())
   .implement((str, ctx: z.RefinementCtx) => {
@@ -86,7 +86,7 @@ export const stringToDate = z
     return new Date(parsedDate);
   });
 
-export const appendAuthorIfExpanded = z
+const appendAuthorIfExpanded = z
   .function()
   .args(z.any())
   .implement((query) => {
@@ -96,7 +96,7 @@ export const appendAuthorIfExpanded = z
     return query;
   });
 
-export const createInputSchema = (name: string) => {
+const createInputSchema = (name: string) => {
   const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
   return z
     .string({
@@ -104,4 +104,17 @@ export const createInputSchema = (name: string) => {
       invalid_type_error: `${capitalizedName} must be a string`,
     })
     .trim();
+};
+
+export {
+  stringToBoolean,
+  optionalStringToNumber,
+  setDefaultIfNaN,
+  clamp,
+  parseFields,
+  addDefaultField,
+  stringToId,
+  stringToDate,
+  appendAuthorIfExpanded,
+  createInputSchema,
 };

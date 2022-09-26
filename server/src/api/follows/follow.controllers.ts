@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
-import { SuccessResponse, UsernameObject } from '../../interfaces/general';
+import { SuccessResponse, UsernameObject } from '../../interfaces';
 import * as FollowService from './follow.service';
 import * as UserService from '../users/user.service';
 

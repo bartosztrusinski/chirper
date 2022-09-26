@@ -3,8 +3,8 @@ import * as FollowService from '../follows/follow.service';
 import * as LikeService from '../likes/like.service';
 import { Profile, User, UserMethods, UserModel } from './user.interfaces';
 import bcrypt from 'bcryptjs';
-import generateHash from '../../utils/generateHash';
-import { IsPasswordMatch } from '../../interfaces/general';
+import { IsPasswordMatch } from '../../interfaces';
+import { generateHash } from '../../utils/helper.utils';
 
 const userProfileSchema = new Schema<Profile>(
   {

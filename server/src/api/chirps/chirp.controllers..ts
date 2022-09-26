@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
 import { FilterQuery, Types } from 'mongoose';
-import { Chirp } from './chirp.interfaces.';
-import { ChirpIdObject, UsernameObject } from '../../interfaces/general';
+import {
+  ChirpIdObject,
+  UsernameObject,
+  SuccessResponse,
+} from '../../interfaces';
 import {
   CreateOne,
   FindOne,
@@ -10,14 +13,16 @@ import {
   SearchMany,
   FindManyByUser,
   FindManyLiked,
+  Chirp,
 } from './chirp.interfaces.';
 import * as ChirpService from './chirp.service';
 import * as UserService from '../users/user.service';
-import calculateSkip from '../../utils/calculateSkip';
-import createChirpSort from '../../utils/createChirpSort';
-import createSuccessResponse from '../../utils/createSuccessResponse';
-import createChirpPopulate from '../../utils/createChirpPopulate';
-import { SuccessResponse } from '../../interfaces/general';
+import {
+  calculateSkip,
+  createSuccessResponse,
+  populateAuthor,
+  createChirpSortQuery,
+} from '../../utils/helper.utils';
 
 export const findMany = async (
   req: Request<unknown, SuccessResponse, unknown, FindMany>,
@@ -28,7 +33,7 @@ export const findMany = async (
   const foundChirps = await ChirpService.findMany(
     { _id: ids },
     chirpFields,
-    expandAuthor ? createChirpPopulate(userFields) : []
+    expandAuthor ? populateAuthor(userFields) : []
   );
 
   res.status(200).json(createSuccessResponse(foundChirps));
@@ -46,7 +51,7 @@ export const findOne = async (
   const foundChirp = await ChirpService.findOne(
     chirpId,
     chirpFields,
-    expandAuthor ? createChirpPopulate(userFields) : []
+    expandAuthor ? populateAuthor(userFields) : []
     // expandReplies ? createChirpPopulate(chirpFields) : [] ??????????
   );
 
@@ -101,8 +106,8 @@ export const searchMany = async (
   const foundChirps = await ChirpService.findMany(
     filter,
     chirpFields,
-    expandAuthor ? createChirpPopulate(userFields) : [],
-    createChirpSort(sortOrder),
+    expandAuthor ? populateAuthor(userFields) : [],
+    createChirpSortQuery(sortOrder),
     limit,
     calculateSkip(page, limit)
   );
@@ -133,7 +138,7 @@ export const getUserTimeline = async (
   const timelineChirps = await ChirpService.findMany(
     filter,
     chirpFields,
-    expandAuthor ? createChirpPopulate(userFields) : [],
+    expandAuthor ? populateAuthor(userFields) : [],
     { _id: -1 },
     limit
   );
@@ -168,7 +173,7 @@ export const findManyByUser = async (
   const foundUsersChirps = await ChirpService.findMany(
     filter,
     chirpFields,
-    expandAuthor ? createChirpPopulate(userFields) : [],
+    expandAuthor ? populateAuthor(userFields) : [],
     { _id: -1 },
     limit
   );
@@ -198,7 +203,7 @@ export const findManyLiked = async (
   const likedChirps = await ChirpService.findMany(
     { _id: likedChirpsIds },
     chirpFields,
-    expandAuthor ? createChirpPopulate(userFields) : []
+    expandAuthor ? populateAuthor(userFields) : []
   );
 
   res.status(200).json(createSuccessResponse(likedChirps, { nextPage }));

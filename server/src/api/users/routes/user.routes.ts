@@ -1,12 +1,7 @@
 import { Router } from 'express';
 import * as userControllers from '../controllers/user.controllers';
-import { authenticateAllowGuest } from '../../../middleware/auth';
-import { validateRequest } from '../../../middleware/validation';
-import {
-  chirpIdObject,
-  objectId,
-  usernameObject,
-} from '../../../schemas/request';
+import { authenticateAllowGuest, validateRequest } from '../../../middlewares';
+import { chirpIdObject, objectId, usernameObject } from '../../../schemas';
 import * as userSchemas from '../user.schemas.';
 
 const router = Router();

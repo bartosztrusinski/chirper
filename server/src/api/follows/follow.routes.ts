@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import * as followControllers from './follow.controllers';
-import { authenticate } from '../../middleware/auth';
-import { validateRequest } from '../../middleware/validation';
-import { objectId, usernameObject } from '../../schemas/request';
+import { authenticate, validateRequest } from '../../middlewares';
+import { objectId, usernameObject } from '../../schemas';
 
 const router = Router();
 

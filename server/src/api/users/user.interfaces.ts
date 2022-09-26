@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import { z } from 'zod';
 import * as UserSchemas from './user.schemas.';
-import { IsPasswordMatch } from '../../interfaces/general';
+import { IsPasswordMatch } from '../../interfaces';
 
 export type Password = z.infer<typeof UserSchemas.password>;
 export type Email = z.infer<typeof UserSchemas.email>;

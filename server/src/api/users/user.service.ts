@@ -11,8 +11,8 @@ import {
   MetricsField,
   User,
 } from './user.interfaces';
-import config from '../../config/request';
-import { SortQuery } from '../../interfaces/general';
+import config from '../../config/request.config';
+import { SortQuery } from '../../interfaces';
 import { Follow } from '../follows/follow.interfaces';
 import { Like } from '../likes/like.interfaces';
 

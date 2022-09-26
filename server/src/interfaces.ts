@@ -1,7 +1,14 @@
 import { z } from 'zod';
 import { JwtPayload } from 'jsonwebtoken';
 import { SortValues } from 'mongoose';
-import { chirpIdObject, usernameObject } from '../schemas/request';
+import { chirpIdObject, usernameObject } from './schemas';
+import { Types } from 'mongoose';
+
+declare module 'express-serve-static-core' {
+  export interface Request {
+    currentUserId?: Types.ObjectId;
+  }
+}
 
 type UsernameObject = z.infer<typeof usernameObject>;
 
@@ -44,11 +51,3 @@ export {
   ChirpIdObject,
   IsPasswordMatch,
 };
-
-import { Types } from 'mongoose';
-
-declare module 'express-serve-static-core' {
-  export interface Request {
-    currentUserId?: Types.ObjectId;
-  }
-}

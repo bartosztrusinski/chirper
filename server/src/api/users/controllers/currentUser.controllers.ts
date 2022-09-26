@@ -8,8 +8,8 @@ import {
   UserProfile,
 } from '../user.interfaces';
 import * as UserService from '../user.service';
-import createSuccessResponse from '../../../utils/createSuccessResponse';
-import { SuccessResponse } from '../../../interfaces/general';
+import { SuccessResponse } from '../../../interfaces';
+import { createSuccessResponse } from '../../../utils/helper.utils';
 
 export const findCurrentOne = async (
   req: Request<unknown, SuccessResponse, unknown, FindOne>,

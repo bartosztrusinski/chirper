@@ -15,12 +15,14 @@ import {
   UsernameObject,
   ChirpIdObject,
   SuccessResponse,
-} from '../../../interfaces/general';
+} from '../../../interfaces';
 import * as UserService from '../user.service';
 import * as ChirpService from '../../chirps/chirp.service';
-import createSuccessResponse from '../../../utils/createSuccessResponse';
-import calculateSkip from '../../../utils/calculateSkip';
-import generateAuthToken from '../../../utils/generateAuthToken';
+import {
+  calculateSkip,
+  createSuccessResponse,
+  generateAuthToken,
+} from '../../../utils/helper.utils';
 
 export const findMany = async (
   req: Request<unknown, SuccessResponse, unknown, FindMany>,

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import config from '../../config/request';
+import config from '../../config/request.config';
 import {
   userFields,
   limit,
@@ -9,8 +9,8 @@ import {
   sinceId,
   followedOnly,
   usernameInput,
-} from '../../schemas/request';
-import { createInputSchema } from '../../utils/zodFunctions';
+} from '../../schemas';
+import { createInputSchema } from '../../utils/zodHelper.utils';
 
 const passwordInput = createInputSchema('password');
 

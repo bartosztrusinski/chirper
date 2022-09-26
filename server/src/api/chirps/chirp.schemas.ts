@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import config from '../../config/request';
+import config from '../../config/request.config';
 import {
   ids,
   userFields,
@@ -10,7 +10,7 @@ import {
   sinceId,
   objectId,
   stringId,
-} from '../../schemas/request';
+} from '../../schemas';
 import {
   addDefaultField,
   appendAuthorIfExpanded,
@@ -18,7 +18,7 @@ import {
   parseFields,
   stringToBoolean,
   stringToDate,
-} from '../../utils/zodFunctions';
+} from '../../utils/zodHelper.utils';
 
 const from = createInputSchema('from').optional();
 

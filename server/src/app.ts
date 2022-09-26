@@ -1,8 +1,7 @@
 import express, { Application } from 'express';
 import 'express-async-errors';
 import apiRoutes from './api';
-import notFound from './middleware/notFound';
-import errorHandler from './middleware/error';
+import { errorHandler, notFound } from './middlewares';
 
 const app: Application = express();
 

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import * as ChirpService from '../chirps/chirp.service';
 import * as LikeService from './like.service';
-import { ChirpIdObject, SuccessResponse } from '../../interfaces/general';
+import { ChirpIdObject, SuccessResponse } from '../../interfaces';
 
 export const createOne = async (
   req: Request<unknown, SuccessResponse, ChirpIdObject>,
