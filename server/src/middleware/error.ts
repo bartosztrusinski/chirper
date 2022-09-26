@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import config from '../config/general';
-import { ErrorResponse } from '../types/general';
+import { ErrorResponse } from '../interfaces/general';
 import parseError from '../utils/parseError';
 
 const env = config.app.environment;

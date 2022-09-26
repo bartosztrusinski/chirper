@@ -7,7 +7,7 @@
     "sourceMap": true,
     "outDir": "dist",
     "moduleResolution": "node",
-    "typeRoots": ["src/types", "node_modules/@types"]
+    "typeRoots": ["src/interfaces", "node_modules/@types"]
   },
   "include": ["src/**/*"]
 }

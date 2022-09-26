@@ -1,5 +1,5 @@
-import { ChirpSortOrder } from '../types/chirp';
-import { SortQuery } from '../types/general';
+import { ChirpSortOrder } from '../api/chirps/chirp.interfaces.';
+import { SortQuery } from '../interfaces/general';
 
 const createChirpSortQuery = (sortOrder: ChirpSortOrder) => {
   const sortBy: Record<string, SortQuery> = {

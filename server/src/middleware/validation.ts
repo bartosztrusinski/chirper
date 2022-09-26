@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { RequestValidators } from '../types/general';
+import { RequestValidators } from '../interfaces/general';
 
 export const validateRequest =
   (validators: RequestValidators) =>

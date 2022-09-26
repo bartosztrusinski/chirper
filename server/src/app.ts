@@ -1,6 +1,6 @@
 import express, { Application } from 'express';
 import 'express-async-errors';
-import apiRoutes from './routes';
+import apiRoutes from './api';
 import notFound from './middleware/notFound';
 import errorHandler from './middleware/error';
 

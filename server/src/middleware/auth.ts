@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
-import * as UserService from '../services/user';
-import * as ChirpService from '../services/chirp';
+import * as UserService from '../api/users/user.service';
+import * as ChirpService from '../api/chirps/chirp.service';
 import parseAuthHeader from '../utils/parseAuthHeader';
-import { DeleteOne } from '../types/user';
-import { ChirpIdObject } from '../types/general';
+import { DeleteOne } from '../api/users/user.interfaces';
+import { ChirpIdObject } from '../interfaces/general';
 
 export const authenticate = async (
   req: Request<unknown, unknown, unknown, unknown>,
