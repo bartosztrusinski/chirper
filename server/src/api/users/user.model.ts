@@ -53,11 +53,11 @@ const userSchema = new Schema<User, UserModel, UserMethods>(
       required: [true, 'User profile is required'],
     },
     metrics: {
-      followersCount: {
+      followingCount: {
         type: Number,
         default: 0,
       },
-      followingCount: {
+      followedCount: {
         type: Number,
         default: 0,
       },

@@ -34,13 +34,13 @@ router.get(
 );
 
 router.get(
-  '/users/:username/following',
+  '/users/:username/followed',
   [validateRequest(userSchemas.findManyFollowed)],
   userControllers.findManyFollowed
 );
 
 router.get(
-  '/users/:username/followers',
+  '/users/:username/following',
   [validateRequest(userSchemas.findManyFollowing)],
   userControllers.findManyFollowing
 );

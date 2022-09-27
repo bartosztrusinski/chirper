@@ -22,13 +22,13 @@ followSchema.index({ sourceUser: 1, targetUser: 1 }, { unique: true });
 
 followSchema.post('save', async function incrementMetrics() {
   if (!this.isNew) return;
-  await userService.incrementMetrics(this.sourceUser, 'followingCount');
-  await userService.incrementMetrics(this.targetUser, 'followersCount');
+  await userService.incrementMetrics(this.sourceUser, 'followedCount');
+  await userService.incrementMetrics(this.targetUser, 'followingCount');
 });
 
 followSchema.post('remove', async function decrementMetrics() {
-  await userService.decrementMetrics(this.sourceUser, 'followingCount');
-  await userService.decrementMetrics(this.targetUser, 'followersCount');
+  await userService.decrementMetrics(this.sourceUser, 'followedCount');
+  await userService.decrementMetrics(this.targetUser, 'followingCount');
 });
 
 const Follow = model<Follow>('Follow', followSchema);

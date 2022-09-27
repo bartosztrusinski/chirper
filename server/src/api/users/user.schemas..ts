@@ -106,8 +106,8 @@ const profile = object({
 const metrics = object({
   chirpCount: number().int().min(0).default(0),
   likedChirpCount: number().int().min(0).default(0),
+  followedCount: number().int().min(0).default(0),
   followingCount: number().int().min(0).default(0),
-  followersCount: number().int().min(0).default(0),
 });
 
 const user = object({

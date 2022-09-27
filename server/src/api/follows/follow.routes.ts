@@ -6,13 +6,13 @@ import * as followSchemas from './follow.schemas';
 const router = Router();
 
 router.post(
-  '/following',
+  '/followed',
   [authenticate, validateRequest(followSchemas.createOne)],
   followControllers.createOne
 );
 
 router.delete(
-  '/following/:username',
+  '/followed/:username',
   [authenticate, validateRequest(followSchemas.deleteOne)],
   followControllers.deleteOne
 );
