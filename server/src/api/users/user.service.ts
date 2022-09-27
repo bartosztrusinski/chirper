@@ -1,24 +1,16 @@
 import { FilterQuery, Types } from 'mongoose';
-import * as FollowService from '../follows/follow.service';
-import * as LikeService from '../likes/like.service';
 import UserModel from './user.model';
-import {
-  Email,
-  Name,
-  Password,
-  Username,
-  Profile,
-  MetricsField,
-  User,
-} from './user.interfaces';
-import config from '../../config/request.config';
 import { SortQuery } from '../../interfaces';
 import { Follow } from '../follows/follow.interfaces';
 import { Like } from '../likes/like.interfaces';
+import { MetricsField, User } from './user.interfaces';
+import * as followService from '../follows/follow.service';
+import * as likeService from '../likes/like.service';
+import config from '../../config/request.config';
 
 const defaultFields = config.user.fields.default;
 
-export const findMany = async (
+const findMany = async (
   filter: FilterQuery<User>,
   select: string = defaultFields,
   sort?: SortQuery,
@@ -38,8 +30,8 @@ export const findMany = async (
   return users;
 };
 
-export const findOne = async (
-  id: Types.ObjectId | Username | Email,
+const findOne = async (
+  id: Types.ObjectId | User['username'] | User['email'],
   select: string = defaultFields
 ) => {
   const filter =
@@ -56,7 +48,10 @@ export const findOne = async (
   return user;
 };
 
-export const handleDuplicate = async (username: Username, email: Email) => {
+const handleDuplicate = async (
+  username: User['username'],
+  email: User['email']
+) => {
   const usernameTaken = await findOne(username);
   if (usernameTaken) {
     throw new Error('Username has already been taken');
@@ -68,11 +63,11 @@ export const handleDuplicate = async (username: Username, email: Email) => {
   }
 };
 
-export const createOne = async (
-  username: Username,
-  name: Name,
-  email: Email,
-  password: Password
+const createOne = async (
+  username: User['username'],
+  name: User['profile']['name'],
+  email: User['email'],
+  password: User['password']
 ) => {
   const newUser = await UserModel.create({
     username,
@@ -84,12 +79,12 @@ export const createOne = async (
   return newUser._id;
 };
 
-export const deleteOne = async (id: Types.ObjectId) => {
+const deleteOne = async (id: Types.ObjectId) => {
   const user = await findOne(id);
   await user.remove();
 };
 
-export const updateProfile = async (id: Types.ObjectId, profile: Profile) => {
+const updateProfile = async (id: Types.ObjectId, profile: User['profile']) => {
   const user = await findOne(id);
 
   user.profile = profile;
@@ -99,31 +94,31 @@ export const updateProfile = async (id: Types.ObjectId, profile: Profile) => {
   return updatedUser.profile;
 };
 
-export const updatePassword = async (
+const updatePassword = async (
   id: Types.ObjectId,
-  password: Password
+  password: User['password']
 ) => {
   const user = await findOne(id);
   user.password = password;
   await user.save();
 };
 
-export const updateUsername = async (
+const updateUsername = async (
   id: Types.ObjectId,
-  username: Username
+  username: User['username']
 ) => {
   const user = await findOne(id);
   user.username = username;
   await user.save();
 };
 
-export const updateEmail = async (id: Types.ObjectId, email: Email) => {
+const updateEmail = async (id: Types.ObjectId, email: User['email']) => {
   const user = await findOne(id);
   user.email = email;
   await user.save();
 };
 
-export const findFollowedUsersIds = async (
+const findFollowedUsersIds = async (
   user: Types.ObjectId,
   limit?: number,
   sinceId?: Types.ObjectId
@@ -131,7 +126,7 @@ export const findFollowedUsersIds = async (
   const filter: FilterQuery<Follow> = { sourceUser: user };
   if (sinceId) filter._id = { $lt: sinceId };
 
-  const follows = await FollowService.findMany(
+  const follows = await followService.findMany(
     filter,
     'targetUser',
     { _id: -1 },
@@ -144,7 +139,7 @@ export const findFollowedUsersIds = async (
   return { followedUsersIds, nextPage };
 };
 
-export const findFollowingUsersIds = async (
+const findFollowingUsersIds = async (
   user: Types.ObjectId,
   limit: number,
   sinceId?: Types.ObjectId
@@ -152,7 +147,7 @@ export const findFollowingUsersIds = async (
   const filter: FilterQuery<Follow> = { targetUser: user };
   if (sinceId) filter._id = { $lt: sinceId };
 
-  const follows = await FollowService.findMany(
+  const follows = await followService.findMany(
     filter,
     'sourceUser',
     { _id: -1 },
@@ -165,7 +160,7 @@ export const findFollowingUsersIds = async (
   return { followingUsersIds, nextPage };
 };
 
-export const findLikedChirpsIds = async (
+const findLikedChirpsIds = async (
   user: Types.ObjectId,
   limit: number,
   sinceId?: Types.ObjectId
@@ -173,7 +168,7 @@ export const findLikedChirpsIds = async (
   const filter: FilterQuery<Like> = { user };
   if (sinceId) filter._id = { $lt: sinceId };
 
-  const likes = await LikeService.findMany(filter, 'chirp', { _id: -1 }, limit);
+  const likes = await likeService.findMany(filter, 'chirp', { _id: -1 }, limit);
 
   const likedChirpsIds = likes.map((like) => like.chirp);
   const nextPage = likes[likes.length - 1]?._id;
@@ -181,9 +176,9 @@ export const findLikedChirpsIds = async (
   return { likedChirpsIds, nextPage };
 };
 
-export const confirmPassword = async (
-  id: Types.ObjectId | Username | Email,
-  password: Password
+const confirmPassword = async (
+  id: Types.ObjectId | User['username'] | User['email'],
+  password: User['password']
 ) => {
   const user = await findOne(id, 'password');
 
@@ -195,7 +190,7 @@ export const confirmPassword = async (
   return user._id;
 };
 
-export const incrementMetrics = async (
+const incrementMetrics = async (
   id: Types.ObjectId,
   ...metricsFields: MetricsField[]
 ) => {
@@ -207,7 +202,7 @@ export const incrementMetrics = async (
   await user.save();
 };
 
-export const decrementMetrics = async (
+const decrementMetrics = async (
   id: Types.ObjectId,
   ...metricsFields: MetricsField[]
 ) => {
@@ -217,4 +212,22 @@ export const decrementMetrics = async (
   uniqueMetricsFields.forEach((field) => user.metrics[field]--);
 
   await user.save();
+};
+
+export {
+  findMany,
+  findOne,
+  createOne,
+  deleteOne,
+  handleDuplicate,
+  confirmPassword,
+  incrementMetrics,
+  decrementMetrics,
+  updateProfile,
+  updatePassword,
+  updateUsername,
+  updateEmail,
+  findFollowedUsersIds,
+  findFollowingUsersIds,
+  findLikedChirpsIds,
 };

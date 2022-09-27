@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
-import * as UserService from '../users/user.service';
 import { Follow, FollowModel } from './follow.interfaces';
+import * as userService from '../users/user.service';
 
 const followSchema = new Schema<Follow, FollowModel>(
   {
@@ -22,13 +22,13 @@ followSchema.index({ sourceUser: 1, targetUser: 1 }, { unique: true });
 
 followSchema.post('save', async function incrementMetrics() {
   if (!this.isNew) return;
-  await UserService.incrementMetrics(this.sourceUser, 'followingCount');
-  await UserService.incrementMetrics(this.targetUser, 'followersCount');
+  await userService.incrementMetrics(this.sourceUser, 'followingCount');
+  await userService.incrementMetrics(this.targetUser, 'followersCount');
 });
 
 followSchema.post('remove', async function decrementMetrics() {
-  await UserService.decrementMetrics(this.sourceUser, 'followingCount');
-  await UserService.decrementMetrics(this.targetUser, 'followersCount');
+  await userService.decrementMetrics(this.sourceUser, 'followingCount');
+  await userService.decrementMetrics(this.targetUser, 'followersCount');
 });
 
 const Follow = model<Follow>('Follow', followSchema);

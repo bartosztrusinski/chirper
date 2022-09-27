@@ -1,8 +1,11 @@
 import { Model, Types } from 'mongoose';
+import * as FollowControllers from './follow.controllers.interfaces';
 
-export interface Follow {
+interface Follow {
   sourceUser: Types.ObjectId;
   targetUser: Types.ObjectId;
 }
 
-export type FollowModel = Model<Follow>;
+type FollowModel = Model<Follow>;
+
+export { Follow, FollowModel, FollowControllers };

@@ -1,8 +1,7 @@
-import { z } from 'zod';
+import { SortValues, Types } from 'mongoose';
+import { AnyZodObject, TypeOf, ZodObject, ZodTypeAny } from 'zod';
 import { JwtPayload } from 'jsonwebtoken';
-import { SortValues } from 'mongoose';
 import { chirpIdObject, usernameObject } from './schemas';
-import { Types } from 'mongoose';
 
 declare module 'express-serve-static-core' {
   export interface Request {
@@ -10,9 +9,9 @@ declare module 'express-serve-static-core' {
   }
 }
 
-type UsernameObject = z.infer<typeof usernameObject>;
+type UsernameObject = TypeOf<typeof usernameObject>;
 
-type ChirpIdObject = z.infer<typeof chirpIdObject>;
+type ChirpIdObject = TypeOf<typeof chirpIdObject>;
 
 interface SortQuery {
   [key: string]: SortValues | { $meta: 'textScore' };
@@ -34,12 +33,12 @@ interface SuccessResponse {
   meta?: Record<string, unknown>;
 }
 
-interface RequestValidators {
-  body?: z.AnyZodObject;
-  params?: z.AnyZodObject;
-  query?: z.AnyZodObject | z.ZodEffects<z.AnyZodObject>;
-  currentUserId?: z.ZodTypeAny;
-}
+type RequestValidators = ZodObject<{
+  body?: AnyZodObject;
+  params?: AnyZodObject;
+  query?: AnyZodObject;
+  currentUserId?: ZodTypeAny;
+}>;
 
 export {
   AuthPayload,

@@ -1,14 +1,14 @@
 import { FilterQuery, PopulateOptions, Types } from 'mongoose';
-import config from '../../config/request.config';
+import ChirpModel, { PostChirp, ReplyChirp } from './chirp.model';
+import * as likeService from '../likes/like.service';
 import { SortQuery } from '../../interfaces';
 import { Chirp, MetricsField, Post, Reply } from './chirp.interfaces.';
-import * as LikeService from '../likes/like.service';
-import ChirpModel, { PostChirp, ReplyChirp } from './chirp.model';
 import { Like } from '../likes/like.interfaces';
+import config from '../../config/request.config';
 
 const defaultFields = config.chirp.fields.default;
 
-export const findMany = async (
+const findMany = async (
   filter: FilterQuery<Chirp>,
   select: string = defaultFields,
   populate: PopulateOptions[] = [],
@@ -30,7 +30,7 @@ export const findMany = async (
   return chirps;
 };
 
-export const findOne = async (
+const findOne = async (
   id: Types.ObjectId,
   select: string = defaultFields,
   populate: PopulateOptions[] = []
@@ -73,7 +73,7 @@ const createPost = async (content: string, author: Types.ObjectId) => {
   return post._id;
 };
 
-export const createOne = async (
+const createOne = async (
   content: string,
   author: Types.ObjectId,
   parentId?: Types.ObjectId
@@ -85,12 +85,12 @@ export const createOne = async (
   return chirpId;
 };
 
-export const deleteOne = async (id: Types.ObjectId) => {
+const deleteOne = async (id: Types.ObjectId) => {
   const chirp = await findOne(id);
   await chirp.remove();
 };
 
-export const findLikingUsersIds = async (
+const findLikingUsersIds = async (
   chirp: Types.ObjectId,
   limit: number,
   sinceId?: Types.ObjectId
@@ -98,7 +98,7 @@ export const findLikingUsersIds = async (
   const filter: FilterQuery<Like> = { chirp };
   if (sinceId) filter._id = { $lt: sinceId };
 
-  const likes = await LikeService.findMany(filter, 'user', { _id: -1 }, limit);
+  const likes = await likeService.findMany(filter, 'user', { _id: -1 }, limit);
 
   const likingUsersIds = likes.map((like) => like.user);
   const nextPage = likes[likes.length - 1]?._id;
@@ -106,7 +106,7 @@ export const findLikingUsersIds = async (
   return { likingUsersIds, nextPage };
 };
 
-export const incrementMetrics = async (
+const incrementMetrics = async (
   id: Types.ObjectId,
   ...metricsField: MetricsField[]
 ) => {
@@ -120,7 +120,7 @@ export const incrementMetrics = async (
   await chirp.save();
 };
 
-export const decrementMetrics = async (
+const decrementMetrics = async (
   id: Types.ObjectId,
   ...metricsField: MetricsField[]
 ) => {
@@ -134,25 +134,32 @@ export const decrementMetrics = async (
   await chirp.save();
 };
 
-export const deleteMany = async (filter: FilterQuery<Chirp>) => {
+const deleteMany = async (filter: FilterQuery<Chirp>) => {
   const chirps = await findMany(filter);
   await Promise.all(chirps.map((chirp) => chirp.remove()));
 };
 
-export const pushReply = async (
-  id: Types.ObjectId,
-  replyId: Types.ObjectId
-) => {
+const pushReply = async (id: Types.ObjectId, replyId: Types.ObjectId) => {
   const chirp = await findOne(id, 'replies');
   chirp.replies.push(replyId);
   await chirp.save();
 };
 
-export const pullReply = async (
-  id: Types.ObjectId,
-  replyId: Types.ObjectId
-) => {
+const pullReply = async (id: Types.ObjectId, replyId: Types.ObjectId) => {
   const chirp = await findOne(id, 'replies');
   chirp.replies = chirp.replies.filter((id) => !id.equals(replyId));
   await chirp.save();
+};
+
+export {
+  findMany,
+  findOne,
+  createOne,
+  deleteOne,
+  findLikingUsersIds,
+  incrementMetrics,
+  decrementMetrics,
+  deleteMany,
+  pushReply,
+  pullReply,
 };

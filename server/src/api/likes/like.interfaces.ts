@@ -1,8 +1,11 @@
 import { Model, Types } from 'mongoose';
+import * as LikeControllers from './like.controllers.interfaces';
 
-export interface Like {
+interface Like {
   user: Types.ObjectId;
   chirp: Types.ObjectId;
 }
 
-export type LikeModel = Model<Like>;
+type LikeModel = Model<Like>;
+
+export { Like, LikeModel, LikeControllers };

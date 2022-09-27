@@ -1,6 +1,6 @@
 import { connect, connection } from 'mongoose';
-import config from './env.config';
 import { listenForDBConnectionErrors } from '../utils/helper.utils';
+import config from './env.config';
 
 const connectDB = async () => {
   try {

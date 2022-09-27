@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { z } from 'zod';
+import { object, instanceof as zodInstanceOf, array } from 'zod';
 import config from './config/request.config';
 import {
   addDefaultField,
@@ -16,27 +16,28 @@ const query = createInputSchema('query');
 
 const stringId = createInputSchema('id').transform(stringToId);
 
-const objectId = z.instanceof(Types.ObjectId, {
+const objectId = zodInstanceOf(Types.ObjectId, {
   message: 'Id must be valid',
 });
 
 const sinceId = stringId.optional();
 
-const chirpIdObject = z.object({
+const chirpIdObject = object({
   chirpId: stringId,
 });
 
-const usernameInput = z.string();
+const usernameInput = createInputSchema('username');
 
-const usernameObject = z.object({
+const passwordInput = createInputSchema('password');
+
+const usernameObject = object({
   username: usernameInput,
 });
 
-const ids = z
-  .array(stringId, {
-    invalid_type_error: 'Ids must be an array',
-    required_error: 'Ids is required',
-  })
+const ids = array(stringId, {
+  invalid_type_error: 'Ids must be an array',
+  required_error: 'Ids is required',
+})
   .nonempty({ message: 'You must provide at least one id' })
   .max(config.limit.max, `You can only provide up to ${config.limit.max} ids`);
 
@@ -68,6 +69,7 @@ export {
   sinceId,
   chirpIdObject,
   usernameInput,
+  passwordInput,
   usernameObject,
   ids,
   followedOnly,

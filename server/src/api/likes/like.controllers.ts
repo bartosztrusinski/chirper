@@ -1,37 +1,43 @@
 import { Request, Response } from 'express';
-import { Types } from 'mongoose';
-import * as ChirpService from '../chirps/chirp.service';
-import * as LikeService from './like.service';
-import { ChirpIdObject, SuccessResponse } from '../../interfaces';
+import { SuccessResponse } from '../../interfaces';
+import { LikeControllers } from './like.interfaces';
+import * as chirpService from '../chirps/chirp.service';
+import * as likeService from './like.service';
 
-export const createOne = async (
-  req: Request<unknown, SuccessResponse, ChirpIdObject>,
+const createOne = async (
+  req: Request<{}, SuccessResponse, LikeControllers.CreateOne['body']>,
   res: Response<SuccessResponse>
 ) => {
-  const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
+  const { currentUserId } = <
+    { currentUserId: LikeControllers.CreateOne['currentUserId'] }
+  >req;
   const { chirpId } = req.body;
 
   res.status(400);
 
-  await LikeService.handleDuplicate(currentUserId, chirpId);
+  await likeService.handleDuplicate(currentUserId, chirpId);
 
-  const existingChirp = await ChirpService.findOne(chirpId);
+  const existingChirp = await chirpService.findOne(chirpId);
 
-  await LikeService.createOne(currentUserId, existingChirp._id);
+  await likeService.createOne(currentUserId, existingChirp._id);
 
   res.status(200).json({ data: null });
 };
 
-export const deleteOne = async (
-  req: Request<ChirpIdObject>,
+const deleteOne = async (
+  req: Request<LikeControllers.DeleteOne['params']>,
   res: Response<SuccessResponse>
 ) => {
-  const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
+  const { currentUserId } = <
+    { currentUserId: LikeControllers.DeleteOne['currentUserId'] }
+  >req;
   const { chirpId } = req.params;
 
   res.status(400);
 
-  await LikeService.deleteOne(currentUserId, chirpId);
+  await likeService.deleteOne(currentUserId, chirpId);
 
   res.status(200).json({ data: null });
 };
+
+export { createOne, deleteOne };

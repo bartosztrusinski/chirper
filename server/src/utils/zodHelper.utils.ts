@@ -1,43 +1,49 @@
 import { Types } from 'mongoose';
-import { z } from 'zod';
+import {
+  string,
+  boolean,
+  number,
+  nan,
+  z,
+  function as zodFunction,
+  ZodIssueCode,
+  RefinementCtx,
+  NEVER,
+  any,
+} from 'zod';
 
-const stringToBoolean = z
-  .function()
-  .args(z.string())
-  .returns(z.boolean())
+const stringToBoolean = zodFunction()
+  .args(string())
+  .returns(boolean())
   .implement((str) => str === 'true');
 
-const optionalStringToNumber = z
-  .function()
-  .args(z.string().optional())
-  .returns(z.number().or(z.nan()))
+const optionalStringToNumber = zodFunction()
+  .args(string().optional())
+  .returns(number().or(nan()))
   .implement((str) => {
     if (!str) return NaN;
     return parseInt(str);
   });
 
 const setDefaultIfNaN = (defaultValue: number) =>
-  z
-    .function()
-    .args(z.number().or(z.nan()))
-    .returns(z.number())
+  zodFunction()
+    .args(number().or(nan()))
+    .returns(number())
     .implement((value) => {
       if (isNaN(value)) return defaultValue;
       return value;
     });
 
 const clamp = (min: number, max: number) =>
-  z
-    .function()
-    .args(z.number())
-    .returns(z.number())
+  zodFunction()
+    .args(number())
+    .returns(number())
     .implement((value) => Math.min(Math.max(value, min), max));
 
 const parseFields = (allowedFields: readonly string[]) =>
-  z
-    .function()
-    .args(z.string())
-    .returns(z.string())
+  zodFunction()
+    .args(string())
+    .returns(string())
     .implement((fields) => {
       return fields
         .split(',')
@@ -47,53 +53,40 @@ const parseFields = (allowedFields: readonly string[]) =>
     });
 
 const addDefaultField = (defaultField: string) =>
-  z
-    .function()
-    .args(z.string().optional())
-    .returns(z.string())
+  zodFunction()
+    .args(string().optional())
+    .returns(string())
     .implement((fields) => {
       if (!fields) return defaultField;
       return `${fields},${defaultField}`;
     });
 
-const stringToId = z
-  .function()
-  .args(z.string(), z.any())
-  .implement((str, ctx: z.RefinementCtx) => {
+const stringToId = zodFunction()
+  .args(string(), any())
+  .implement((str, ctx: RefinementCtx) => {
     try {
       return new Types.ObjectId(str);
     } catch (error) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: ZodIssueCode.custom,
         message: 'Id must be valid',
       });
-      return z.NEVER;
+      return NEVER;
     }
   });
 
-const stringToDate = z
-  .function()
-  .args(z.string(), z.any())
-  .implement((str, ctx: z.RefinementCtx) => {
+const stringToDate = zodFunction()
+  .args(string(), any())
+  .implement((str, ctx: RefinementCtx) => {
     const parsedDate = Date.parse(str);
     if (isNaN(parsedDate)) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: ZodIssueCode.custom,
         message: 'Date must be valid',
       });
-      return z.NEVER;
+      return NEVER;
     }
     return new Date(parsedDate);
-  });
-
-const appendAuthorIfExpanded = z
-  .function()
-  .args(z.any())
-  .implement((query) => {
-    if (query.expandAuthor) {
-      query.chirpFields += 'author';
-    }
-    return query;
   });
 
 const createInputSchema = (name: string) => {
@@ -115,6 +108,5 @@ export {
   addDefaultField,
   stringToId,
   stringToDate,
-  appendAuthorIfExpanded,
   createInputSchema,
 };

@@ -1,27 +1,19 @@
 import { Router } from 'express';
-import * as likeControllers from './like.controllers';
 import { authenticate, validateRequest } from '../../middlewares';
-import { chirpIdObject, objectId } from '../../schemas';
+import * as likeControllers from './like.controllers';
+import * as likeSchemas from './like.schemas';
 
 const router = Router();
 
 router.post(
   '/likes',
-  authenticate,
-  validateRequest({
-    currentUserId: objectId,
-    body: chirpIdObject,
-  }),
+  [authenticate, validateRequest(likeSchemas.createOne)],
   likeControllers.createOne
 );
 
 router.delete(
   '/likes/:chirpId',
-  authenticate,
-  validateRequest({
-    currentUserId: objectId,
-    params: chirpIdObject,
-  }),
+  [authenticate, validateRequest(likeSchemas.deleteOne)],
   likeControllers.deleteOne
 );
 

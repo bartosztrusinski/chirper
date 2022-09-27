@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
-import config from './config/env.config';
-import * as UserService from './api/users/user.service';
-import * as ChirpService from './api/chirps/chirp.service';
-import { DeleteOne } from './api/users/user.interfaces';
 import { ErrorResponse, RequestValidators, ChirpIdObject } from './interfaces';
 import { parseAuthHeader, parseError } from './utils/helper.utils';
+import * as userService from './api/users/user.service';
+import * as chirpService from './api/chirps/chirp.service';
+import config from './config/env.config';
 
 const env = config.app.environment;
 
@@ -20,7 +19,7 @@ const authenticate = async (
 
   const currentUserId = parseAuthHeader(authHeader);
 
-  const currentUser = await UserService.findOne(currentUserId);
+  const currentUser = await userService.findOne(currentUserId);
 
   req.currentUserId = currentUser._id;
 
@@ -38,7 +37,7 @@ const authenticateAllowGuest = async (
 
   try {
     const currentUserId = parseAuthHeader(authHeader);
-    const currentUser = await UserService.findOne(currentUserId);
+    const currentUser = await userService.findOne(currentUserId);
 
     req.currentUserId = currentUser._id;
   } catch (err) {
@@ -56,7 +55,7 @@ const authorize = async (
   const { currentUserId } = <{ currentUserId: Types.ObjectId }>req;
   const { chirpId } = req.params;
 
-  const foundChirp = await ChirpService.findOne(chirpId, 'author');
+  const foundChirp = await chirpService.findOne(chirpId, 'author');
 
   if (!foundChirp.author.equals(currentUserId)) {
     res.status(401);
@@ -69,7 +68,7 @@ const authorize = async (
 };
 
 const passwordAuthenticate = async (
-  req: Request<unknown, unknown, DeleteOne, unknown>,
+  req: Request<unknown, unknown, { password: string }>,
   res: Response,
   next: NextFunction
 ) => {
@@ -78,7 +77,7 @@ const passwordAuthenticate = async (
 
   res.status(400);
 
-  await UserService.confirmPassword(currentUserId, password);
+  await userService.confirmPassword(currentUserId, password);
 
   next();
 };
@@ -112,18 +111,18 @@ const validateRequest =
     res: Response,
     next: NextFunction
   ) => {
-    if (validators.body) {
-      req.body = validators.body.parse(req.body);
-    }
-    if (validators.params) {
-      req.params = validators.params.parse(req.params);
-    }
-    if (validators.query) {
-      req.query = validators.query.parse(req.query);
-    }
-    if (validators.currentUserId) {
-      req.currentUserId = validators.currentUserId.parse(req.currentUserId);
-    }
+    const parsedReq = validators.parse({
+      body: req.body,
+      params: req.params,
+      query: req.query,
+      currentUserId: req.currentUserId,
+    });
+
+    req.body = parsedReq.body;
+    req.params = parsedReq.params;
+    req.query = parsedReq.query;
+    req.currentUserId = parsedReq.currentUserId as Types.ObjectId;
+
     next();
   };
 

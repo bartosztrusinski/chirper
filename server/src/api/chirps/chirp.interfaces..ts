@@ -1,25 +1,28 @@
 import { Model } from 'mongoose';
-import { z } from 'zod';
-import * as ChirpSchemas from './chirp.schemas';
+import { TypeOf } from 'zod';
+import * as chirpSchemas from './chirp.schemas';
+import * as ChirpControllers from './chirp.controllers.interfaces';
 
-export type Content = z.infer<typeof ChirpSchemas.content>;
-export type Author = z.infer<typeof ChirpSchemas.author>;
-export type Replies = z.infer<typeof ChirpSchemas.replies>;
-export type Metrics = z.infer<typeof ChirpSchemas.metrics>;
-export type MetricsField = keyof Metrics;
-export type Chirp = z.infer<typeof ChirpSchemas.chirp>;
-export type Post = z.infer<typeof ChirpSchemas.post>;
-export type Reply = z.infer<typeof ChirpSchemas.reply>;
-export type ChirpModel = Model<Chirp>;
-export type PostModel = Model<Post>;
-export type ReplyModel = Model<Reply>;
+type Chirp = TypeOf<typeof chirpSchemas.chirp>;
+type Post = TypeOf<typeof chirpSchemas.post>;
+type Reply = TypeOf<typeof chirpSchemas.reply>;
 
-export type ChirpSortOrder = z.infer<typeof ChirpSchemas.chirpSortOrder>;
+type ChirpModel = Model<Chirp>;
+type PostModel = Model<Post>;
+type ReplyModel = Model<Reply>;
 
-export type FindMany = z.infer<typeof ChirpSchemas._findMany>;
-export type FindOne = z.infer<typeof ChirpSchemas._findOne>;
-export type SearchMany = z.infer<typeof ChirpSchemas._searchMany>;
-export type GetUserTimeline = z.infer<typeof ChirpSchemas._getUserTimeline>;
-export type FindManyByUser = z.infer<typeof ChirpSchemas._findManyByUser>;
-export type FindManyLiked = z.infer<typeof ChirpSchemas._findManyLiked>;
-export type CreateOne = z.infer<typeof ChirpSchemas._createOne>;
+type MetricsField = keyof Chirp['metrics'];
+
+type SortOrder = TypeOf<typeof chirpSchemas.sortOrder>;
+
+export {
+  Chirp,
+  Post,
+  Reply,
+  ChirpModel,
+  PostModel,
+  ReplyModel,
+  MetricsField,
+  SortOrder,
+  ChirpControllers,
+};

@@ -1,24 +1,16 @@
-import { ChirpSortOrder } from '../api/chirps/chirp.interfaces.';
-import { SortQuery } from '../interfaces';
-import { SuccessResponse } from '../interfaces';
-import { Types } from 'mongoose';
 import jwt from 'jsonwebtoken';
 import config from '../config/env.config';
 import bcrypt from 'bcryptjs';
-import { AuthPayload } from '../interfaces';
+import { Types, connection } from 'mongoose';
 import { ZodError } from 'zod';
-import { connection } from 'mongoose';
+import { SortOrder } from '../api/chirps/chirp.interfaces.';
+import { SortQuery, SuccessResponse, AuthPayload } from '../interfaces';
 
 const calculateSkip = (page: number, limit: number) => {
   return (page - 1) * limit;
 };
 
-// useless????
-const populateAuthor = (userFields: string) => [
-  { path: 'author', select: userFields },
-];
-
-const createChirpSortQuery = (sortOrder: ChirpSortOrder) => {
+const createChirpSortQuery = (sortOrder: SortOrder) => {
   const sortBy: Record<string, SortQuery> = {
     recent: { createdAt: -1 },
     popular: { 'metrics.likeCount': -1 },
@@ -120,5 +112,4 @@ export {
   listenForDBConnectionErrors,
   parseAuthHeader,
   parseError,
-  populateAuthor,
 };

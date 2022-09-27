@@ -1,4 +1,5 @@
-import { z } from 'zod';
+import { object, number } from 'zod';
+import { createInputSchema } from '../../utils/zodHelper.utils';
 import config from '../../config/request.config';
 import {
   userFields,
@@ -9,31 +10,13 @@ import {
   sinceId,
   followedOnly,
   usernameInput,
+  objectId,
+  usernameObject,
+  chirpIdObject,
+  passwordInput,
 } from '../../schemas';
-import { createInputSchema } from '../../utils/zodHelper.utils';
 
-const passwordInput = createInputSchema('password');
-
-export const password = passwordInput
-  .min(
-    config.user.password.min,
-    `Password must be at least ${config.user.password.min} characters`
-  )
-  .max(
-    config.user.password.max,
-    `Password cannot exceed ${config.user.password.max} characters`
-  )
-  .regex(
-    /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)[^\s<>]*$/,
-    'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
-  );
-
-export const email = createInputSchema('email').regex(
-  /^([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-  'Please enter a valid email address'
-);
-
-export const username = usernameInput
+const username = usernameInput
   .min(
     config.user.username.min,
     `Username must be at least ${config.user.username.min} characters`
@@ -47,7 +30,26 @@ export const username = usernameInput
     'Username must only contain letters, numbers, and underscores'
   );
 
-export const name = createInputSchema('name')
+const email = createInputSchema('email').regex(
+  /^([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+  'Please enter a valid email address'
+);
+
+const password = passwordInput
+  .min(
+    config.user.password.min,
+    `Password must be at least ${config.user.password.min} characters`
+  )
+  .max(
+    config.user.password.max,
+    `Password cannot exceed ${config.user.password.max} characters`
+  )
+  .regex(
+    /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)[^\s<>]*$/,
+    'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
+  );
+
+const name = createInputSchema('name')
   .min(1, 'Name cannot be empty')
   .max(
     config.user.name.max,
@@ -55,7 +57,7 @@ export const name = createInputSchema('name')
   )
   .regex(/^[^<>]*$/, 'Profile name cannot include invalid characters');
 
-export const bio = createInputSchema('bio')
+const bio = createInputSchema('bio')
   .min(1, 'Description cannot be empty')
   .max(
     config.user.bio.max,
@@ -64,7 +66,7 @@ export const bio = createInputSchema('bio')
   .regex(/^[^<>]*$/, 'Description cannot include invalid characters')
   .optional();
 
-export const location = createInputSchema('location')
+const location = createInputSchema('location')
   .min(1, 'Location cannot be empty')
   .max(
     config.user.location.max,
@@ -73,7 +75,7 @@ export const location = createInputSchema('location')
   .regex(/^[^<>]*$/, 'Location cannot include invalid characters')
   .optional();
 
-export const website = createInputSchema('website')
+const website = createInputSchema('website')
   .max(
     config.user.website.max,
     `Website URL cannot exceed ${config.user.website.max} characters`
@@ -84,15 +86,15 @@ export const website = createInputSchema('website')
   )
   .optional();
 
-export const picture = createInputSchema('picture')
+const picture = createInputSchema('picture')
   .min(1, 'Picture cannot be empty')
   .optional();
 
-export const header = createInputSchema('header')
+const header = createInputSchema('header')
   .min(1, 'Header cannot be empty')
   .optional();
 
-export const profile = z.object({
+const profile = object({
   name,
   bio,
   location,
@@ -101,14 +103,14 @@ export const profile = z.object({
   header,
 });
 
-export const metrics = z.object({
-  chirpCount: z.number().int().min(0).default(0),
-  likedChirpCount: z.number().int().min(0).default(0),
-  followingCount: z.number().int().min(0).default(0),
-  followersCount: z.number().int().min(0).default(0),
+const metrics = object({
+  chirpCount: number().int().min(0).default(0),
+  likedChirpCount: number().int().min(0).default(0),
+  followingCount: number().int().min(0).default(0),
+  followersCount: number().int().min(0).default(0),
 });
 
-export const user = z.object({
+const user = object({
   username,
   email,
   password,
@@ -116,47 +118,105 @@ export const user = z.object({
   metrics,
 });
 
-export const findMany = z.object({ ids, userFields });
-
-export const findOne = z.object({ userFields });
-
-export const searchMany = z.object({
-  query,
-  followedOnly,
-  userFields,
-  limit,
-  page,
+const findMany = object({
+  query: object({ ids, userFields }),
 });
 
-export const findManyLiking = z.object({ sinceId, userFields, limit });
-
-const findUsersFromFollows = z.object({ sinceId, userFields, limit });
-
-export const findManyFollowed = findUsersFromFollows;
-export const findManyFollowing = findUsersFromFollows;
-
-export const signUp = z.object({ username, email, password, name });
-
-export const logIn = z.object({
-  login: createInputSchema('login'),
-  password: passwordInput,
+const findOne = object({
+  params: usernameObject,
+  query: object({ userFields }),
 });
 
-export const updateProfile = profile;
-
-export const updatePassword = z.object({
-  password: createInputSchema('current password'),
-  newPassword: password,
+const findCurrentOne = object({
+  currentUserId: objectId,
+  query: object({ userFields }),
 });
 
-export const updateUsername = z.object({
-  password: passwordInput,
-  newUsername: username,
+const searchMany = object({
+  currentUserId: objectId.optional(),
+  query: object({
+    query,
+    followedOnly,
+    userFields,
+    limit,
+    page,
+  }),
 });
 
-export const updateEmail = z.object({
-  password: passwordInput,
-  newEmail: email,
+const findManyLiking = object({
+  params: chirpIdObject,
+  query: object({ sinceId, userFields, limit }),
 });
 
-export const deleteOne = z.object({ password: passwordInput });
+const findManyFollowed = object({
+  params: usernameObject,
+  query: object({ sinceId, userFields, limit }),
+});
+
+const findManyFollowing = object({
+  params: usernameObject,
+  query: object({ sinceId, userFields, limit }),
+});
+
+const signUp = object({
+  body: user,
+});
+
+const logIn = object({
+  body: object({
+    login: createInputSchema('login'),
+    password: passwordInput,
+  }),
+});
+
+const updateProfile = object({
+  currentUserId: objectId,
+  body: profile,
+});
+
+const updatePassword = object({
+  currentUserId: objectId,
+  body: object({
+    password: createInputSchema('current password'),
+    newPassword: password,
+  }),
+});
+
+const updateUsername = object({
+  currentUserId: objectId,
+  body: object({
+    password: passwordInput,
+    newUsername: username,
+  }),
+});
+
+const updateEmail = object({
+  currentUserId: objectId,
+  body: object({
+    password: passwordInput,
+    newEmail: email,
+  }),
+});
+
+const deleteOne = object({
+  currentUserId: objectId,
+  body: object({ password: passwordInput }),
+});
+
+export {
+  user,
+  findMany,
+  findOne,
+  findCurrentOne,
+  searchMany,
+  findManyLiking,
+  findManyFollowed,
+  findManyFollowing,
+  signUp,
+  logIn,
+  updateProfile,
+  updatePassword,
+  updateUsername,
+  updateEmail,
+  deleteOne,
+};

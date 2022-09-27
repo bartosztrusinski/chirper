@@ -1,14 +1,14 @@
 import { Schema, model } from 'mongoose';
-import * as UserService from '../users/user.service';
-import * as ChirpService from './chirp.service';
-import * as LikeService from '../likes/like.service';
+import * as userService from '../users/user.service';
+import * as chirpService from './chirp.service';
+import * as likeService from '../likes/like.service';
 import {
-  ChirpModel,
   Chirp,
-  Reply,
-  ReplyModel,
   Post,
+  Reply,
+  ChirpModel,
   PostModel,
+  ReplyModel,
 } from './chirp.interfaces.';
 
 const chirpSchema = new Schema<Chirp, ChirpModel>(
@@ -57,22 +57,22 @@ chirpSchema.index({ content: 'text' });
 
 chirpSchema.post('save', async function incrementMetrics() {
   if (!this.isNew) return;
-  await UserService.incrementMetrics(this.author, 'chirpCount');
+  await userService.incrementMetrics(this.author, 'chirpCount');
 });
 
 chirpSchema.post('remove', async function removeDependencies() {
-  await UserService.decrementMetrics(this.author, 'chirpCount');
-  await ChirpService.deleteMany({ _id: this.replies });
-  await LikeService.deleteMany({ chirp: this._id });
+  await userService.decrementMetrics(this.author, 'chirpCount');
+  await chirpService.deleteMany({ _id: this.replies });
+  await likeService.deleteMany({ chirp: this._id });
 });
 
 replySchema.post('save', async function pushToParent() {
   if (!this.isNew) return;
-  await ChirpService.pushReply(this.parent, this._id);
+  await chirpService.pushReply(this.parent, this._id);
 });
 
 replySchema.post('remove', async function pullFromParent() {
-  await ChirpService.pullReply(this.parent, this._id);
+  await chirpService.pullReply(this.parent, this._id);
 });
 
 const Chirp = model<Chirp, ChirpModel>('Chirp', chirpSchema);

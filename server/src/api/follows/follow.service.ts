@@ -1,12 +1,12 @@
 import { FilterQuery, Types } from 'mongoose';
-import config from '../../config/request.config';
 import FollowModel from './follow.model';
 import { Follow } from './follow.interfaces';
 import { SortQuery } from '../../interfaces';
+import config from '../../config/request.config';
 
 const defaultFields = config.follow.fields.default;
 
-export const findOne = async (filter: FilterQuery<Follow>) => {
+const findOne = async (filter: FilterQuery<Follow>) => {
   const follow = await FollowModel.findOne(filter).select(
     'sourceUser targetUser'
   );
@@ -18,7 +18,7 @@ export const findOne = async (filter: FilterQuery<Follow>) => {
   return follow;
 };
 
-export const findMany = async (
+const findMany = async (
   filter: FilterQuery<Follow>,
   select: string = defaultFields,
   sort?: SortQuery,
@@ -35,14 +35,14 @@ export const findMany = async (
   return follows;
 };
 
-export const createOne = async (
+const createOne = async (
   sourceUser: Types.ObjectId,
   targetUser: Types.ObjectId
 ) => {
   await FollowModel.create({ sourceUser, targetUser });
 };
 
-export const deleteOne = async (
+const deleteOne = async (
   sourceUser: Types.ObjectId,
   targetUser: Types.ObjectId
 ) => {
@@ -50,7 +50,7 @@ export const deleteOne = async (
   await follow.remove();
 };
 
-export const handleDuplicate = async (
+const handleDuplicate = async (
   sourceUser: Types.ObjectId,
   targetUser: Types.ObjectId
 ) => {
@@ -60,7 +60,9 @@ export const handleDuplicate = async (
   }
 };
 
-export const deleteMany = async (filter: FilterQuery<Follow>) => {
+const deleteMany = async (filter: FilterQuery<Follow>) => {
   const follows = await findMany(filter);
   await Promise.all(follows.map((follow) => follow.remove()));
 };
+
+export { findOne, findMany, createOne, deleteOne, handleDuplicate, deleteMany };

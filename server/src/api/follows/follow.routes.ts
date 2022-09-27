@@ -1,27 +1,19 @@
 import { Router } from 'express';
-import * as followControllers from './follow.controllers';
 import { authenticate, validateRequest } from '../../middlewares';
-import { objectId, usernameObject } from '../../schemas';
+import * as followControllers from './follow.controllers';
+import * as followSchemas from './follow.schemas';
 
 const router = Router();
 
 router.post(
   '/following',
-  authenticate,
-  validateRequest({
-    currentUserId: objectId,
-    body: usernameObject,
-  }),
+  [authenticate, validateRequest(followSchemas.createOne)],
   followControllers.createOne
 );
 
 router.delete(
   '/following/:username',
-  authenticate,
-  validateRequest({
-    currentUserId: objectId,
-    params: usernameObject,
-  }),
+  [authenticate, validateRequest(followSchemas.deleteOne)],
   followControllers.deleteOne
 );
 

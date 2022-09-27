@@ -1,88 +1,52 @@
 import { Router } from 'express';
 import * as chirpControllers from './chirp.controllers.';
+import * as chirpSchemas from './chirp.schemas';
 import {
   authenticate,
   authenticateAllowGuest,
   authorize,
   validateRequest,
 } from '../../middlewares';
-import { chirpIdObject, objectId, usernameObject } from '../../schemas';
-import * as chirpSchemas from './chirp.schemas';
 
 const router = Router();
 
-router.get(
-  '/chirps',
-  validateRequest({
-    query: chirpSchemas.findMany,
-  }),
-  chirpControllers.findMany
-);
+router
+  .route('/chirps')
+  .get([validateRequest(chirpSchemas.findMany)], chirpControllers.findMany)
+  .post(
+    [authenticate, validateRequest(chirpSchemas.createOne)],
+    chirpControllers.createOne
+  );
+
+router
+  .route('/chirps/:chirpId')
+  .get([validateRequest(chirpSchemas.findOne)], chirpControllers.findOne)
+  .delete(
+    [authenticate, validateRequest(chirpSchemas.deleteOne), authorize],
+    chirpControllers.deleteOne
+  );
 
 router.get(
   '/chirps/search',
-  authenticateAllowGuest,
-  validateRequest({
-    currentUserId: objectId.optional(),
-    query: chirpSchemas.searchMany,
-  }),
+  [authenticateAllowGuest, validateRequest(chirpSchemas.searchMany)],
   chirpControllers.searchMany
 );
 
 router.get(
-  '/chirps/:chirpId',
-  validateRequest({
-    params: chirpIdObject,
-    query: chirpSchemas.findOne,
-  }),
-  chirpControllers.findOne
-);
-
-router.post(
-  '/chirps',
-  authenticate,
-  validateRequest({
-    currentUserId: objectId,
-    body: chirpSchemas.createOne,
-  }),
-  chirpControllers.createOne
-);
-
-router.delete(
-  '/chirps/:chirpId',
-  authenticate,
-  validateRequest({
-    currentUserId: objectId,
-    params: chirpIdObject,
-  }),
-  authorize,
-  chirpControllers.deleteOne
-);
-
-router.get(
   '/users/:username/chirps',
-  validateRequest({
-    params: usernameObject,
-    query: chirpSchemas.findManyByUser,
-  }),
+  [validateRequest(chirpSchemas.findManyByUser)],
   chirpControllers.findManyByUser
 );
 
 router.get(
   '/users/:username/liked-chirps',
-  validateRequest({
-    params: usernameObject,
-    query: chirpSchemas.findManyLiked,
-  }),
+  [validateRequest(chirpSchemas.findManyLiked)],
   chirpControllers.findManyLiked
 );
 
 router.get(
   '/users/:username/timelines/reverse-chronological',
-  validateRequest({
-    params: usernameObject,
-    query: chirpSchemas.getUserTimeline,
-  }),
+  [validateRequest(chirpSchemas.getUserTimeline)],
   chirpControllers.getUserTimeline
 );
 

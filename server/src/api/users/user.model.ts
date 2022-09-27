@@ -1,12 +1,12 @@
 import { Schema, model } from 'mongoose';
-import * as FollowService from '../follows/follow.service';
-import * as LikeService from '../likes/like.service';
-import { Profile, User, UserMethods, UserModel } from './user.interfaces';
 import bcrypt from 'bcryptjs';
+import { User, UserMethods, UserModel } from './user.interfaces';
 import { IsPasswordMatch } from '../../interfaces';
 import { generateHash } from '../../utils/helper.utils';
+import * as followService from '../follows/follow.service';
+import * as likeService from '../likes/like.service';
 
-const userProfileSchema = new Schema<Profile>(
+const userProfileSchema = new Schema<User['profile']>(
   {
     name: {
       type: String,
@@ -89,10 +89,10 @@ userSchema.pre('save', async function hashPassword(next) {
 });
 
 userSchema.post('remove', async function removeDependencies() {
-  await FollowService.deleteMany({
+  await followService.deleteMany({
     $or: [{ sourceUser: this._id }, { targetUser: this._id }],
   });
-  await LikeService.deleteMany({ user: this._id });
+  await likeService.deleteMany({ user: this._id });
 });
 
 const User = model<User, UserModel>('User', userSchema);

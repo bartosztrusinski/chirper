@@ -1,5 +1,12 @@
-import { z } from 'zod';
+import { number, object, enum as zodEnum, array, string } from 'zod';
 import config from '../../config/request.config';
+import {
+  addDefaultField,
+  createInputSchema,
+  parseFields,
+  stringToBoolean,
+  stringToDate,
+} from '../../utils/zodHelper.utils';
 import {
   ids,
   userFields,
@@ -10,15 +17,9 @@ import {
   sinceId,
   objectId,
   stringId,
+  chirpIdObject,
+  usernameObject,
 } from '../../schemas';
-import {
-  addDefaultField,
-  appendAuthorIfExpanded,
-  createInputSchema,
-  parseFields,
-  stringToBoolean,
-  stringToDate,
-} from '../../utils/zodHelper.utils';
 
 const from = createInputSchema('from').optional();
 
@@ -32,116 +33,147 @@ const expandAuthor = createInputSchema('expandAuthor')
   .default('false')
   .transform(stringToBoolean);
 
-const chirpFields = z
-  .string()
+const chirpFields = string()
   .optional()
   .transform(addDefaultField(config.chirp.fields.default))
   .transform(parseFields(config.chirp.fields.allowed));
 
 const dateQuery = createInputSchema('date').transform(stringToDate).optional();
 
-export const chirpSortOrder = z
-  .enum(config.chirp.sort.allowed, {
-    errorMap: () => {
-      return {
-        message: `Sort order should be one of: ${config.chirp.sort.allowed.join(
-          ', '
-        )}`,
-      };
-    },
-  })
-  .default(config.chirp.sort.default);
+const sortOrder = zodEnum(config.chirp.sort.allowed, {
+  errorMap: () => {
+    return {
+      message: `Sort order should be one of: ${config.chirp.sort.allowed.join(
+        ', '
+      )}`,
+    };
+  },
+}).default(config.chirp.sort.default);
 
-export const content = createInputSchema('content').max(
+const content = createInputSchema('content').max(
   config.chirp.content.max,
   `Chirp content cannot exceed ${config.chirp.content.max} characters`
 );
 
-export const author = objectId;
+const author = objectId;
 
-export const replies = z.array(objectId);
+const replies = array(objectId);
 
-export const metrics = z.object({
-  likeCount: z.number().int().min(0).default(0),
+const metrics = object({
+  likeCount: number().int().min(0).default(0),
 });
 
-export const chirp = z.object({
+const chirp = object({
   content,
   author,
   replies,
   metrics,
 });
 
-export const post = chirp;
+const post = chirp;
 
-export const reply = z.object(chirp.shape).merge(
-  z.object({
+const reply = object(chirp.shape).merge(
+  object({
     parent: objectId,
     post: objectId,
   })
 );
 
-export const _findMany = z.object({
-  ids,
-  chirpFields,
-  userFields,
-  expandAuthor,
+const findMany = object({
+  query: object({
+    ids,
+    chirpFields,
+    userFields,
+    expandAuthor,
+  }),
 });
 
-export const _findOne = z.object({
-  chirpFields,
-  userFields,
-  expandAuthor,
+const findOne = object({
+  params: chirpIdObject,
+  query: object({
+    chirpFields,
+    userFields,
+    expandAuthor,
+  }),
 });
 
-export const _searchMany = z.object({
-  query,
-  followedOnly,
-  sortOrder: chirpSortOrder,
-  from,
-  includeReplies,
-  startTime: dateQuery,
-  endTime: dateQuery,
-  chirpFields,
-  userFields,
-  expandAuthor,
-  limit,
-  page,
+const searchMany = object({
+  currentUserId: objectId.optional(),
+  query: object({
+    query,
+    followedOnly,
+    sortOrder,
+    from,
+    includeReplies,
+    startTime: dateQuery,
+    endTime: dateQuery,
+    chirpFields,
+    userFields,
+    expandAuthor,
+    limit,
+    page,
+  }),
 });
 
-export const _getUserTimeline = z.object({
-  sinceId,
-  userFields,
-  chirpFields,
-  expandAuthor,
-  limit,
+const getUserTimeline = object({
+  params: usernameObject,
+  query: object({
+    sinceId,
+    userFields,
+    chirpFields,
+    expandAuthor,
+    limit,
+  }),
 });
 
-export const _findManyByUser = z.object({
-  sinceId,
-  userFields,
-  chirpFields,
-  expandAuthor,
-  includeReplies,
-  limit,
+const findManyByUser = object({
+  params: usernameObject,
+  query: object({
+    sinceId,
+    userFields,
+    chirpFields,
+    expandAuthor,
+    includeReplies,
+    limit,
+  }),
 });
 
-export const _findManyLiked = z.object({
-  sinceId,
-  userFields,
-  chirpFields,
-  expandAuthor,
-  limit,
+const findManyLiked = object({
+  params: usernameObject,
+  query: object({
+    sinceId,
+    userFields,
+    chirpFields,
+    expandAuthor,
+    limit,
+  }),
 });
 
-export const _createOne = z.object({ content, parentId });
+const createOne = object({
+  currentUserId: objectId,
+  body: object({ content, parentId }),
+});
 
-export const findMany = _findMany.transform(appendAuthorIfExpanded);
-export const findOne = _findOne.transform(appendAuthorIfExpanded);
-export const searchMany = _searchMany.transform(appendAuthorIfExpanded);
-export const getUserTimeline = _getUserTimeline.transform(
-  appendAuthorIfExpanded
-);
-export const findManyByUser = _findManyByUser.transform(appendAuthorIfExpanded);
-export const findManyLiked = _findManyLiked.transform(appendAuthorIfExpanded);
-export const createOne = _createOne;
+const deleteOne = object({
+  currentUserId: objectId,
+  params: chirpIdObject,
+});
+
+export {
+  chirp,
+  post,
+  reply,
+  content,
+  author,
+  replies,
+  metrics,
+  findMany,
+  findOne,
+  searchMany,
+  sortOrder,
+  deleteOne,
+  createOne,
+  findManyByUser,
+  findManyLiked,
+  getUserTimeline,
+};
