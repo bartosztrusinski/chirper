@@ -1,12 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
+import rateLimit from 'express-rate-limit';
 import { ErrorResponse, RequestValidators, ChirpIdObject } from './interfaces';
 import { parseAuthHeader, parseError } from './utils/helper.utils';
 import * as userService from './api/users/user.service';
 import * as chirpService from './api/chirps/chirp.service';
-import config from './config/env.config';
+import envConfig from './config/env.config';
+import reqConfig from './config/request.config';
 
-const env = config.app.environment;
+const env = envConfig.app.environment;
 
 const authenticate = async (
   req: Request<unknown, unknown, unknown, unknown>,
@@ -126,6 +128,13 @@ const validateRequest =
     next();
   };
 
+const rateLimiter = rateLimit({
+  windowMs: 1000 * 60 * reqConfig.rate.timeFrameMinutes,
+  max: reqConfig.rate.limit,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 export {
   authenticate,
   authenticateAllowGuest,
@@ -134,4 +143,5 @@ export {
   notFound,
   passwordAuthenticate,
   validateRequest,
+  rateLimiter,
 };

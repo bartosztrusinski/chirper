@@ -72,6 +72,11 @@ const like = {
   },
 } as const;
 
+const rate = {
+  limit: 100,
+  timeFrameMinutes: 15,
+} as const;
+
 const config = {
   limit,
   page,
@@ -79,6 +84,7 @@ const config = {
   chirp,
   follow,
   like,
+  rate,
 } as const;
 
 export default config;
