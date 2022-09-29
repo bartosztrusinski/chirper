@@ -10,4 +10,17 @@ module.exports = {
   devServer: {
     static: "./dist",
   },
+  devtool: "source-map",
+
+  module: {
+    rules: [
+      {
+        test: /\.m?js$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: "swc-loader",
+        },
+      },
+    ],
+  },
 };
