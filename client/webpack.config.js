@@ -19,6 +19,10 @@ module.exports = {
 
   plugins: [new MiniCssExtractPlugin()],
 
+  resolve: {
+    extensions: [".js", ".jsx"],
+  },
+
   module: {
     rules: [
       {
@@ -31,7 +35,7 @@ module.exports = {
         ],
       },
       {
-        test: /\.m?js$/,
+        test: /\.jsx?$/,
         exclude: /(node_modules)/,
         use: {
           loader: "swc-loader",

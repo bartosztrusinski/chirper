@@ -1,5 +1,16 @@
 {
   "$schema": "https://json.schemastore.org/swcrc",
+  "jsc": {
+    "transform": {
+      "react": {
+        "runtime": "automatic"
+      }
+    },
+    "parser": {
+      "jsx": true,
+      "syntax": "ecmascript"
+    }
+  },
   "module": {
     "type": "commonjs",
     "strict": false,
