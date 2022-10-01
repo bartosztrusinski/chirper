@@ -6,5 +6,9 @@
     "strictMode": true,
     "lazy": false,
     "noInterop": false
+  },
+  "env": {
+    "mode": "usage",
+    "coreJs": 3.25
   }
 }

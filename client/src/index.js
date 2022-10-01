@@ -13,3 +13,9 @@ const daedricSwordRecipe = {
 };
 
 console.log("Daedric sword recipe: ", daedricSwordRecipe);
+
+console.log([1, 3, 5].includes(3));
+
+console.log({ ...daedricSwordRecipe, name: "Daedric Greatsword" });
+
+console.log(Object.values(daedricSwordRecipe));
