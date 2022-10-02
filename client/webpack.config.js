@@ -8,8 +8,9 @@ module.exports = {
   mode,
   entry: "./src/index.js",
   output: {
-    filename: "main.js",
+    filename: "[name].js",
     path: path.resolve(__dirname, "dist"),
+    assetModuleFilename: "images/[hash][ext][query]",
   },
   devServer: {
     static: "./dist",
@@ -25,6 +26,10 @@ module.exports = {
 
   module: {
     rules: [
+      {
+        test: /\.(png|jpe?g|svg|gif)$/i,
+        type: "asset",
+      },
       {
         test: /\.(s[ac]|c)ss$/i,
         use: [
