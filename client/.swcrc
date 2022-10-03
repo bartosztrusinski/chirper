@@ -3,7 +3,8 @@
   "jsc": {
     "transform": {
       "react": {
-        "runtime": "automatic"
+        "runtime": "automatic",
+        "refresh": true
       }
     },
     "parser": {

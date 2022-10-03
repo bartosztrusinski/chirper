@@ -1,6 +1,7 @@
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HTMLWebpackPlugin = require("html-webpack-plugin");
+const ReactFastRefreshPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
 const mode =
   process.env.NODE_ENV === "production" ? "production" : "development";
@@ -31,6 +32,7 @@ module.exports = {
       template: "./src/index.html",
       hash: true,
     }),
+    new ReactFastRefreshPlugin(),
   ],
 
   resolve: {
