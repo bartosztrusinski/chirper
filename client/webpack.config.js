@@ -5,11 +5,14 @@ const HTMLWebpackPlugin = require("html-webpack-plugin");
 const mode =
   process.env.NODE_ENV === "production" ? "production" : "development";
 
+const filename = (ext) =>
+  mode === "production" ? `[name].[contenthash].${ext}` : `[name].${ext}`;
+
 module.exports = {
   mode,
   entry: "./src/index.js",
   output: {
-    filename: "[name].[contenthash].js",
+    filename: filename("js"),
     path: path.resolve(__dirname, "dist"),
     assetModuleFilename: "images/[hash][ext][query]",
     clean: true,
@@ -22,7 +25,7 @@ module.exports = {
 
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "[name].[contenthash].css",
+      filename: filename("css"),
     }),
     new HTMLWebpackPlugin({
       template: "./src/index.html",
