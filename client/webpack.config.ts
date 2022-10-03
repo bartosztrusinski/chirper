@@ -1,17 +1,20 @@
-const path = require("path");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const HTMLWebpackPlugin = require("html-webpack-plugin");
-const ReactFastRefreshPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+import * as path from "path";
+import * as webpack from "webpack";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import HTMLWebpackPlugin from "html-webpack-plugin";
+import ReactFastRefreshPlugin from "@pmmmwh/react-refresh-webpack-plugin";
+import "webpack-dev-server";
 
-const mode =
-  process.env.NODE_ENV === "production" ? "production" : "development";
+const isProd = process.env.NODE_ENV === "production";
 
-const filename = (ext) =>
-  mode === "production" ? `[name].[contenthash].${ext}` : `[name].${ext}`;
+const mode = isProd ? "production" : "development";
 
-module.exports = {
+const filename = (ext: string) =>
+  isProd ? `[name].[contenthash].${ext}` : `[name].${ext}`;
+
+const config: webpack.Configuration = {
   mode,
-  entry: "./src/index.js",
+  entry: "./src/index.tsx",
   output: {
     filename: filename("js"),
     path: path.resolve(__dirname, "dist"),
@@ -36,7 +39,7 @@ module.exports = {
   ],
 
   resolve: {
-    extensions: [".js", ".jsx"],
+    extensions: [".tx", ".tsx", ".js", ".jsx"],
   },
 
   module: {
@@ -55,7 +58,7 @@ module.exports = {
         ],
       },
       {
-        test: /\.jsx?$/,
+        test: /\.(j|t)sx?$/,
         exclude: /(node_modules)/,
         use: {
           loader: "swc-loader",
@@ -64,3 +67,5 @@ module.exports = {
     ],
   },
 };
+
+export default config;

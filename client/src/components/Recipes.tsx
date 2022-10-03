@@ -29,7 +29,6 @@ function Recipes() {
     daedricSwordRecipe,
     dragonboneSwordRecipe,
   ]);
-  console.log(recipes);
 
   const list = (
     <ol>

@@ -8,8 +8,7 @@
       }
     },
     "parser": {
-      "jsx": true,
-      "syntax": "ecmascript"
+      "syntax": "typescript"
     }
   },
   "module": {
