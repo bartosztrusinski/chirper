@@ -1,10 +1,9 @@
-@use "variables";
+@use 'variables';
 
 body {
   background-color: black;
   color: var(--text);
-  font-family: "Roboto", "Arial", "Segoe UI", Tahoma, Geneva, Verdana,
-    sans-serif;
+  font-family: Roboto, Arial, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
 }
 
@@ -20,7 +19,7 @@ header {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-image: url("../images/rx7.jpg");
+  background-image: url('../images/rx7.jpg');
   background-size: cover;
   background-position-y: 40%;
   padding: 150px;

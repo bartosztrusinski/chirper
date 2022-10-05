@@ -1,27 +1,27 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 const daedricSwordRecipe = {
-  name: "Daedric Sword",
+  name: 'Daedric Sword',
   ingredients: [
-    { name: "Daedra Heart", quantity: 1 },
-    { name: "Leather Strips", quantity: 1 },
-    { name: "Ebony Ingot", quantity: 2 },
+    { name: 'Daedra Heart', quantity: 1 },
+    { name: 'Leather Strips', quantity: 1 },
+    { name: 'Ebony Ingot', quantity: 2 },
   ],
-  skill: "Smithing",
+  skill: 'Smithing',
   skillLevel: 90,
-  type: "Daedric",
+  type: 'Daedric',
 };
 
 const dragonboneSwordRecipe = {
-  name: "Dragonbone Sword",
+  name: 'Dragonbone Sword',
   ingredients: [
-    { name: "Dragon Bone", quantity: 1 },
-    { name: "Leather Strips", quantity: 1 },
-    { name: "Ebony Ingot", quantity: 1 },
+    { name: 'Dragon Bone', quantity: 1 },
+    { name: 'Leather Strips', quantity: 1 },
+    { name: 'Ebony Ingot', quantity: 1 },
   ],
-  skill: "Smithing",
+  skill: 'Smithing',
   skillLevel: 100,
-  type: "Dragonbone",
+  type: 'Dragonbone',
 };
 
 function Recipes() {
