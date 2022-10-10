@@ -1,6 +1,7 @@
 html {
   box-sizing: border-box;
   font-size: 100%;
+  scroll-behavior: smooth;
 }
 
 *,
@@ -12,7 +13,7 @@ html {
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: hsl(0deg 0% 11%);
-  color: hsl(0deg 0% 100%);
+  font-family: var(--font);
+  background-color: var(--color-dark);
+  color: var(--color-light);
 }
