@@ -1,3 +1,5 @@
+@use '../util' as u;
+
 h1,
 h2,
 h3 {
@@ -6,8 +8,21 @@ h3 {
   margin-top: 0;
 }
 
+h1 {
+  font-size: clamp(u.rem(28), u.rem(16) + 2vw, u.rem(40));
+}
+
+h2 {
+  font-size: clamp(u.rem(24), u.rem(16) + 1.5vw, u.rem(36));
+}
+
+h3 {
+  font-size: clamp(u.rem(20), u.rem(16) + 1vw, u.rem(32));
+}
+
 p {
   margin-top: 0;
+  font-size: clamp(u.rem(16), u.rem(16) + 0.5vw, u.rem(24));
 }
 
 a,
