@@ -1,0 +1,15 @@
+@use 'sass:math';
+
+@function rem($px) {
+  @if math.is-unitless($px) {
+    @return math.div($px, 16) * 1rem;
+  }
+  @error 'Expected unitless number, but got #{$px}.';
+}
+
+@function em($px) {
+  @if math.is-unitless($px) {
+    @return math.div($px, 16) * 1em;
+  }
+  @error 'Expected unitless number, but got #{$px}.';
+}
