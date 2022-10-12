@@ -1,41 +1,27 @@
 import { RiTwitterLine } from 'react-icons/ri';
-import { GrLinkDown } from 'react-icons/gr';
 import Button from '../Button/Button';
-import Link from '../Button/Link';
 import styles from './Landing.module.scss';
 
 function Landing() {
   return (
-    <main>
-      <section className={styles.article}>
+    <main className={styles.main}>
+      <article className={styles.welcome}>
         <RiTwitterLine className={styles.icon} />
-        <h1 className={styles.heading}>Welcome to Chirper!</h1>
-        <Link
-          href='#article2'
-          style={{
-            position: 'absolute',
-            bottom: '20px',
-            borderRadius: '15px',
-          }}
-        >
-          <GrLinkDown />
-        </Link>
-      </section>
-      <div className='grid' id='article2'>
-        <section className={styles.section}>
-          <h2 className={styles.subheading}>Don’t miss what’s happening</h2>
-          <p className={styles.paragraph}>
-            People on Chirper are the first to know
-          </p>
+        <h1>Welcome to Chirper!</h1>
+      </article>
+      <article className={styles.hero}>
+        <section className={styles.card}>
+          <h2>Don&apos;t miss what&apos;s happening</h2>
+          <p>People on Chirper are the first to know</p>
         </section>
-        <section className={styles.section}>
-          <h2 className={styles.subheading}>Join Chirper today</h2>
-          <div className={`${styles.group} grid`}>
+        <section className={styles.card}>
+          <h2>Join Chirper today</h2>
+          <div className={styles.group}>
             <Button variant='light'>Sign up</Button>
             <Button variant='light'>Log in</Button>
           </div>
         </section>
-      </div>
+      </article>
     </main>
   );
 }
