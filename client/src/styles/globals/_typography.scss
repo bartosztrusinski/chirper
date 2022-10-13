@@ -9,15 +9,15 @@ h3 {
 }
 
 h1 {
-  font-size: clamp(u.rem(28), u.rem(16) + 2vw, u.rem(40));
+  font-size: clamp(u.rem(28), u.rem(16) + 2.25vw, u.rem(44));
 }
 
 h2 {
-  font-size: clamp(u.rem(24), u.rem(16) + 1.5vw, u.rem(36));
+  font-size: clamp(u.rem(24), u.rem(16) + 1.75vw, u.rem(38));
 }
 
 h3 {
-  font-size: clamp(u.rem(20), u.rem(16) + 1vw, u.rem(32));
+  font-size: clamp(u.rem(20), u.rem(16) + 1.25vw, u.rem(32));
 }
 
 p {
