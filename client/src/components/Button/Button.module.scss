@@ -1,10 +1,12 @@
+@use '../../styles/util' as u;
+
 .button {
-  border-radius: 12px;
+  border-radius: u.rem(12);
   border: none;
-  padding: 12px 24px;
+  padding: u.rem(14) u.rem(24);
   cursor: pointer;
-  font-weight: bold;
-  font-size: 1.2rem;
+  font-size: u.rem(18);
+  box-shadow: 0 0 u.rem(4) u.rem(1) rgba(0 0 0 / 20%);
 }
 
 .primary {
