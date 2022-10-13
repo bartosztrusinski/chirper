@@ -1,4 +1,4 @@
-import { RiTwitterLine } from 'react-icons/ri';
+import { RiTwitterLine } from '@react-icons/all-files/ri/RiTwitterLine';
 import Button from '../Button/Button';
 import styles from './Landing.module.scss';
 

@@ -1,16 +1,52 @@
 import '../styles/index.scss';
-import Recipes from './Recipes';
-import rx7 from '../images/rx7.jpg';
+import {
+  Link,
+  Outlet,
+  MakeGenerics,
+  Router,
+  Route,
+  ReactLocation,
+  useMatch,
+} from '@tanstack/react-location';
+import Home from './Home';
+import Landing from './Landing/Landing';
+import Profile from './Profile';
+import Search from './Search';
+import Explore from './Explore';
+
+const location = new ReactLocation();
+const routes: Route[] = [
+  {
+    path: '/',
+    element: <Landing />,
+  },
+  {
+    path: 'home',
+    element: <Home />,
+  },
+  {
+    path: 'profile',
+    element: <Profile />,
+  },
+  {
+    path: 'search',
+    element: <Search />,
+  },
+  {
+    path: 'explore',
+    element: <Explore />,
+  },
+  {
+    path: '*',
+    element: <h1>404</h1>,
+  },
+];
 
 function App() {
   return (
-    <>
-      <header>
-        <h1>Hello React ⚛️</h1>
-        <img src={rx7} alt='Mazda RX7' width='150' />
-      </header>
-      <Recipes />
-    </>
+    <Router location={location} routes={routes}>
+      <Outlet />
+    </Router>
   );
 }
 

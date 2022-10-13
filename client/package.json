@@ -18,10 +18,11 @@
     "format": "npm run prettier-fix && npm run lint-fix"
   },
   "dependencies": {
+    "@react-icons/all-files": "^4.1.0",
+    "@tanstack/react-location": "^3.7.4",
     "core-js": "^3.25.3",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-icons": "^4.4.0"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",

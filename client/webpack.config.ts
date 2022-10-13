@@ -18,11 +18,13 @@ const config: webpack.Configuration = {
   output: {
     filename: filename('js'),
     path: path.resolve(__dirname, 'dist'),
+    publicPath: '/',
     assetModuleFilename: 'images/[hash][ext][query]',
     clean: true,
   },
   devServer: {
     static: './dist',
+    historyApiFallback: true,
     hot: true,
   },
   devtool: 'source-map',
