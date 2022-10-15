@@ -34,7 +34,7 @@ const config: webpack.Configuration = {
       filename: filename('css'),
     }),
     new HTMLWebpackPlugin({
-      template: './src/index.html',
+      template: './src/assets/template.html',
       hash: true,
     }),
     new ReactFastRefreshPlugin(),
