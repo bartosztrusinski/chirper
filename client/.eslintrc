@@ -3,13 +3,7 @@
     "browser": true,
     "es2021": true
   },
-  "plugins": [
-    "react",
-    "react-hooks",
-    "import",
-    "@typescript-eslint",
-    "prettier"
-  ],
+  "plugins": ["react", "import", "@typescript-eslint", "prettier"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
@@ -22,6 +16,7 @@
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended",
     "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
