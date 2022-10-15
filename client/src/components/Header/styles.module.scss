@@ -1,0 +1,27 @@
+@use '../../assets/styles/util/' as u;
+
+.header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  padding: u.rem(12) u.rem(10) u.rem(20);
+  border: 1px solid hotpink;
+  text-align: center;
+}
+
+.logo {
+  display: flex;
+  place-items: center;
+  gap: u.rem(10);
+  color: var(--color-primary);
+}
+
+.heading {
+  margin: 0;
+  order: 2;
+}
+
+.icon {
+  font-size: u.rem(60);
+  order: 1;
+}
