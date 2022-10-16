@@ -1,0 +1,51 @@
+@use '../../assets/styles/util' as u;
+
+.form {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  color: var(--color-light);
+  border: u.rem(3) solid var(--color-primary);
+  padding: u.rem(6) u.rem(5) u.rem(2);
+  border-radius: u.rem(20);
+}
+
+.input {
+  background-color: transparent;
+  color: inherit;
+  font-size: u.rem(16);
+  margin: 0;
+  padding: u.rem(8) u.rem(10);
+  border: u.rem(2) solid transparent;
+  border-radius: u.rem(14);
+  transition: transform 0.2s ease-in-out;
+}
+
+.input::placeholder {
+  color: var(--color-light);
+}
+
+.button {
+  background-color: transparent;
+  color: var(--color-light);
+  border: u.rem(2) solid transparent;
+  font-size: u.rem(16);
+  overflow: hidden;
+  width: u.rem(43);
+  padding: 0;
+  border-radius: u.rem(14);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: transform 0.2s ease-in-out;
+}
+
+.button:hover,
+.button:focus {
+  opacity: 1;
+}
+
+.input:focus,
+.button:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  transform: translate(0, u.rem(-2));
+}

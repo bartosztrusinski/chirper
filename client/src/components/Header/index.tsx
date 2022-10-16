@@ -1,8 +1,8 @@
-import Button from '../Button';
 import styles from './styles.module.scss';
 import { RiTwitterLine } from '@react-icons/all-files/ri/RiTwitterLine';
+import Button from '../Button';
+import SearchForm from '../SearchForm';
 import useMediaQuery from '../../hooks/useMediaQuery';
-import useViewport from '../../hooks/useViewport';
 
 interface Props {
   title: string;
@@ -11,7 +11,6 @@ interface Props {
 function Header({ title }: Props) {
   const breakpoint = 700;
   const matches = useMediaQuery(breakpoint, 'max');
-  const { width, height } = useViewport();
 
   return (
     <header className={styles.header}>
@@ -22,10 +21,7 @@ function Header({ title }: Props) {
         <RiTwitterLine className={styles.icon} />
       </section>
       <section>
-        <h2 className={styles.heading}>{title}</h2>
-        <p>
-          {width}px, {height}px
-        </p>
+        {matches ? <h2 className={styles.heading}>{title}</h2> : <SearchForm />}
       </section>
       <section style={{ textAlign: 'end' }}>
         <Button>🤔</Button>

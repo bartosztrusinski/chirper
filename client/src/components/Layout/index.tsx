@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import Header from '../Header';
 
 interface Props {
-  children: ReactNode;
+  children?: ReactNode;
   title: string;
 }
 
