@@ -1,0 +1,43 @@
+@use '../../assets/styles/util' as u;
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: calc(100vh - u.rem(99));
+  place-content: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+
+  @include u.breakpoint-up('medium') {
+    grid-template-columns: 1fr 6fr 1fr;
+  }
+
+  @include u.breakpoint-up('large') {
+    grid-template-columns: 1fr 2.5fr 1fr;
+  }
+}
+
+.main {
+  border-left: u.rem(1) solid var(--color-border);
+  border-right: u.rem(1) solid var(--color-border);
+}
+
+.nav {
+  display: grid;
+  justify-content: center;
+  padding-top: u.rem(20);
+}
+
+.profile {
+  display: grid;
+  justify-content: center;
+  padding-top: u.rem(20);
+}
+
+.avatar {
+  width: clamp(u.rem(60), u.rem(25) + 5vw, u.rem(70));
+  border-radius: u.rem(15);
+}
