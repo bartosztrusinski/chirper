@@ -36,6 +36,7 @@ const config: webpack.Configuration = {
     new HTMLWebpackPlugin({
       template: './src/assets/template.html',
       hash: true,
+      favicon: './src/assets/images/favicon.ico',
     }),
     new ReactFastRefreshPlugin(),
   ],
