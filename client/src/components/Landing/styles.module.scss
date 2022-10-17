@@ -9,7 +9,7 @@
 
   @include u.breakpoint-up('xlarge') {
     grid-template-columns: 7fr 4fr;
-    min-height: 100vh;
+    grid-template-rows: calc(100vh - u.rem(94));
   }
 }
 
