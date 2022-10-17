@@ -1,0 +1,45 @@
+@use '../../assets/styles/util' as u;
+
+.link {
+  display: grid;
+  grid-template-columns: auto;
+  align-items: center;
+  gap: u.rem(8);
+  padding: u.rem(10);
+  margin-bottom: u.rem(8);
+  border-radius: u.rem(8);
+  outline: u.rem(2) solid transparent;
+  color: var(--color-light);
+  opacity: 0.8;
+  transition: all 0.2s ease-in-out;
+
+  &:focus {
+    outline-color: var(--color-primary);
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:hover,
+  &:focus {
+    transform: translate(0, u.rem(-2));
+  }
+
+  @include u.breakpoint-up('large') {
+    grid-template-columns: auto 1fr;
+  }
+}
+
+.active {
+  color: var(--color-primary);
+  opacity: 1;
+}
+
+.heading {
+  margin: 0;
+}
+
+.icon {
+  font-size: clamp(u.rem(32), u.rem(26) + 1vw, u.rem(48));
+}
