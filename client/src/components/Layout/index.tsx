@@ -4,6 +4,7 @@ import Header from '../Header';
 import Nav from '../Nav';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import defaultAvatar from '../../assets/images/default_avatar.png';
+import Button from '../Button';
 
 interface Props {
   children?: ReactNode;
@@ -11,28 +12,39 @@ interface Props {
 }
 
 function Layout({ children, title }: Props) {
-  const breakpoint = 700;
-  const matches = useMediaQuery(breakpoint);
+  const mediumBreakpoint = 700;
+  const largeBreakpoint = 900;
+  const isMediumUp = useMediaQuery(mediumBreakpoint);
+  const isLargeUp = useMediaQuery(largeBreakpoint);
 
   return (
     <>
       <Header title={title} />
       <div className={styles.container}>
         <div className={styles.grid}>
-          {matches && (
+          {isMediumUp && (
             <aside className={styles.nav}>
               <Nav />
             </aside>
           )}
           <main className={styles.main}>{children}</main>
-          {matches && (
+          {isLargeUp ? (
             <aside className={styles.profile}>
-              <img
-                src={defaultAvatar}
-                alt='default user avatar'
-                className={styles.avatar}
-              />
+              <div className={styles.group}>
+                <Button variant='light'>Sign up</Button>
+                <Button variant='light'>Log in</Button>
+              </div>
             </aside>
+          ) : (
+            isMediumUp && (
+              <aside className={styles.profile}>
+                <img
+                  src={defaultAvatar}
+                  alt='default user avatar'
+                  className={styles.avatar}
+                />
+              </aside>
+            )
           )}
         </div>
       </div>

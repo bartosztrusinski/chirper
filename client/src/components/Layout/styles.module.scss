@@ -33,11 +33,29 @@
 
 .profile {
   display: grid;
+  justify-items: center;
   justify-content: center;
+  align-content: start;
   padding-top: u.rem(20);
+  grid-template-columns: 1fr;
+
+  @include u.breakpoint-up('large') {
+    padding-inline: clamp(u.rem(16), u.rem(3) + 1.5vw, u.rem(27));
+    justify-items: initial;
+    grid-template-columns: min(100%, u.rem(250));
+  }
 }
 
 .avatar {
   width: clamp(u.rem(60), u.rem(25) + 5vw, u.rem(70));
   border-radius: u.rem(15);
+}
+
+.group {
+  display: grid;
+  grid-template-columns: 1fr;
+  background-color: var(--color-primary);
+  border-radius: u.rem(16);
+  gap: u.rem(16);
+  padding: clamp(u.rem(16), u.rem(16) + 2vw, u.rem(20)) u.rem(20);
 }
