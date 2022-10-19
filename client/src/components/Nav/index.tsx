@@ -29,7 +29,11 @@ function Nav() {
           </Link>
         </li>
         <li>
-          <Link to='/explore' className={styles.link}>
+          <Link
+            to='/explore'
+            className={styles.link}
+            getActiveProps={() => ({ className: styles.active })}
+          >
             <FaHashtag className={styles.icon} />{' '}
             <h3
               className={`${styles.heading} ${
@@ -41,7 +45,11 @@ function Nav() {
           </Link>
         </li>
         <li>
-          <Link to='/search' className={styles.link}>
+          <Link
+            to='/search'
+            className={styles.link}
+            getActiveProps={() => ({ className: styles.active })}
+          >
             <FaSearch className={styles.icon} />{' '}
             <h3
               className={`${styles.heading} ${
