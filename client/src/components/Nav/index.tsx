@@ -1,64 +1,34 @@
-import { Link } from '@tanstack/react-location';
-import styles from './styles.module.scss';
 import { FaHome } from '@react-icons/all-files/fa/FaHome';
 import { FaSearch } from '@react-icons/all-files/fa/FaSearch';
 import { FaHashtag } from '@react-icons/all-files/fa/FaHashtag';
 import useMediaQuery from '../../hooks/useMediaQuery';
+import NavLink from './NavLink';
 
 function Nav() {
   const breakpoint = 900;
-  const matches = useMediaQuery(breakpoint, 'max');
+  const isLargeUp = useMediaQuery(breakpoint, 'max');
 
   return (
     <nav>
-      <ul className={styles.list}>
+      <ul>
         <li>
-          <Link
-            to='/home'
-            className={styles.link}
-            getActiveProps={() => ({ className: styles.active })}
-          >
-            <FaHome className={styles.icon} />
-            <h3
-              className={`${styles.heading} ${
-                matches ? 'visually-hidden' : ''
-              }`}
-            >
-              Home
-            </h3>
-          </Link>
+          <NavLink to='/home' name='Home' Icon={FaHome} isLargeUp={isLargeUp} />
         </li>
         <li>
-          <Link
+          <NavLink
             to='/explore'
-            className={styles.link}
-            getActiveProps={() => ({ className: styles.active })}
-          >
-            <FaHashtag className={styles.icon} />{' '}
-            <h3
-              className={`${styles.heading} ${
-                matches ? 'visually-hidden' : ''
-              }`}
-            >
-              Explore
-            </h3>
-          </Link>
+            name='Explore'
+            Icon={FaHashtag}
+            isLargeUp={isLargeUp}
+          />
         </li>
         <li>
-          <Link
+          <NavLink
             to='/search'
-            className={styles.link}
-            getActiveProps={() => ({ className: styles.active })}
-          >
-            <FaSearch className={styles.icon} />{' '}
-            <h3
-              className={`${styles.heading} ${
-                matches ? 'visually-hidden' : ''
-              }`}
-            >
-              Search
-            </h3>
-          </Link>
+            name='Search'
+            Icon={FaSearch}
+            isLargeUp={isLargeUp}
+          />
         </li>
       </ul>
     </nav>

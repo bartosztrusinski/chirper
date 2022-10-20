@@ -3,7 +3,9 @@
 .link {
   display: grid;
   grid-template-columns: auto;
+  justify-content: center;
   align-items: center;
+  text-align: center;
   gap: u.rem(8);
   padding: u.rem(10);
   margin-bottom: u.rem(8);
