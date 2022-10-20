@@ -14,15 +14,24 @@ const findMany = async (
   req: Request<{}, SuccessResponse, {}, ChirpControllers.FindMany['query']>,
   res: Response<SuccessResponse>
 ) => {
-  const { ids, userFields, chirpFields, expandAuthor } = req.query;
+  const { sinceId, ids, userFields, chirpFields, expandAuthor, limit } =
+    req.query;
+
+  const filter: FilterQuery<Chirp> = {};
+  if (sinceId) filter._id = { $lt: sinceId };
+  if (ids) filter._id = ids;
 
   const foundChirps = await chirpService.findMany(
-    { _id: ids },
+    filter,
     expandAuthor ? chirpFields + 'author' : chirpFields,
-    expandAuthor ? [{ path: 'author', select: userFields }] : []
+    expandAuthor ? [{ path: 'author', select: userFields }] : [],
+    { _id: -1 },
+    limit
   );
 
-  res.status(200).json(createSuccessResponse(foundChirps));
+  const nextPage = ids ? undefined : foundChirps[foundChirps.length - 1]?._id;
+
+  res.status(200).json(createSuccessResponse(foundChirps, { nextPage }));
 };
 
 const findOne = async (

@@ -39,7 +39,8 @@ const ids = array(stringId, {
   required_error: 'Ids is required',
 })
   .nonempty({ message: 'You must provide at least one id' })
-  .max(config.limit.max, `You can only provide up to ${config.limit.max} ids`);
+  .max(config.limit.max, `You can only provide up to ${config.limit.max} ids`)
+  .optional();
 
 const followedOnly = createInputSchema('followedOnly')
   .default('false')

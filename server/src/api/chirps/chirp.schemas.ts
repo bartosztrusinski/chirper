@@ -85,6 +85,8 @@ const findMany = object({
     chirpFields,
     userFields,
     expandAuthor,
+    limit,
+    sinceId,
   }),
 });
 
