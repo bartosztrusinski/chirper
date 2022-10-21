@@ -8,7 +8,7 @@
 .group {
   display: grid;
   grid-template-columns: 1fr;
-  background-color: var(--color-primary);
+  background-color: var(--color-primary-400);
   border-radius: u.rem(16);
   gap: u.rem(16);
   padding: clamp(u.rem(16), u.rem(16) + 2vw, u.rem(20)) u.rem(20);

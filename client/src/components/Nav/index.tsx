@@ -10,7 +10,7 @@ function Nav() {
 
   return (
     <nav>
-      <ul>
+      <ul role='list'>
         <li>
           <NavLink to='/home' name='Home' Icon={FaHome} isLargeUp={isLargeUp} />
         </li>

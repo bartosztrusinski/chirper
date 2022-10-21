@@ -11,20 +11,16 @@
   margin-bottom: u.rem(8);
   border-radius: u.rem(8);
   outline: u.rem(2) solid transparent;
-  color: var(--color-light);
-  opacity: 0.8;
+  color: var(--color-neutral-100);
   transition: all 0.2s ease-in-out;
 
   &:focus {
-    outline-color: var(--color-primary);
+    outline-color: var(--color-primary-400);
+    transform: translate(0, u.rem(-2));
   }
 
   &:hover {
-    opacity: 1;
-  }
-
-  &:hover,
-  &:focus {
+    color: var(--color-neutral-200);
     transform: translate(0, u.rem(-2));
   }
 
@@ -34,12 +30,7 @@
 }
 
 .active {
-  color: var(--color-primary);
-  opacity: 1;
-}
-
-.heading {
-  margin: 0;
+  color: var(--color-primary-400) !important;
 }
 
 .icon {

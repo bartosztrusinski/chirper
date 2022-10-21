@@ -26,8 +26,7 @@
 }
 
 .main {
-  border-left: u.rem(1) solid var(--color-border);
-  border-right: u.rem(1) solid var(--color-border);
+  border-inline: u.rem(1) solid var(--color-neutral-700);
 }
 
 .sidebar {

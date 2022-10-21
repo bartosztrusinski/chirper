@@ -17,9 +17,7 @@ function NavLink({ Icon, to, name, isLargeUp }: Props) {
       getActiveProps={() => ({ className: styles.active })}
     >
       <Icon className={styles.icon} />
-      <h3 className={`${styles.heading} ${isLargeUp ? 'visually-hidden' : ''}`}>
-        {name}
-      </h3>
+      <p className={isLargeUp ? 'visually-hidden' : ''}>{name}</p>
     </Link>
   );
 }

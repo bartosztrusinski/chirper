@@ -3,8 +3,8 @@
 .form {
   display: grid;
   grid-template-columns: 1fr auto auto;
-  color: var(--color-light);
-  border: u.rem(3) solid var(--color-primary);
+  color: var(--color-neutral-100);
+  border: u.rem(3) solid var(--color-primary-400);
   padding: u.rem(6) u.rem(5) u.rem(2);
   border-radius: u.rem(20);
 }
@@ -13,39 +13,39 @@
   background-color: transparent;
   color: inherit;
   font-size: u.rem(16);
-  margin: 0;
   padding: u.rem(8) u.rem(10);
   border: u.rem(2) solid transparent;
   border-radius: u.rem(14);
   transition: transform 0.2s ease-in-out;
+  outline: none;
 }
 
 .input::placeholder {
-  color: var(--color-light);
+  color: var(--color-neutral-100);
 }
 
 .button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: transparent;
-  color: var(--color-light);
+  color: var(--color-neutral-200);
   border: u.rem(2) solid transparent;
-  font-size: u.rem(16);
   overflow: hidden;
   width: u.rem(44);
-  padding: 0;
   border-radius: u.rem(14);
   cursor: pointer;
-  opacity: 0.7;
   transition: transform 0.2s ease-in-out;
+  outline: none;
 }
 
 .button:hover,
 .button:focus {
-  opacity: 1;
+  color: var(--color-neutral-100);
 }
 
 .input:focus,
 .button:focus {
-  border-color: var(--color-primary);
-  outline: none;
+  border-color: var(--color-primary-400);
   transform: translate(0, u.rem(-2));
 }
