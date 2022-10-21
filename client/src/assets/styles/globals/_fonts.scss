@@ -1,0 +1,18 @@
+:root {
+  --ff-primary: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --ff-body: var(--ff-primary);
+  --ff-heading: var(--ff-primary);
+}
+
+body {
+  font-family: var(--ff-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--ff-heading);
+}
