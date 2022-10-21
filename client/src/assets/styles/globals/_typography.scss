@@ -1,28 +1,72 @@
 @use '../util' as u;
 
+:root {
+  --fw-regular: 400;
+  --fw-semi-bold: 500;
+  --fw-bold: 700;
+  --fs-200: #{u.rem(15)};
+  --fs-300: #{u.rem(16)};
+  --fs-400: #{u.rem(20)};
+  --fs-500: #{u.rem(22)};
+  --fs-600: #{u.rem(24)};
+  --fs-700: #{u.rem(30)};
+  --fs-800: #{u.rem(36)};
+  --fs-900: #{u.rem(40)};
+  --fs-primary-heading: clamp(
+    var(--fs-600),
+    var(--fs-300) + 1.2vw,
+    var(--fs-900)
+  );
+  --fs-secondary-heading: clamp(
+    var(--fs-500),
+    var(--fs-300) + 1vw,
+    var(--fs-800)
+  );
+  --fs-tertiary-heading: clamp(
+    var(--fs-400),
+    var(--fs-300) + 0.7vw,
+    var(--fs-700)
+  );
+  --fs-nav: clamp(var(--fs-400), var(--fs-300) + 0.7vw, var(--fs-700));
+}
+
+body {
+  font-size: var(--fs-300);
+  font-weight: var(--fw-regular);
+}
+
+nav {
+  font-size: var(--fs-nav);
+  font-weight: var(--fw-semi-bold);
+}
+
 h1,
 h2,
-h3 {
-  font-weight: 700;
-  line-height: 1.1;
-  margin-top: 0;
+h3,
+h4,
+h5,
+h6 {
+  font-weight: var(--fw-bold);
+}
+
+button {
+  font-weight: var(--fw-semi-bold);
 }
 
 h1 {
-  font-size: clamp(u.rem(28), u.rem(16) + 2.25vw, u.rem(44));
+  font-size: var(--fs-primary-heading);
 }
 
 h2 {
-  font-size: clamp(u.rem(24), u.rem(16) + 1.75vw, u.rem(38));
+  font-size: var(--fs-secondary-heading);
 }
 
 h3 {
-  font-size: clamp(u.rem(20), u.rem(16) + 1.25vw, u.rem(32));
+  font-size: var(--fs-tertiary-heading);
 }
 
 p {
-  margin-top: 0;
-  font-size: clamp(u.rem(16), u.rem(16) + 0.5vw, u.rem(24));
+  font-size: clamp(var(--fs-300), var(--fs-300) + 0.2vw, var(--fs-400));
 }
 
 a,
