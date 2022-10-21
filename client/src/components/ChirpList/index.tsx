@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import Chirp from '../../api/services/Chirp';
+import ChirpService from '../../api/services/Chirp';
+import Chirp from '../Chirp';
 
 function ChirpList() {
   const {
@@ -7,7 +8,7 @@ function ChirpList() {
     isLoading,
     isError,
     error,
-  } = useQuery<{ _id: number }[]>(['chirps'], Chirp.getMany);
+  } = useQuery<{ data: Chirp[] }, Error>(['chirps'], ChirpService.getMany);
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -18,11 +19,15 @@ function ChirpList() {
   }
 
   return (
-    <div>
-      {chirps.map((chirp) => (
-        <p key={chirp._id}>{chirp._id}</p>
-      ))}
-    </div>
+    <>
+      {chirps.data.map((chirp) => {
+        return (
+          <>
+            <Chirp chirp={chirp} />
+          </>
+        );
+      })}
+    </>
   );
 }
 
