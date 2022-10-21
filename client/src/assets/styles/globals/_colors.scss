@@ -1,6 +1,14 @@
 :root {
-  --color-primary: hsl(158deg 50% 48%);
-  --color-light: hsl(0deg 0% 96%);
-  --color-dark: hsl(169deg 81% 4%);
-  --color-border: hsl(206deg 7% 20%);
+  --color-primary-400: hsl(158deg 50% 48%);
+  --color-primary-500: hsla(158deg 50% 48% 80%);
+  --color-neutral-100: hsl(169deg 0% 96%);
+  --color-neutral-200: hsl(169deg 4% 76%);
+  --color-neutral-400: hsl(169deg 4% 46%);
+  --color-neutral-700: hsl(169deg 7% 20%);
+  --color-neutral-900: hsl(169deg 81% 4%);
+}
+
+body {
+  background-color: var(--color-neutral-900);
+  color: var(--color-neutral-100);
 }
