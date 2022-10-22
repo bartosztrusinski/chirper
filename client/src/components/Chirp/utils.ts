@@ -23,4 +23,20 @@ const formatRelativeTime = (date: Date) => {
   }
 };
 
-export default formatRelativeTime;
+const formatCount = (count: number) => {
+  if (count > 10000) {
+    const integerPart = Math.floor(count / 1000);
+    const remainderHundreds = Math.floor((count % 1000) / 100);
+    const fractionalPart = remainderHundreds > 0 ? `.${remainderHundreds}` : '';
+    return `${integerPart}${fractionalPart}K`;
+  } else if (count > 1000) {
+    const countStr = count.toString();
+    return `${countStr.slice(0, 1)},${countStr.slice(1)}`;
+  }
+  return count;
+};
+
+export default {
+  formatRelativeTime,
+  formatCount,
+};
