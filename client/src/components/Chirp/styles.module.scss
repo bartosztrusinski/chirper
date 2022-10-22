@@ -19,10 +19,6 @@
   border-radius: 50%;
 }
 
-.content-container {
-  padding-bottom: 12px;
-}
-
 .content {
   padding: 30px;
 }
@@ -43,4 +39,20 @@
 
 .name {
   color: white;
+}
+
+.metrics {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.replies,
+.likes,
+.share {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--fs-200);
 }
