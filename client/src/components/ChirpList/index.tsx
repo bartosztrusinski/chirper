@@ -8,7 +8,9 @@ function ChirpList() {
     isLoading,
     isError,
     error,
-  } = useQuery<{ data: Chirp[] }, Error>(['chirps'], ChirpService.getMany);
+  } = useQuery<{ data: Chirp[] }, Error>(['chirps'], () =>
+    ChirpService.getMany(),
+  );
 
   if (isLoading) {
     return <p>Loading...</p>;

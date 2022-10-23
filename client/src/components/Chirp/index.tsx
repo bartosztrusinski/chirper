@@ -20,11 +20,11 @@ interface User {
 }
 
 interface Chirp {
-  _id: number;
+  _id: string;
   content: string;
   createdAt: string;
   author: User;
-  replies: number[];
+  replies: string[];
   metrics: {
     likeCount: number;
   };
@@ -40,6 +40,7 @@ function Chirp({ chirp }: Props) {
   const avatar = profile.picture ?? defaultAvatar;
   const navigate = useNavigate();
   const noPropagate = (e: MouseEvent) => e.stopPropagation();
+  const relativeCreatedTime = utils.formatRelativeTime(createdAt);
 
   return (
     <article
@@ -50,7 +51,7 @@ function Chirp({ chirp }: Props) {
         <Link to={`/users/${username}`} onClick={noPropagate}>
           <img
             src={avatar}
-            alt={`${username} avatar`}
+            alt={`${username}'s avatar`}
             className={styles.avatar}
           />
         </Link>
@@ -75,7 +76,7 @@ function Chirp({ chirp }: Props) {
           </span>
           <span className={styles.dot}>·</span>
           <time className={styles.time} dateTime={createdAt}>
-            {utils.formatRelativeTime(new Date(createdAt))}
+            {relativeCreatedTime}
           </time>
         </div>
         <div className={styles.content}>{content}</div>
