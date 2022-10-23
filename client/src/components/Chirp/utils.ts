@@ -1,4 +1,6 @@
-const formatter = new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' });
+const relativeTimeFormatter = new Intl.RelativeTimeFormat(undefined, {
+  numeric: 'auto',
+});
 
 type TimeUnit = 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks' | 'months';
 
@@ -11,16 +13,34 @@ const time: Record<TimeUnit, number> = {
   months: 12,
 } as const;
 
-const formatRelativeTime = (date: Date) => {
-  let delta = (date.getTime() - Date.now()) / 1000;
+const formatRelativeTime = (isoDateStr: string) => {
+  const localDate = new Date(isoDateStr);
+  let timeDelta = (localDate.getTime() - Date.now()) / 1000;
 
   let unit: TimeUnit;
   for (unit in time) {
-    if (Math.abs(delta) < time[unit]) {
-      return formatter.format(Math.round(delta), unit);
+    if (Math.abs(timeDelta) < time[unit]) {
+      return relativeTimeFormatter.format(Math.round(timeDelta), unit);
     }
-    delta /= time[unit];
+    timeDelta /= time[unit];
   }
+};
+
+const timeFormatter = new Intl.DateTimeFormat(undefined, {
+  hour12: false,
+  dateStyle: 'medium',
+  timeStyle: 'short',
+});
+
+const formatTime = (isoDateStr: string) => {
+  const localDate = new Date(isoDateStr);
+  const formattedFull = timeFormatter.format(localDate);
+
+  const index = formattedFull.lastIndexOf(' ');
+  const formattedTime = formattedFull.slice(index + 1);
+  const formattedDate = formattedFull.slice(0, index).replace(/(,|\s)*$/, '');
+
+  return [formattedTime, formattedDate];
 };
 
 const formatCount = (count: number) => {
@@ -38,5 +58,6 @@ const formatCount = (count: number) => {
 
 export default {
   formatRelativeTime,
+  formatTime,
   formatCount,
 };
