@@ -1,8 +1,12 @@
 :root {
+  --color-primary-200: hsl(158deg 67% 63%);
+  --color-primary-300: hsl(158deg 50% 54%);
   --color-primary-400: hsl(158deg 50% 48%);
-  --color-primary-500: hsla(158deg 50% 48% 80%);
-  --color-neutral-100: hsl(169deg 0% 96%);
-  --color-neutral-200: hsl(169deg 4% 76%);
+  --color-primary-500: hsl(158deg 50% 37%);
+  --color-primary-600: hsl(158deg 44% 36%);
+  --color-neutral-100: hsl(169deg 4% 96%);
+  --color-neutral-200: hsl(169deg 4% 86%);
+  --color-neutral-300: hsl(169deg 4% 76%);
   --color-neutral-400: hsl(169deg 4% 46%);
   --color-neutral-700: hsl(169deg 7% 20%);
   --color-neutral-900: hsl(169deg 81% 4%);
