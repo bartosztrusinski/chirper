@@ -23,11 +23,7 @@ function ChirpList() {
   return (
     <>
       {chirps.data.map((chirp) => {
-        return (
-          <>
-            <Chirp chirp={chirp} />
-          </>
-        );
+        return <Chirp key={chirp._id} chirp={chirp} />;
       })}
     </>
   );

@@ -63,7 +63,7 @@ function ChirpPage() {
         <FaArrowLeft />
         Back
       </div>
-      <article key={chirp.data._id} className={styles.chirp}>
+      <article className={styles.chirp}>
         <div className={styles.author}>
           <Link to={`/users/${username}`}>
             <img
@@ -142,15 +142,9 @@ function ChirpPage() {
           </form>
         </div>
       </article>
-      <>
-        {repliesData?.data.map((chirp) => {
-          return (
-            <>
-              <Chirp key={chirp._id} chirp={chirp} />
-            </>
-          );
-        })}
-      </>
+      {repliesData?.data.map((chirp) => {
+        return <Chirp key={chirp._id} chirp={chirp} />;
+      })}
     </section>
   );
 }
