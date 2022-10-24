@@ -3,11 +3,22 @@ import styles from './styles.module.scss';
 interface Props {
   children: React.ReactNode;
   variant?: 'primary' | 'light' | 'dark';
+  className?: string;
+  [key: string]: unknown;
 }
 
-function Button({ children, variant = 'primary' }: Props) {
+function Button({
+  children,
+  className,
+  variant = 'primary',
+  ...restProps
+}: Props) {
+  const classes = [styles.button, styles[variant], className]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <button className={`${styles.button} ${styles[variant]}`}>
+    <button className={classes} {...restProps}>
       {children}
     </button>
   );
