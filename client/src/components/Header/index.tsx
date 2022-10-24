@@ -3,6 +3,7 @@ import { RiTwitterLine } from '@react-icons/all-files/ri/RiTwitterLine';
 import Button from '../Button';
 import SearchForm from '../SearchForm';
 import useMediaQuery from '../../hooks/useMediaQuery';
+import { Link } from '@tanstack/react-location';
 
 interface Props {
   title: string;
@@ -14,18 +15,18 @@ function Header({ title }: Props) {
 
   return (
     <header className={styles.header}>
-      <section className={styles.logo}>
+      <Link to='/' className={styles.logo}>
         <h1 className={`${styles.heading} ${matches ? 'visually-hidden' : ''}`}>
           Chirper
         </h1>
-        <RiTwitterLine className={styles.icon} />
-      </section>
-      <section>
+        <RiTwitterLine className={styles.icon} aria-label='lol' />
+      </Link>
+      <div>
         {matches ? <h2 className={styles.heading}>{title}</h2> : <SearchForm />}
-      </section>
-      <section style={{ textAlign: 'end' }}>
+      </div>
+      <div style={{ textAlign: 'end' }}>
         <Button>🤔</Button>
-      </section>
+      </div>
     </header>
   );
 }

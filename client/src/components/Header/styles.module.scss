@@ -2,9 +2,9 @@
 
 .header {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   align-items: center;
-  padding: u.rem(18) u.rem(10) u.rem(20);
+  padding: u.rem(10) u.rem(10) u.rem(12);
   border-bottom: u.rem(1) solid var(--color-neutral-700);
   text-align: center;
   box-shadow: hsla(0deg 0% 0% / 10%) 0 u.rem(20) u.rem(25) u.rem(-5),
@@ -12,8 +12,11 @@
 }
 
 .logo {
-  display: flex;
-  place-items: center;
+  display: grid;
+  align-items: center;
+  grid-template-columns: repeat(2, auto);
+  gap: u.rem(4);
+  justify-self: start;
   color: var(--color-primary-400);
 }
 
@@ -23,6 +26,6 @@
 }
 
 .icon {
-  font-size: u.rem(60);
+  font-size: clamp(u.rem(40), u.rem(40) + 0.5vw, u.rem(50));
   order: 1;
 }
