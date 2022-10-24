@@ -79,7 +79,7 @@ function Chirp({ chirp }: Props) {
             {relativeCreatedTime}
           </time>
         </div>
-        <div className={styles.content}>{content}</div>
+        <p className={styles.content}>{content}</p>
         <div className={styles.metrics}>
           <div className={styles.replies}>
             <FaRegCommentAlt />

@@ -8,6 +8,7 @@ import Home from './components/Home';
 import Layout from './components/Layout';
 import Search from './components/Search';
 import Explore from './components/Explore';
+import ChirpPage from './components/ChirpPage';
 
 const location = new ReactLocation();
 const routes: Route[] = [
@@ -36,6 +37,14 @@ const routes: Route[] = [
     element: (
       <Layout title='Explore'>
         <Explore />
+      </Layout>
+    ),
+  },
+  {
+    path: 'chirps/:id',
+    element: (
+      <Layout title='Chirp'>
+        <ChirpPage />
       </Layout>
     ),
   },
