@@ -6,29 +6,7 @@ import { MouseEvent } from 'react';
 import { FaRegCommentAlt } from '@react-icons/all-files/fa/FaRegCommentAlt';
 import { FaRegHeart } from '@react-icons/all-files/fa/FaRegHeart';
 import { FiShare } from '@react-icons/all-files/fi/FiShare';
-
-interface User {
-  username: string;
-  profile: {
-    name: string;
-    bio?: string;
-    location?: string;
-    website?: string;
-    picture?: string;
-    header?: string;
-  };
-}
-
-interface Chirp {
-  _id: string;
-  content: string;
-  createdAt: string;
-  author: User;
-  replies: string[];
-  metrics: {
-    likeCount: number;
-  };
-}
+import Chirp from '../../interfaces/Chirp';
 
 interface Props {
   chirp: Chirp;
