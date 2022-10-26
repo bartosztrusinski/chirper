@@ -34,11 +34,9 @@ function ChirpPage() {
     isLoading,
     isError,
     error,
-  } = useQuery<{ data: Chirp }, Error>(['chirps', id], () =>
-    ChirpService.getOne(id),
-  );
+  } = useQuery(['chirps', id], () => ChirpService.getOne(id));
 
-  const { data: repliesData } = useQuery<{ data: Chirp[] }, Error>(
+  const { data: repliesData } = useQuery(
     ['chirps', { ids: chirp?.data?.replies }],
     () => ChirpService.getMany(chirp?.data.replies),
   );
@@ -48,7 +46,7 @@ function ChirpPage() {
   }
 
   if (isError) {
-    return <p>Error: {error.message}</p>;
+    return <p>Error: {(error as Error).message}</p>;
   }
 
   const { content, author, createdAt, replies, metrics } = chirp.data;

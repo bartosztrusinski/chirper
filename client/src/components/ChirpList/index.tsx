@@ -8,16 +8,21 @@ function ChirpList() {
     isLoading,
     isError,
     error,
-  } = useQuery<{ data: Chirp[] }, Error>(['chirps'], () =>
-    ChirpService.getMany(),
-  );
+  } = useQuery(['chirps'], () => ChirpService.getMany());
 
   if (isLoading) {
     return <p>Loading...</p>;
   }
 
   if (isError) {
-    return <p>Error: {error.message}</p>;
+    return (
+      <p>
+        Error:
+        {error instanceof Error
+          ? error.message
+          : 'Oops, something went wrong...'}
+      </p>
+    );
   }
 
   return (
