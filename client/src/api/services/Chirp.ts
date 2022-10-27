@@ -29,7 +29,38 @@ const getOne = async (id: string) => {
   return data;
 };
 
+const getManyByUser = async (username: string, includeReplies = false) => {
+  const params = {
+    expandAuthor: true,
+    userFields: 'username, profile',
+    chirpFields: 'content, createdAt, metrics, replies',
+    includeReplies,
+  };
+
+  const { data } = await client.get<{ data: Chirp[] }>(
+    `/users/${username}/chirps`,
+    { params },
+  );
+  return data;
+};
+
+const getManyLikedByUser = async (username: string) => {
+  const params = {
+    expandAuthor: true,
+    userFields: 'username, profile',
+    chirpFields: 'content, createdAt, metrics, replies',
+  };
+
+  const { data } = await client.get<{ data: Chirp[] }>(
+    `/users/${username}/liked-chirps`,
+    { params },
+  );
+  return data;
+};
+
 export default {
   getMany,
   getOne,
+  getManyByUser,
+  getManyLikedByUser,
 };
