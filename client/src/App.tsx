@@ -9,6 +9,7 @@ import Layout from './components/Layout';
 import Search from './components/Search';
 import Explore from './components/Explore';
 import ChirpPage from './components/ChirpPage';
+import UserProfile from './components/UserProfilePage';
 
 const location = new ReactLocation();
 const routes: Route[] = [
@@ -49,6 +50,14 @@ const routes: Route[] = [
     ),
   },
   {
+    path: 'users/:username',
+    element: (
+      <Layout title='User'>
+        <UserProfile />
+      </Layout>
+    ),
+  },
+  {
     element: <h1>404 Not Found 💀</h1>,
   },
 ];
@@ -61,8 +70,8 @@ function App() {
       <Router location={location} routes={routes}>
         <Outlet />
         <ReactLocationDevtools initialIsOpen={false} />
-        <ReactQueryDevtools initialIsOpen={false} position='bottom-right' />
       </Router>
+      <ReactQueryDevtools initialIsOpen={false} position='bottom-right' />
     </QueryClientProvider>
   );
 }
