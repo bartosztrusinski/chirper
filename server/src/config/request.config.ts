@@ -17,14 +17,14 @@ const user = {
   },
   username: {
     min: 5,
-    max: 50,
+    max: 24,
   },
   password: {
     min: 8,
     max: 64,
   },
   name: {
-    max: 50,
+    max: 24,
   },
   bio: {
     max: 160,

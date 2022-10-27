@@ -3,7 +3,7 @@
 .container {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: calc(100vh - u.rem(99));
+  grid-template-rows: calc(100vh - u.rem(81));
   place-content: center;
 }
 
@@ -16,11 +16,11 @@
   }
 
   @include u.breakpoint-up('large') {
-    grid-template-columns: 1fr 2.5fr 1fr;
+    grid-template-columns: 1fr minmax(u.rem(530), 2fr) 1fr;
   }
 
   @include u.breakpoint-up('xlarge') {
-    grid-template-columns: 300px 700px 300px;
+    grid-template-columns: u.rem(300) u.rem(700) u.rem(300);
     justify-content: center;
   }
 }
@@ -31,10 +31,10 @@
 
 .sidebar {
   display: grid;
-  justify-content: center;
-  padding-top: u.rem(30);
-  align-content: start;
   grid-template-columns: 1fr;
+  justify-content: center;
+  align-content: start;
+  padding-top: u.rem(30);
   padding-inline: u.rem(20);
 
   @include u.breakpoint-up('large') {

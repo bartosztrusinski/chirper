@@ -11,19 +11,25 @@ interface Props {
 
 function Header({ title }: Props) {
   const breakpoint = 700;
-  const matches = useMediaQuery(breakpoint, 'max');
+  const isMediumDown = useMediaQuery(breakpoint, 'max');
 
   return (
     <header className={styles.header}>
       <Link to='/' className={styles.logo}>
-        <h1 className={`${styles.heading} ${matches ? 'visually-hidden' : ''}`}>
+        <h1
+          className={`${styles.heading} ${
+            isMediumDown ? 'visually-hidden' : ''
+          }`}
+        >
           Chirper
         </h1>
         <RiTwitterLine className={styles.icon} aria-label='lol' />
       </Link>
-      <div>
-        {matches ? <h2 className={styles.heading}>{title}</h2> : <SearchForm />}
-      </div>
+      {isMediumDown ? (
+        <h2 className={styles.subheading}>{title}</h2>
+      ) : (
+        <SearchForm />
+      )}
       <div style={{ textAlign: 'end' }}>
         <Button>🤔</Button>
       </div>
