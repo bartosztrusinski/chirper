@@ -1,8 +1,30 @@
-import useViewport from './useViewport';
+import { useEffect, useState } from 'react';
 
-function useMediaQuery(breakpoint: number, type: 'min' | 'max' = 'min') {
-  const { width } = useViewport();
-  return type === 'min' ? width >= breakpoint : width < breakpoint;
-}
+const useMediaQuery = (mediaQuery: string) => {
+  const [matches, setMatches] = useState<boolean>(function getMatches() {
+    return matchMedia(mediaQuery).matches;
+  });
+
+  useEffect(
+    function listenForChanges() {
+      const mediaQueryList = matchMedia(mediaQuery);
+
+      setMatches(mediaQueryList.matches);
+
+      const handleChange = (event: MediaQueryListEvent) => {
+        setMatches(event.matches);
+      };
+
+      mediaQueryList.addEventListener('change', handleChange);
+
+      return () => {
+        mediaQueryList.removeEventListener('change', handleChange);
+      };
+    },
+    [mediaQuery],
+  );
+
+  return matches;
+};
 
 export default useMediaQuery;
