@@ -1,0 +1,15 @@
+@use 'sass:color';
+@use 'sass:math';
+
+@mixin generate-color-var($key, $value, $tones) {
+  --#{$key}: #{$value};
+  --#{$key}-rgb: #{color.red($value)}, #{color.green($value)},
+    #{color.blue($value)};
+  @each $tone in $tones {
+    $scale-value: color.adjust($value, $lightness: math.div($tone, 2.5) * 1%);
+
+    --#{$key}-#{$tone}: #{$scale-value};
+    --#{$key}-#{$tone}-rgb: #{color.red($scale-value)},
+      #{color.green($scale-value)}, #{color.blue($scale-value)};
+  }
+}
