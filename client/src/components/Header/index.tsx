@@ -11,7 +11,7 @@ interface Props {
 
 function Header({ title }: Props) {
   const breakpoint = 700;
-  const isMediumDown = useMediaQuery(breakpoint, 'max');
+  const isMediumDown = useMediaQuery(`(max-width: ${breakpoint}px)`);
 
   return (
     <header className={styles.header}>
@@ -31,7 +31,7 @@ function Header({ title }: Props) {
         <SearchForm />
       )}
       <div style={{ textAlign: 'end' }}>
-        <Button>🤔</Button>
+        <Button variant='dark'>🤔</Button>
       </div>
     </header>
   );

@@ -1,14 +1,23 @@
 @use '../../assets/styles/util/' as u;
 
+[data-theme='light'] {
+  --logo-text-color: var(--color-primary);
+}
+
+[data-theme='dark'] {
+  --logo-text-color: var(--color-primary);
+}
+
 .header {
   display: grid;
   grid-template-columns: repeat(3, minmax(auto, 1fr));
   align-items: center;
+  position: sticky;
+  top: 0;
+  background-color: var(--background-color);
   padding: u.rem(10) u.rem(16) u.rem(12);
-  border-bottom: u.rem(1) solid var(--color-neutral-700);
   text-align: center;
-  box-shadow: hsla(0deg 0% 0% / 10%) 0 u.rem(20) u.rem(25) u.rem(-5),
-    hsla(0deg 0% 0% / 4%) 0 u.rem(10) u.rem(10) u.rem(-5);
+  box-shadow: var(--shadow-small);
 }
 
 .logo {
@@ -17,7 +26,7 @@
   grid-template-columns: repeat(2, auto);
   gap: u.rem(4);
   justify-self: start;
-  color: var(--color-primary-400);
+  color: var(--logo-text-color);
 }
 
 .heading {
