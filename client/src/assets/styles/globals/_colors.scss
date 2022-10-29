@@ -1,18 +1,74 @@
+@use '../util' as u;
+@use 'sass:color';
+@use 'sass:map';
+
+// Brand & Neutral Colors
+$target-colors: (
+  color-green: #287a5b,
+  color-light: #989f9f,
+  color-dark: #010202,
+);
+
+// Tones for each color
+$tones: 10, 20, 30, 40, 50, 60, 70, 80, 90, 100;
+
 :root {
-  --color-primary-200: hsl(158deg 67% 63%);
-  --color-primary-300: hsl(158deg 50% 54%);
-  --color-primary-400: hsl(158deg 50% 48%);
-  --color-primary-500: hsl(158deg 50% 37%);
-  --color-primary-600: hsl(158deg 44% 36%);
-  --color-neutral-100: hsl(169deg 4% 96%);
-  --color-neutral-200: hsl(169deg 4% 86%);
-  --color-neutral-300: hsl(169deg 4% 76%);
-  --color-neutral-400: hsl(169deg 4% 46%);
-  --color-neutral-700: hsl(169deg 7% 20%);
-  --color-neutral-900: hsl(169deg 81% 4%);
+  // Brand & Neutral Colors Palette
+  @each $key, $value in $target-colors {
+    @include u.generate-color-var($key, $value, $tones);
+  }
+
+  // Semantic Colors
+  --color-error: hsl(4deg 90% 58%);
+  --color-warning: hsl(45deg 90% 51%);
+  --color-info: hsl(207deg 90% 54%);
+  --color-success: hsl(141deg 100% 45%);
+
+  // Shadows
+  --shadow-small: 0 #{u.rem(4)} #{u.rem(6)} #{u.rem(-1)} var(--shadow-color),
+    0 #{u.rem(2)} #{u.rem(4)} #{u.rem(-2)} var(--shadow-color);
+  --shadow-medium: 0 #{u.rem(10)} #{u.rem(15)} #{u.rem(-3)} var(--shadow-color),
+    0 #{u.rem(4)} #{u.rem(6)} #{u.rem(-4)} var(--shadow-color);
+  --shadow-large: 0 #{u.rem(20)} #{u.rem(25)} #{u.rem(-5)} var(--shadow-color),
+    0 #{u.rem(8)} #{u.rem(10)} #{u.rem(-6)} var(--shadow-color);
+  --shadow-xlarge: 0 #{u.rem(25)} #{u.rem(50)} #{u.rem(-12)} var(--shadow-color-large);
+}
+
+// App Light Theme
+[data-theme='light'] {
+  --color-primary: var(--color-green-50);
+  --background-color: var(--color-light-100);
+  --text-color: var(--color-dark);
+  --shadow-color: hsl(0deg 0% 0% / 10%);
+  --shadow-color-large: hsl(0deg 0% 0% / 25%);
+
+  $text-muted-color: color.adjust(
+    map.get($target-colors, 'color-light'),
+    $lightness: -20%
+  );
+
+  --text-muted-color: #{$text-muted-color};
+  --border-color: var(--color-light-60);
+}
+
+// App Dark Theme
+[data-theme='dark'] {
+  --color-primary: var(--color-green-50);
+  --background-color: var(--color-dark-10);
+  --text-color: var(--color-light-70);
+  --border-color: var(--color-dark-20);
+  --shadow-color: hsl(0deg 0% 30% / 10%);
 }
 
 body {
-  background-color: var(--color-neutral-900);
-  color: var(--color-neutral-100);
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+a {
+  color: var(--color-primary);
+}
+
+a:active {
+  color: var(--color-green-80);
 }
