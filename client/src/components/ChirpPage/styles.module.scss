@@ -20,12 +20,12 @@
   display: grid;
   gap: u.rem(12);
   padding: u.rem(16);
-  border-bottom: u.rem(1) solid var(--color-neutral-700);
+  border-bottom: u.rem(1) solid var(--border-color);
 }
 
 .author {
   display: grid;
-  grid-template-columns: u.rem(48) auto;
+  grid-template-columns: u.rem(48) 1fr;
   gap: u.rem(12);
 }
 
@@ -40,11 +40,11 @@
 }
 
 .username {
-  color: var(--color-neutral-400);
+  color: var(--text-muted-color);
 }
 
 .name {
-  color: var(--color-neutral-100);
+  color: var(--text-color);
   font-weight: var(--fw-bold);
   font-size: var(--fs-400);
 }
@@ -52,7 +52,7 @@
 .content {
   font-size: var(--fs-600);
   padding-bottom: u.rem(16);
-  border-bottom: u.rem(1) solid var(--color-neutral-700);
+  border-bottom: u.rem(1) solid var(--border-color);
 }
 
 .meta {
@@ -60,7 +60,7 @@
   grid-template-columns: 1fr;
   justify-items: center;
   padding-inline: u.rem(4);
-  color: var(--color-neutral-400);
+  color: var(--text-muted-color);
 
   @include u.breakpoint-up('medium') {
     grid-template-columns: repeat(2, 1fr);
@@ -76,7 +76,7 @@
 }
 
 .count {
-  color: var(--color-neutral-100);
+  color: var(--text-color);
   font-weight: var(--fw-bold);
   margin-right: u.rem(4);
 }
@@ -97,8 +97,8 @@
   gap: u.rem(12);
   place-items: center;
   padding-top: u.rem(12);
-  border-top: u.rem(1) solid var(--color-neutral-700);
-  color: var(--color-neutral-400);
+  border-top: u.rem(1) solid var(--border-color);
+  color: var(--text-muted-color);
 }
 
 .icon {
@@ -111,10 +111,10 @@
 
 .reply {
   display: grid;
-  grid-template-columns: 48px 1fr;
+  grid-template-columns: u.rem(48) 1fr;
   gap: u.rem(12);
   padding-top: u.rem(12);
-  border-top: u.rem(1) solid var(--color-neutral-700);
+  border-top: u.rem(1) solid var(--border-color);
   cursor: pointer;
 }
 
@@ -122,28 +122,22 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr;
-  gap: u.rem(12);
+  gap: u.rem(6);
 }
 
 .textarea {
   font-size: var(--fs-400);
   resize: none;
   overflow: hidden;
-  background-color: var(--color-neutral-900);
-  color: var(--color-neutral-100);
+  background-color: var(--background-color);
+  color: var(--text-color);
   padding-block: u.rem(12);
-  border: u.rem(1) solid var(--color-neutral-700);
   border: none;
-  border-radius: u.rem(4);
-  outline: u.rem(1) solid transparent;
-
-  &:focus {
-    // outline-color: var(--color-primary-400);
-  }
+  outline: none;
 }
 
 .submit {
   justify-self: end;
-  padding: u.rem(12) u.rem(16);
+  padding: u.rem(10) clamp(u.rem(16), u.rem(14.4) + 0.5vw, u.rem(24));
   font-size: var(--fs-200);
 }
