@@ -25,7 +25,7 @@ function Chirp({ chirp }: Props) {
       onClick={() => navigate({ to: `/chirps/${_id}` })}
       className={styles.chirp}
     >
-      <div className={styles['avatar-container']}>
+      <div>
         <Link to={`/users/${username}`} onClick={noPropagate}>
           <img
             src={avatar}
@@ -34,9 +34,10 @@ function Chirp({ chirp }: Props) {
           />
         </Link>
       </div>
-      <div className={styles['content-container']}>
-        <div>
-          <span className={styles.author}>
+
+      <div className={styles.mainContainer}>
+        <div className={styles.upperPanel}>
+          <div>
             <Link
               to={`/users/${username}`}
               className={styles.name}
@@ -51,13 +52,15 @@ function Chirp({ chirp }: Props) {
             >
               @{username}
             </Link>
-          </span>
-          <span className={styles.dot}>·</span>
+          </div>
+          <div>·</div>
           <time className={styles.time} dateTime={createdAt}>
             {relativeCreatedTime}
           </time>
         </div>
+
         <p className={styles.content}>{content}</p>
+
         <div className={styles.metrics}>
           <div className={styles.replies}>
             <FaRegCommentAlt />

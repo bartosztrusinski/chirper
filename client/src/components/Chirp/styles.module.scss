@@ -6,26 +6,31 @@
   grid-template-rows: 1fr;
   gap: u.rem(12);
   padding: u.rem(16);
+  border-bottom: u.rem(1) solid var(--border-color);
   cursor: pointer;
-  border-bottom: u.rem(1) solid var(--color-neutral-700);
 }
 
 .avatar {
   border-radius: 50%;
 }
 
-.content {
-  padding: u.rem(25);
+.mainContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: u.rem(10);
+}
+
+.upperPanel {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  gap: u.rem(6);
 }
 
 .dot,
 .username,
 .time {
-  color: var(--color-neutral-400);
-}
-
-.dot {
-  padding-inline: u.rem(6);
+  color: var(--text-muted-color);
 }
 
 .username {
@@ -33,8 +38,12 @@
 }
 
 .name {
-  color: var(--color-neutral-100);
+  color: var(--text-color);
   font-weight: var(--fw-bold);
+}
+
+.content {
+  padding-bottom: u.rem(8);
 }
 
 .metrics {
@@ -51,4 +60,9 @@
   align-items: center;
   gap: u.rem(12);
   font-size: var(--fs-200);
+  color: var(--text-muted-color);
+
+  svg {
+    font-size: var(--fs-300);
+  }
 }
