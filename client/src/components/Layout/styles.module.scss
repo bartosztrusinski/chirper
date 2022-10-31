@@ -1,18 +1,24 @@
 @use '../../assets/styles/util' as u;
 
+:root {
+  --header-height: #{u.rem(79.4)};
+  --sidebar-padding-top: #{u.rem(30)};
+}
+
 .container {
+  min-height: 100vh;
   display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: calc(100vh - u.rem(81));
-  place-content: center;
+  grid-template-rows: auto 1fr;
 }
 
 .grid {
   display: grid;
   grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;
 
   @include u.breakpoint-up('medium') {
     grid-template-columns: 1fr 6fr 1fr;
+    grid-template-rows: 1fr;
   }
 
   @include u.breakpoint-up('large') {
@@ -26,7 +32,7 @@
 }
 
 .main {
-  border-inline: u.rem(1) solid var(--color-neutral-700);
+  border-inline: u.rem(1) solid var(--border-color);
 }
 
 .sidebar {
@@ -34,10 +40,27 @@
   grid-template-columns: 1fr;
   justify-content: center;
   align-content: start;
-  padding-top: u.rem(30);
   padding-inline: u.rem(20);
 
   @include u.breakpoint-up('large') {
-    padding-inline: clamp(u.rem(20), u.rem(-16) + 4vw, u.rem(40));
+    padding-inline: clamp(u.rem(20), u.rem(-25) + 5vw, u.rem(60));
   }
+
+  .stickyContainer {
+    position: sticky;
+    top: var(--header-height);
+    padding-top: var(--sidebar-padding-top);
+  }
+}
+
+.bottomPanel {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: grid;
+  justify-content: center;
+  padding: u.rem(10) u.rem(12);
+  background-color: var(--background-color);
+  box-shadow: var(--shadow-xlarge);
+  border-top: u.rem(1) solid var(--border-color);
 }

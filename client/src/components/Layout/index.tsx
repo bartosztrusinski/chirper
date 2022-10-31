@@ -5,6 +5,7 @@ import Nav from '../Nav';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import UserPanel from '../UserPanel';
 import Sidebar from './Sidebar';
+import SearchForm from '../SearchForm';
 
 interface Props {
   children?: ReactNode;
@@ -13,27 +14,30 @@ interface Props {
 
 function Layout({ children, title }: Props) {
   const breakpoint = 700;
-  const isMediumUp = useMediaQuery(breakpoint);
+  const isMediumUp = useMediaQuery(`(min-width: ${breakpoint}px)`);
 
   return (
-    <>
+    <div className={styles.container}>
       <Header title={title} />
-      <div className={styles.container}>
-        <div className={styles.grid}>
-          {isMediumUp && (
-            <Sidebar>
-              <Nav />
-            </Sidebar>
-          )}
-          <main className={styles.main}>{children}</main>
-          {isMediumUp && (
-            <Sidebar>
-              <UserPanel />
-            </Sidebar>
-          )}
-        </div>
+      <div className={styles.grid}>
+        {isMediumUp && (
+          <Sidebar>
+            <Nav />
+          </Sidebar>
+        )}
+        <main className={styles.main}>{children}</main>
+        {isMediumUp && (
+          <Sidebar>
+            <UserPanel />
+          </Sidebar>
+        )}
+        {isMediumUp || (
+          <div className={styles.bottomPanel}>
+            <SearchForm />
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }
 

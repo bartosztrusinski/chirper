@@ -6,7 +6,11 @@ interface Props {
 }
 
 function Sidebar({ children }: Props) {
-  return <aside className={styles.sidebar}>{children}</aside>;
+  return (
+    <aside className={styles.sidebar}>
+      <div className={styles.stickyContainer}>{children}</div>
+    </aside>
+  );
 }
 
 export default Sidebar;
