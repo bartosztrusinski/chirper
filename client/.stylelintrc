@@ -5,6 +5,7 @@
   ],
   "ignoreFiles": ["node_modules/**/*", "dist/**/*"],
   "rules": {
-    "value-keyword-case": null
+    "value-keyword-case": null,
+    "selector-class-pattern": null
   }
 }
