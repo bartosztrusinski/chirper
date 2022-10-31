@@ -1,34 +1,21 @@
 import { FaHome } from '@react-icons/all-files/fa/FaHome';
 import { FaSearch } from '@react-icons/all-files/fa/FaSearch';
 import { FaHashtag } from '@react-icons/all-files/fa/FaHashtag';
-import useMediaQuery from '../../hooks/useMediaQuery';
 import NavLink from './NavLink';
+import styles from './styles.module.scss';
 
 function Nav() {
-  const breakpoint = 900;
-  const isLargeUp = useMediaQuery(breakpoint, 'max');
-
   return (
-    <nav>
-      <ul role='list'>
+    <nav className={styles.nav}>
+      <ul role='list' className={styles.list}>
         <li>
-          <NavLink to='/home' name='Home' Icon={FaHome} isLargeUp={isLargeUp} />
+          <NavLink to='/home' name='Home' Icon={FaHome} />
         </li>
         <li>
-          <NavLink
-            to='/explore'
-            name='Explore'
-            Icon={FaHashtag}
-            isLargeUp={isLargeUp}
-          />
+          <NavLink to='/explore' name='Explore' Icon={FaHashtag} />
         </li>
         <li>
-          <NavLink
-            to='/search'
-            name='Search'
-            Icon={FaSearch}
-            isLargeUp={isLargeUp}
-          />
+          <NavLink to='/search' name='Search' Icon={FaSearch} />
         </li>
       </ul>
     </nav>

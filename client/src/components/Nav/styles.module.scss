@@ -1,27 +1,36 @@
 @use '../../assets/styles/util' as u;
 
+.list {
+  display: grid;
+  justify-content: center;
+
+  @include u.breakpoint-up('large') {
+    justify-content: stretch;
+  }
+}
+
 .link {
   display: grid;
   grid-template-columns: auto;
   justify-content: center;
   align-items: center;
-  text-align: center;
-  gap: u.rem(8);
   padding: u.rem(10);
-  margin-bottom: u.rem(8);
+  margin-bottom: u.rem(12);
   border-radius: u.rem(8);
   outline: u.rem(2) solid transparent;
-  color: var(--color-neutral-100);
+  color: var(--text-color);
   transition: all 0.2s ease-in-out;
 
   &:focus {
-    outline-color: var(--color-primary-400);
+    outline-color: var(--color-primary);
     transform: translate(0, u.rem(-2));
+    box-shadow: var(--shadow-medium);
   }
 
   &:hover {
-    color: var(--color-neutral-200);
+    background-color: var(--background-hover-color);
     transform: translate(0, u.rem(-2));
+    box-shadow: var(--shadow-small);
   }
 
   @include u.breakpoint-up('large') {
@@ -30,7 +39,7 @@
 }
 
 .active {
-  color: var(--color-primary-400) !important;
+  color: var(--color-primary);
 }
 
 .icon {
