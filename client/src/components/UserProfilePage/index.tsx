@@ -21,9 +21,6 @@ const UserProfile = () => {
   const withRepliesRoute = matchRoute({ to: '/users/:username/with-replies' });
   const likesRoute = matchRoute({ to: '/users/:username/likes' });
 
-  console.log('withRepliesRoute', withRepliesRoute);
-  console.log('likesRoute', likesRoute);
-
   const {
     data: user,
     isLoading,
@@ -91,8 +88,8 @@ const UserProfile = () => {
             alt={`${username}'s avatar`}
           />
           <div className={styles.info}>
-            <div className={styles.name}>Bartosz Trusiński 4201337</div>
-            <div className={styles.username}>@trsix_wtf_tego_typu_benc</div>
+            <div className={styles.name}>John Smith 1943</div>
+            <div className={styles.username}>@jsmith_1943_some_nick</div>
           </div>
           <Button className={styles.button}>Follow</Button>
         </div>
@@ -114,7 +111,7 @@ const UserProfile = () => {
             <div className={styles.item}>
               <HiOutlineLocationMarker className={styles.icon} />
               <div className={styles.text}>
-                Ostrow Wlkp, Poland 63-400, ul.Rejtana 26
+                Some City, Some Country Zip-Code, Street 2/4
               </div>
             </div>
           )}
@@ -154,7 +151,7 @@ const UserProfile = () => {
               getActiveProps={() => ({ className: styles.active })}
               activeOptions={{ exact: true }}
             >
-              Chirps
+              <div>Chirps</div>
             </Link>
           </li>
           <li className={styles.item}>
@@ -163,7 +160,7 @@ const UserProfile = () => {
               className={styles.link}
               getActiveProps={() => ({ className: styles.active })}
             >
-              Chirps & Replies
+              <div>Chirps & Replies</div>
             </Link>
           </li>
           <li className={styles.item}>
@@ -172,7 +169,7 @@ const UserProfile = () => {
               className={styles.link}
               getActiveProps={() => ({ className: styles.active })}
             >
-              Likes
+              <div>Likes</div>
             </Link>
           </li>
         </ul>

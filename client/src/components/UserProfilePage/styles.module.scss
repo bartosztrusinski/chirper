@@ -1,9 +1,18 @@
 @use '../../assets/styles/util' as u;
 
+[data-theme='light'] {
+  --card-background-color: var(--background-color);
+}
+
+[data-theme='dark'] {
+  --card-background-color: var(--color-dark-20);
+}
+
 @mixin card {
-  border: u.rem(1) solid var(--color-neutral-700);
+  background-color: var(--card-background-color);
+  border: u.rem(1) solid var(--border-color);
   border-radius: u.rem(8);
-  box-shadow: 0 0 u.rem(16) u.rem(2) hsl(0deg 0% 0% / 50%);
+  box-shadow: var(--shadow-small);
   padding: u.rem(12);
 }
 
@@ -12,7 +21,6 @@
   grid-template-columns: 1fr;
   gap: u.rem(12);
   padding: u.rem(12) u.rem(16) u.rem(20);
-  border-bottom: u.rem(1) solid var(--color-neutral-700);
 
   @include u.breakpoint-up('medium') {
     grid-template-columns: 4fr minmax(u.rem(110), 1fr);
@@ -55,7 +63,7 @@
 
     .username {
       font-size: var(--fs-200);
-      color: var(--color-neutral-400);
+      color: var(--text-muted-color);
     }
   }
 
@@ -92,7 +100,7 @@
     gap: u.rem(12);
     padding: u.rem(10) u.rem(10) u.rem(12);
     font-size: var(--fs-200);
-    color: var(--color-neutral-300);
+    color: var(--text-muted-color);
 
     .icon {
       font-size: var(--fs-400);
@@ -113,7 +121,7 @@
   grid-template-columns: 1fr auto 1fr;
   align-content: space-evenly;
   text-align: center;
-  color: var(--color-neutral-300);
+  color: var(--text-muted-color);
   font-size: var(--fs-200);
 
   @include u.breakpoint-up('medium') {
@@ -123,40 +131,48 @@
   }
 
   .count {
-    color: var(--color-neutral-100);
+    color: var(--text-color);
     font-size: var(--fs-300);
     font-weight: var(--fw-bold);
   }
 
   .line {
-    background-color: var(--color-neutral-700);
+    background-color: var(--border-color);
     padding: u.rem(1);
   }
 }
 
 .nav {
-  border-bottom: u.rem(1) solid var(--color-neutral-700);
+  border-bottom: u.rem(1) solid var(--border-color);
 
   .list {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: u.rem(16);
+    grid-template-columns: repeat(3, auto);
+    font-size: var(--fs-300);
 
-    .item {
+    @include u.breakpoint-up('medium') {
+      grid-template-columns: repeat(3, 1fr);
+      font-size: var(--fs-400);
+    }
+
+    .item .link {
       display: grid;
+      justify-items: center;
+      color: var(--text-color);
+      font-weight: var(--fw-bold);
+      transition: background-color 200ms ease-in-out;
 
-      .link {
-        padding-block: u.rem(16);
-        text-align: center;
-        color: var(--color-neutral-100);
-        font-size: var(--fs-400);
-        font-weight: var(--fw-bold);
-        transition: all 100ms ease-in-out;
+      &:hover {
+        background-color: var(--background-hover-color);
+      }
+
+      & > div {
+        padding: u.rem(16) u.rem(4);
         border-bottom: u.rem(4) solid transparent;
+      }
 
-        &.active {
-          border-bottom-color: var(--color-primary-400);
-        }
+      &.active > div {
+        border-bottom-color: var(--color-primary);
       }
     }
   }
