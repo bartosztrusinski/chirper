@@ -1,5 +1,9 @@
 @use '../../assets/styles/util' as u;
 
+:root {
+  --button-group-background-color: var(--color-primary);
+}
+
 .avatar {
   width: clamp(u.rem(60), u.rem(25) + 5vw, u.rem(70));
   border-radius: u.rem(15);
@@ -8,7 +12,7 @@
 .group {
   display: grid;
   grid-template-columns: 1fr;
-  background-color: var(--color-primary-400);
+  background-color: var(--button-group-background-color);
   border-radius: u.rem(16);
   gap: u.rem(16);
   padding: clamp(u.rem(16), u.rem(16) + 2vw, u.rem(20)) u.rem(20);
