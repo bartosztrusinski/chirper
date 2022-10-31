@@ -1,15 +1,17 @@
 @use '../../assets/styles/util' as u;
 
 .main {
+  min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;
+  background-color: var(--color-light-70);
   padding: clamp(u.rem(20), u.rem(20) + 2vw, u.rem(40))
     clamp(u.rem(25), u.rem(25) + 2vw, u.rem(58))
     clamp(u.rem(48), u.rem(48) + 2vw, u.rem(54));
 
   @include u.breakpoint-up('xlarge') {
     grid-template-columns: 7fr 4fr;
-    grid-template-rows: calc(100vh - u.rem(94));
   }
 }
 
@@ -17,53 +19,56 @@
   display: grid;
   place-content: center;
   place-items: center;
-  text-align: center;
-  color: var(--color-primary-400);
+  color: var(--color-primary);
   padding-bottom: calc(u.rem(48) + 2vw);
+
+  .icon {
+    font-size: clamp(u.rem(200), u.rem(200) + 12vw, u.rem(400));
+  }
 }
 
 .hero {
   display: grid;
-  grid-template-rows: 1fr 1fr;
-  grid-template-columns: 1fr;
-  gap: u.rem(40);
+  justify-content: center;
+  grid-template-columns: minmax(auto, u.rem(500));
+  grid-auto-rows: 1fr;
+  gap: u.rem(48);
 
   @include u.breakpoint-up('large') {
-    grid-template-rows: 1fr;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(u.rem(350), u.rem(500)));
   }
 
   @include u.breakpoint-up('xlarge') {
-    grid-template-rows: 1fr 1fr;
     grid-template-columns: 1fr;
   }
 }
 
 .card {
   display: grid;
-  place-content: center;
-  place-items: center;
-  text-align: center;
   grid-template-columns: 1fr;
-  background-color: var(--color-neutral-100);
-  color: var(--color-neutral-900);
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+  gap: u.rem(10);
+  background-color: var(--color-light-80);
+  color: var(--color-dark-10);
   border-radius: u.rem(24);
-  box-shadow: 0 u.rem(20) u.rem(20) u.rem(10) rgba(0 0 0 / 50%);
-  padding: clamp(u.rem(28), u.rem(28) + 2vw, u.rem(80))
+  box-shadow: var(--shadow-large);
+  padding: clamp(u.rem(28), u.rem(28) + 2.2vw, u.rem(60))
     clamp(u.rem(19), u.rem(19) + 2vw, u.rem(40));
 
   @include u.breakpoint-up('xlarge') {
-    padding: u.rem(40) u.rem(40);
+    padding: u.rem(40);
   }
 }
 
 .group {
   display: grid;
   grid-template-columns: 1fr;
-  background-color: var(--color-primary-400);
+  background-color: var(--color-primary);
   border-radius: u.rem(16);
   gap: u.rem(16);
-  padding: clamp(u.rem(32), u.rem(32) + 2vw, u.rem(40)) u.rem(40);
+  padding: clamp(u.rem(16), u.rem(16) + 2vw, u.rem(24)) u.rem(24);
   width: clamp(u.rem(200), 100% - u.rem(60), u.rem(350));
 
   @include u.breakpoint-up('medium') {
@@ -73,9 +78,6 @@
 
   @include u.breakpoint-up('xlarge') {
     grid-template-columns: 1fr;
+    padding: u.rem(32);
   }
-}
-
-.icon {
-  font-size: clamp(u.rem(200), u.rem(200) + 12vw, u.rem(400));
 }
