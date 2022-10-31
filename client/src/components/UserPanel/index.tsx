@@ -6,27 +6,23 @@ import defaultAvatar from '../../assets/images/default_avatar.png';
 function UserPanel() {
   const mediumBreakpoint = 700;
   const largeBreakpoint = 900;
-  const isMediumUp = useMediaQuery(mediumBreakpoint);
-  const isLargeUp = useMediaQuery(largeBreakpoint);
+  const isMediumUp = useMediaQuery(`(min-width: ${mediumBreakpoint}px)`);
+  const isLargeUp = useMediaQuery(`(min-width: ${largeBreakpoint}px)`);
 
-  if (isLargeUp)
-    return (
-      <div className={styles.group}>
-        <Button variant='light'>Sign up</Button>
-        <Button variant='light'>Log in</Button>
-      </div>
-    );
+  const userContent = isLargeUp ? (
+    <div className={styles.group}>
+      <Button variant='light'>Sign up</Button>
+      <Button variant='light'>Log in</Button>
+    </div>
+  ) : isMediumUp ? (
+    <img
+      src={defaultAvatar}
+      alt='default user avatar'
+      className={styles.avatar}
+    />
+  ) : null;
 
-  if (isMediumUp)
-    return (
-      <img
-        src={defaultAvatar}
-        alt='default user avatar'
-        className={styles.avatar}
-      />
-    );
-
-  return null;
+  return userContent;
 }
 
 export default UserPanel;
