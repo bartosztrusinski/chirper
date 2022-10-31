@@ -1,9 +1,9 @@
 import styles from './styles.module.scss';
 import { RiTwitterLine } from '@react-icons/all-files/ri/RiTwitterLine';
-import Button from '../Button';
 import SearchForm from '../SearchForm';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import { Link } from '@tanstack/react-location';
+import DarkModeToggle from '../Toggle/DarkModeToggle';
 
 interface Props {
   title: string;
@@ -11,7 +11,7 @@ interface Props {
 
 function Header({ title }: Props) {
   const breakpoint = 700;
-  const isMediumDown = useMediaQuery(`(max-width: ${breakpoint}px)`);
+  const isMediumDown = useMediaQuery(`(max-width: ${breakpoint - 1}px)`);
 
   return (
     <header className={styles.header}>
@@ -23,15 +23,15 @@ function Header({ title }: Props) {
         >
           Chirper
         </h1>
-        <RiTwitterLine className={styles.icon} aria-label='lol' />
+        <RiTwitterLine className={styles.icon} />
       </Link>
       {isMediumDown ? (
         <h2 className={styles.subheading}>{title}</h2>
       ) : (
         <SearchForm />
       )}
-      <div style={{ textAlign: 'end' }}>
-        <Button variant='dark'>🤔</Button>
+      <div className={styles.toggle}>
+        <DarkModeToggle />
       </div>
     </header>
   );
