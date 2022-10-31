@@ -1,93 +1,75 @@
 @use '../../assets/styles/util/' as u;
 
 :root {
-  --btn-bg-color: var(--color-primary-400);
-  --btn-text-color: var(--color-neutral-200);
-  --btn-outline-color: var(--color-primary-600);
+  --button-background-color: var(--color-primary);
+  --button-text-color: var(--color-light-80);
+  --button-outline-color: var(--color-green-80);
+}
+
+@mixin button-colors($bg, $text, $outline, $bg-hover) {
+  --button-background-color: #{$bg};
+  --button-text-color: #{$text};
+  --button-outline-color: #{$outline};
+
+  &:hover:not(:disabled) {
+    --button-background-color: #{$bg-hover};
+  }
 }
 
 .button {
-  background-color: var(--btn-bg-color);
-  color: var(--btn-text-color);
-  box-shadow: 0 0 u.rem(4) u.rem(1) rgba(0 0 0 / 20%);
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
+  box-shadow: var(--shadow-small);
+  font-weight: var(--fw-bold);
+  outline: u.rem(2) solid transparent;
   border-radius: u.rem(12);
   border: none;
-  outline: u.rem(2) solid transparent;
-  font-weight: var(--fw-bold);
   cursor: pointer;
   padding: u.rem(12) u.rem(24);
-  transition: all 0.2s ease-in-out;
+  transition: all 200ms ease-in-out;
 
-  &.primary {
-    --btn-bg-color: var(--color-primary-400);
-    --btn-text-color: var(--color-neutral-100);
-
-    &:hover {
-      --btn-bg-color: var(--color-primary-400);
-    }
-
-    &:active {
-      --btn-bg-color: var(--color-primary-500);
-    }
-
-    &:disabled {
-      --btn-bg-color: var(--color-primary-600);
-      --btn-text-color: var(--color-neutral-200);
-    }
-  }
-
-  &.light {
-    --btn-bg-color: var(--color-neutral-100);
-    --btn-text-color: var(--color-neutral-700);
-
-    &:hover {
-      --btn-bg-color: var(--color-neutral-100);
-    }
-
-    &:active {
-      --btn-bg-color: var(--color-neutral-200);
-    }
-
-    &:disabled {
-      --btn-bg-color: var(--color-neutral-200);
-      --btn-text-color: var(--color-neutral-400);
-    }
-  }
-
-  &.dark {
-    --btn-bg-color: var(--color-neutral-900);
-    --btn-text-color: var(--color-neutral-100);
-
-    &:hover {
-      --btn-bg-color: var(--color-neutral-900);
-    }
-
-    &:active {
-      --btn-bg-color: var(--color-neutral-900);
-    }
-
-    &:disabled {
-      --btn-bg-color: var(--color-neutral-700);
-      --btn-text-color: var(--color-neutral-400);
-    }
+  &:focus {
+    outline-color: var(--button-outline-color);
   }
 
   &:hover {
-    transform: translate(0, u.rem(-2));
-    box-shadow: 0 0 u.rem(4) u.rem(2) rgba(0 0 0 / 30%);
-  }
-
-  &:focus {
-    transform: translate(0, u.rem(-2));
-    outline-color: var(--btn-outline-color);
+    transform: translateY(u.rem(-2));
   }
 
   &:active {
-    transform: none;
+    transform: translate(0);
   }
 
   &:disabled {
+    transform: translate(0);
+    opacity: 0.7;
     cursor: not-allowed;
-    transform: none;
+  }
+
+  &.primary {
+    @include button-colors(
+      var(--color-primary),
+      var(--color-light-80),
+      var(--color-green-20),
+      var(--color-green-30)
+    );
+  }
+
+  &.light {
+    @include button-colors(
+      var(--color-light-80),
+      var(--color-dark-10),
+      var(--color-light-20),
+      var(--color-light-70)
+    );
+  }
+
+  &.dark {
+    @include button-colors(
+      var(--color-dark-10),
+      var(--color-light-60),
+      var(--color-dark-80),
+      var(--color-dark-30)
+    );
   }
 }
