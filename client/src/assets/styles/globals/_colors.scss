@@ -4,9 +4,9 @@
 
 // Brand & Neutral Colors
 $target-colors: (
-  color-green: #287a5b,
-  color-light: #a2a9a9,
-  color-dark: #121212,
+  color-green: hsl(157deg 51% 32%),
+  color-light: hsl(180deg 4% 65%),
+  color-dark: hsl(0deg 0% 7%),
 );
 
 // Tones for each color
@@ -40,6 +40,13 @@ $tones: 10, 20, 30, 40, 50, 60, 70, 80;
     0 #{u.rem(8)} #{u.rem(10)} #{u.rem(-6)} var(--shadow-color);
   --shadow-xlarge: 0 #{u.rem(25)} #{u.rem(50)} #{u.rem(-12)} var(--shadow-color-dark);
   --shadow-inner: inset 0 #{u.rem(2)} #{u.rem(4)} #{u.rem(0)} var(--shadow-color);
+  --shadow-inverse: 0 #{u.rem(-4)} #{u.rem(6)} #{u.rem(-1)} var(--shadow-color),
+    0 #{u.rem(-2)} #{u.rem(4)} #{u.rem(-2)} var(--shadow-color);
+
+  &,
+  ::backdrop {
+    --backdrop-background-color: hsl(157deg 28% 34% / 40%);
+  }
 }
 
 // App Light Theme
@@ -61,7 +68,7 @@ $tones: 10, 20, 30, 40, 50, 60, 70, 80;
   --background-hover-color: var(--color-dark-20);
   --text-color: var(--color-light-80);
   --text-muted-color: var(--color-light-10);
-  --border-color: var(--color-dark-30);
+  --border-color: var(--color-dark-40);
 }
 
 body {
