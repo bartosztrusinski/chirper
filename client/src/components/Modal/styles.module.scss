@@ -1,0 +1,42 @@
+@use '../../assets/styles/util' as u;
+
+.dialog {
+  &[open] {
+    display: grid;
+  }
+
+  grid-template-columns: 1fr;
+  grid-template-rows: u.rem(40) 1fr;
+  margin: auto;
+  padding: u.rem(16);
+  border-radius: u.rem(16);
+  background-color: var(--background-color);
+  border: none;
+  color: var(--text-color);
+  box-shadow: var(--shadow-medium);
+
+  &::backdrop {
+    background-color: var(--backdrop-background-color);
+  }
+
+  @include u.breakpoint-up('medium') {
+    grid-template-columns: u.rem(600);
+  }
+}
+
+.closeButton {
+  justify-self: end;
+  align-self: center;
+  padding: u.rem(8);
+  background-color: inherit;
+  color: inherit;
+  border: none;
+  outline: u.rem(1) solid transparent;
+  border-radius: u.rem(4);
+  font-size: var(--fs-500);
+  cursor: pointer;
+
+  &:focus {
+    outline-color: var(--color-primary);
+  }
+}
