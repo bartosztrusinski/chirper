@@ -160,7 +160,7 @@
       justify-items: center;
       color: var(--text-color);
       font-weight: var(--fw-bold);
-      transition: background-color 200ms ease-in-out;
+      transition: background-color 180ms ease-in-out;
 
       &:hover {
         background-color: var(--background-hover-color);
@@ -169,6 +169,7 @@
       & > div {
         padding: u.rem(16) u.rem(4);
         border-bottom: u.rem(4) solid transparent;
+        transition: border-bottom-color 90ms ease-in-out;
       }
 
       &.active > div {
