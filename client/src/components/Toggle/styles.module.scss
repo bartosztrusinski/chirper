@@ -26,6 +26,11 @@
   padding: calc(var(--toggle-width) / 10.4) calc(var(--toggle-width) / 10.8);
   cursor: pointer;
   box-shadow: var(--shadow-inner);
+  outline: u.rem(2) solid transparent;
+
+  &:focus-within {
+    outline-color: var(--color-primary);
+  }
 
   &::before {
     content: '';
@@ -37,7 +42,7 @@
     position: absolute;
     z-index: 2;
     transform: translate(0);
-    transition: transform 180ms ease-in-out;
+    transition: transform 220ms ease-in-out;
   }
 
   &.enabled::before {
