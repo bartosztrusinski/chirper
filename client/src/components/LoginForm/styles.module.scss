@@ -1,0 +1,86 @@
+@use '../../assets/styles/util' as u;
+
+:root {
+  --input-transition-time: 240ms;
+  --input-padding: #{u.rem(12)};
+}
+
+.heading {
+  font-size: var(--fs-700);
+  font-weight: var(--fw-bold);
+  text-align: center;
+}
+
+.form {
+  display: grid;
+  align-content: space-between;
+  grid-template-columns: 1fr;
+  gap: u.rem(26);
+}
+
+.inputContainer {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  background-color: var(--background-color);
+  font-size: var(--fs-300);
+  border: u.rem(1) solid var(--border-color);
+  border-radius: u.rem(4);
+  cursor: text;
+  transition: all var(--input-transition-time) ease-in-out;
+
+  &:focus-within {
+    border-color: var(--color-primary);
+  }
+
+  .placeholder {
+    position: absolute;
+    top: var(--input-padding);
+    padding-inline: var(--input-padding);
+    color: var(--text-muted-color);
+    pointer-events: none;
+    transition: all var(--input-transition-time) ease-in-out;
+  }
+
+  .input {
+    background-color: inherit;
+    color: inherit;
+    outline: none;
+    border: none;
+    min-width: 0;
+    padding: var(--input-padding);
+
+    &:focus ~ .placeholder {
+      color: var(--color-primary);
+    }
+
+    &:valid ~ .placeholder,
+    &:focus ~ .placeholder {
+      transform: translateY(-100%) scale(88%);
+      background-color: inherit;
+      letter-spacing: u.rem(1);
+    }
+  }
+
+  .revealPassword {
+    aspect-ratio: 1 /1;
+    background-color: inherit;
+    margin-right: u.rem(8);
+    padding-inline: u.rem(6);
+    font-size: var(--fs-400);
+    border: none;
+    border-radius: inherit;
+    outline: u.rem(1) solid transparent;
+    cursor: pointer;
+
+    &:focus {
+      outline-color: var(--color-primary);
+    }
+  }
+}
+
+.submit {
+  margin-top: u.rem(24);
+  font-size: var(--fs-400);
+}
