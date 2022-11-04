@@ -47,9 +47,9 @@
 }
 
 .metrics {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: start;
 }
 
 .replies,
