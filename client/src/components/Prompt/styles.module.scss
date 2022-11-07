@@ -1,0 +1,34 @@
+@use '../../assets/styles/util' as u;
+
+:root {
+  --prompt-icon-size: #{u.rem(48)};
+}
+
+.icon {
+  font-size: var(--prompt-icon-size);
+  color: var(--color-primary);
+  margin-inline: auto;
+}
+
+.textContainer {
+  text-align: center;
+  padding-block: u.rem(16);
+
+  .title {
+    font-size: var(--fs-700);
+    font-weight: var(--fw-bold);
+    margin-bottom: u.rem(8);
+  }
+
+  .description {
+    font-size: var(--fs-200);
+    color: var(--text-muted-color);
+  }
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: u.rem(16);
+  padding: u.rem(20);
+}
