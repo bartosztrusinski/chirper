@@ -1,0 +1,39 @@
+@use '../../assets/styles/util' as u;
+
+[data-theme='light'] {
+  --user-item-background-color: var(--background-color);
+}
+
+[data-theme='dark'] {
+  --user-item-background-color: var(--color-dark-20);
+}
+
+.userContainer {
+  display: grid;
+  grid-template-columns: u.rem(48) 1fr auto;
+  align-items: center;
+  gap: u.rem(12);
+  background-color: var(--user-item-background-color);
+  padding: u.rem(8) u.rem(16);
+  border-radius: u.rem(12);
+  cursor: pointer;
+  box-shadow: var(--shadow-small);
+
+  .avatarContainer {
+    align-self: start;
+  }
+
+  .avatar {
+    border-radius: 50%;
+  }
+
+  .textContainer {
+    display: grid;
+    grid-template-columns: auto;
+  }
+
+  .follow {
+    padding: u.rem(8) u.rem(12);
+    font-size: var(--fs-300);
+  }
+}
