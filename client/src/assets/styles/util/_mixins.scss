@@ -9,7 +9,8 @@
     );
 
     --#{$key}-#{$tone}: #{$scale-value};
-    --#{$key}-#{$tone}-rgb: #{color.red($scale-value)},
-      #{color.green($scale-value)}, #{color.blue($scale-value)};
+    --#{$key}-#{$tone}-rgb: #{color.red($scale-value)}
+      #{color.green($scale-value)}
+      #{color.blue($scale-value)};
   }
 }
