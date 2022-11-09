@@ -1,0 +1,7 @@
+@use '../../assets/styles/util' as u;
+
+.form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: u.rem(24);
+}
