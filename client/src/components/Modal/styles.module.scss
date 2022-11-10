@@ -1,5 +1,13 @@
 @use '../../assets/styles/util' as u;
 
+[data-theme='light'] {
+  --panel-background-color: rgb(var(--color-light-80-rgb) / 85%);
+}
+
+[data-theme='dark'] {
+  --panel-background-color: rgb(var(--color-dark-10-rgb) / 85%);
+}
+
 .dialog {
   &[open] {
     display: grid;
@@ -8,9 +16,8 @@
   grid-template-columns: 1fr;
   grid-template-rows: u.rem(40) 1fr;
   gap: u.rem(24);
-  width: u.rem(600);
-  max-width: 80vw;
-  padding: u.rem(16) u.rem(16) u.rem(48);
+  width: min(90vw, u.rem(600));
+  max-height: 75vh;
   margin: auto;
   border-radius: u.rem(16);
   border: none;
@@ -20,23 +27,32 @@
 
   &::backdrop {
     background-color: var(--backdrop-background-color);
+    backdrop-filter: blur(u.rem(1));
   }
 }
 
 .content {
   order: 2;
   display: grid;
-  grid-template-columns: min(80%, u.rem(440));
+  grid-template-columns: min(90%, u.rem(480));
   justify-content: center;
-  gap: u.rem(24);
+  gap: u.rem(12);
+  padding: 0 u.rem(12) u.rem(24);
 }
 
 .panel {
   order: 1;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: u.rem(56);
   display: grid;
   grid-template-columns: 1fr u.rem(40);
-  padding-left: u.rem(40);
   place-items: center;
+  background-color: var(--panel-background-color);
+  backdrop-filter: blur(u.rem(4));
+  padding-left: u.rem(56);
+  padding-right: u.rem(16);
 
   .icon {
     font-size: var(--fs-900);
@@ -49,13 +65,14 @@
   }
 
   .closeButton {
-    place-self: stretch;
+    place-self: center;
     background-color: inherit;
     color: inherit;
+    font-size: var(--fs-500);
+    padding: u.rem(8);
+    border-radius: u.rem(4);
     border: none;
     outline: u.rem(1) solid transparent;
-    border-radius: u.rem(4);
-    font-size: var(--fs-500);
     cursor: pointer;
 
     &:focus {
