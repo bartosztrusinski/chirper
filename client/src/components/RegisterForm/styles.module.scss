@@ -1,0 +1,57 @@
+@use '../../assets/styles/util' as u;
+
+.form {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-content: space-between;
+  gap: u.rem(24);
+  min-height: u.rem(400);
+  padding-bottom: u.rem(32);
+
+  .stepContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: u.rem(20);
+  }
+
+  .stepIndexPanel {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: u.rem(40);
+    gap: u.rem(8);
+    align-items: center;
+  }
+
+  .backButton {
+    outline: u.rem(1) solid transparent;
+    border: none;
+    background-color: inherit;
+    cursor: pointer;
+    padding: u.rem(12);
+    border-radius: u.rem(4);
+
+    &:focus {
+      outline-color: var(--color-primary);
+    }
+  }
+
+  .heading {
+    font-size: var(--fs-700);
+    font-weight: var(--fw-bold);
+    text-align: center;
+    margin-bottom: u.rem(12);
+  }
+
+  .description {
+    color: var(--text-muted-color);
+    font-size: var(--fs-200);
+  }
+
+  .submitButton {
+    margin-top: u.rem(24);
+  }
+
+  .logInLink {
+    color: var(--text-muted-color);
+  }
+}
