@@ -1,8 +1,16 @@
 @use '../../assets/styles/util' as u;
 
 :root {
-  --header-height: #{u.rem(79.4)};
+  --header-height: #{u.rem(71)};
   --sidebar-padding-top: #{u.rem(30)};
+}
+
+[data-theme='light'] {
+  --bottom-panel-background-color: rgb(var(--color-light-80-rgb) / 85%);
+}
+
+[data-theme='dark'] {
+  --bottom-panel-background-color: rgb(var(--color-dark-10-rgb) / 85%);
 }
 
 .container {
@@ -59,8 +67,9 @@
   z-index: 1;
   display: grid;
   justify-content: center;
-  padding: u.rem(10) u.rem(12);
-  background-color: var(--background-color);
-  box-shadow: var(--shadow-xlarge);
+  padding: u.rem(7) u.rem(10);
+  background-color: var(--bottom-panel-background-color);
+  backdrop-filter: blur(u.rem(4));
+  box-shadow: var(--shadow-inverse);
   border-top: u.rem(1) solid var(--border-color);
 }
