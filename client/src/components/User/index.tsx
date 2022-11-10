@@ -29,9 +29,20 @@ const User = ({ user }: Props) => {
           className={styles.avatar}
         />
       </Link>
-      <div className={styles.textContainer}>
-        <Link to={`/users/${username}`}>{name}</Link>
-        <Link to={`/users/${username}`}>{username}</Link>
+      <div className={styles.mainContainer}>
+        <div className={styles.topPanel}>
+          <div className={styles.usernames}>
+            <Link className={styles.name} to={`/users/${username}`}>
+              {name}
+            </Link>
+            <Link className={styles.username} to={`/users/${username}`}>
+              @{username}
+            </Link>
+          </div>
+          <Button variant='light' className={styles.followButton}>
+            Follow
+          </Button>
+        </div>
         {bio || (
           <div>
             {bio ||
@@ -42,9 +53,6 @@ const User = ({ user }: Props) => {
           </div>
         )}
       </div>
-      <Button variant='light' className={styles.follow}>
-        Follow
-      </Button>
     </div>
   );
 };
