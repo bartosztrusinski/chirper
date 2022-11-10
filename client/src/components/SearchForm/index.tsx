@@ -6,7 +6,11 @@ function SearchForm() {
   return (
     <>
       <form className={styles.form}>
-        <input type='search' className={styles.input} placeholder='Search...' />
+        <input
+          type='search'
+          className={styles.input}
+          placeholder='Search Chirper'
+        />
         <button type='button' className={styles.button}>
           <FaFilter />
         </button>

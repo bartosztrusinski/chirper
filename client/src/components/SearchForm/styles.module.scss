@@ -1,51 +1,71 @@
 @use '../../assets/styles/util' as u;
 
+[data-theme='light'] {
+  --search-background-color: var(--color-light-70);
+  --search-button-hover-background-color: var(--color-light-60);
+  --search-button-hover-text-color: var(--color-dark-60);
+}
+
+[data-theme='dark'] {
+  --search-background-color: var(--color-dark-30);
+  --search-button-hover-background-color: var(--color-dark-40);
+  --search-button-hover-text-color: var(--color-light-40);
+}
+
 .form {
   display: grid;
-  grid-template-columns: 1fr auto auto;
-  color: var(--color-neutral-100);
-  border: u.rem(3) solid var(--color-primary-400);
-  padding: u.rem(6) u.rem(5) u.rem(2);
-  border-radius: u.rem(20);
+  grid-template-columns: minmax(0, u.rem(250)) auto auto;
+  gap: u.rem(4);
+  background-color: var(--search-background-color);
+  color: var(--text-color);
+  box-shadow: var(--shadow-inner);
+  padding: u.rem(6);
+  border-radius: u.rem(13);
+  outline: u.rem(2) solid transparent;
+  transition: outline-color 180ms ease-in-out;
+
+  &:focus-within {
+    outline-color: var(--color-primary);
+  }
+
+  @include u.breakpoint-up('medium') {
+    grid-template-columns: minmax(u.rem(200), 1fr) auto auto;
+  }
 }
 
 .input {
-  background-color: transparent;
+  background-color: inherit;
   color: inherit;
-  font-size: u.rem(16);
-  padding: u.rem(8) u.rem(10);
-  border: u.rem(2) solid transparent;
+  font-size: var(--fs-200);
+  padding-inline: u.rem(8);
   border-radius: u.rem(14);
-  transition: transform 0.2s ease-in-out;
   outline: none;
-}
+  border: none;
 
-.input::placeholder {
-  color: var(--color-neutral-100);
+  @include u.breakpoint-up('medium') {
+    font-size: var(--fs-300);
+  }
 }
 
 .button {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   background-color: transparent;
-  color: var(--color-neutral-200);
-  border: u.rem(2) solid transparent;
-  overflow: hidden;
-  width: u.rem(44);
-  border-radius: u.rem(14);
+  color: var(--text-muted-color);
+  padding: u.rem(8);
+  border-radius: u.rem(9);
+  border: none;
+  outline: u.rem(2) solid transparent;
   cursor: pointer;
-  transition: transform 0.2s ease-in-out;
-  outline: none;
-}
+  transition: all 120ms ease-in-out;
 
-.button:hover,
-.button:focus {
-  color: var(--color-neutral-100);
-}
+  &:hover {
+    background-color: var(--search-button-hover-background-color);
+    color: var(--search-button-hover-text-color);
+  }
 
-.input:focus,
-.button:focus {
-  border-color: var(--color-primary-400);
-  transform: translate(0, u.rem(-2));
+  &:focus {
+    outline-color: var(--color-primary);
+  }
 }
