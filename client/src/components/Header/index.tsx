@@ -1,5 +1,5 @@
 import styles from './styles.module.scss';
-import { RiTwitterLine } from '@react-icons/all-files/ri/RiTwitterLine';
+import { RiTwitterLine as ChirperIcon } from '@react-icons/all-files/ri/RiTwitterLine';
 import SearchForm from '../SearchForm';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import { Link } from '@tanstack/react-location';
@@ -23,7 +23,7 @@ function Header({ title }: Props) {
         >
           Chirper
         </h1>
-        <RiTwitterLine className={styles.icon} />
+        <ChirperIcon className={styles.icon} />
       </Link>
       {isMediumDown ? (
         <h2 className={styles.subheading}>{title}</h2>

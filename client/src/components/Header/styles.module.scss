@@ -4,6 +4,14 @@
   --logo-text-color: var(--color-primary);
 }
 
+[data-theme='light'] {
+  --header-background-color: rgb(var(--color-light-80-rgb) / 85%);
+}
+
+[data-theme='dark'] {
+  --header-background-color: rgb(var(--color-dark-10-rgb) / 85%);
+}
+
 .header {
   position: sticky;
   top: 0;
@@ -11,7 +19,8 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   align-items: center;
-  background-color: var(--background-color);
+  background-color: var(--header-background-color);
+  backdrop-filter: blur(u.rem(4));
   border-bottom: u.rem(1) solid var(--border-color);
   padding: u.rem(5) u.rem(8) u.rem(8);
   box-shadow: var(--shadow-small);
