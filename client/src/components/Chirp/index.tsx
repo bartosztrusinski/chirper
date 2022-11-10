@@ -10,9 +10,10 @@ import Chirp from '../../interfaces/Chirp';
 
 interface Props {
   chirp: Chirp;
+  showMetrics?: boolean;
 }
 
-function Chirp({ chirp }: Props) {
+function Chirp({ chirp, showMetrics = true }: Props) {
   const { _id, content, createdAt, author, metrics, replies } = chirp;
   const { username, profile } = author;
   const avatar = profile.picture ?? defaultAvatar;
@@ -61,19 +62,21 @@ function Chirp({ chirp }: Props) {
 
         <p className={styles.content}>{content}</p>
 
-        <div className={styles.metrics}>
-          <div className={styles.replies}>
-            <FaRegCommentAlt />
-            <div>{utils.formatCount(replies.length || 124000)}</div>
+        {showMetrics && (
+          <div className={styles.metrics}>
+            <div className={styles.replies}>
+              <FaRegCommentAlt />
+              <div>{utils.formatCount(replies.length || 124000)}</div>
+            </div>
+            <div className={styles.likes}>
+              <FaRegHeart />
+              <div>{utils.formatCount(metrics.likeCount || 1460)}</div>
+            </div>
+            <div className={styles.share}>
+              <FiShare />
+            </div>
           </div>
-          <div className={styles.likes}>
-            <FaRegHeart />
-            <div>{utils.formatCount(metrics.likeCount || 1460)}</div>
-          </div>
-          <div className={styles.share}>
-            <FiShare />
-          </div>
-        </div>
+        )}
       </div>
     </article>
   );
