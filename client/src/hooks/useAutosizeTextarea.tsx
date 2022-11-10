@@ -9,8 +9,9 @@ const useAutosizeTextArea = (
 
     textAreaRef.style.height = '0px';
 
-    const scrollHeight = textAreaRef.scrollHeight;
-    textAreaRef.style.height = `${scrollHeight}px`;
+    const { scrollHeight } = textAreaRef;
+
+    textAreaRef.style.height = scrollHeight ? `${scrollHeight}px` : 'auto';
   }, [textAreaRef, value]);
 };
 
