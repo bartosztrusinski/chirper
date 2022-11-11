@@ -26,7 +26,7 @@ const useDarkMode = (initialValue = false) => {
 };
 
 const usePrefersDarkMode = () => {
-  return useMediaQuery('(prefers-color-scheme: dark');
+  return useMediaQuery('(prefers-color-scheme: dark)');
 };
 
 export default useDarkMode;
