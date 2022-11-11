@@ -27,17 +27,11 @@
     var(--fs-300) + 0.7vw,
     var(--fs-700)
   );
-  --fs-nav: clamp(var(--fs-400), var(--fs-300) + 0.7vw, var(--fs-700));
 }
 
 body {
   font-size: var(--fs-300);
   font-weight: var(--fw-regular);
-}
-
-nav {
-  font-size: var(--fs-nav);
-  font-weight: var(--fw-semi-bold);
 }
 
 h1,
