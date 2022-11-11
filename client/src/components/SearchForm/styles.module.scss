@@ -14,7 +14,7 @@
 
 .form {
   display: grid;
-  grid-template-columns: minmax(0, u.rem(250)) auto auto;
+  grid-template-columns: 1fr auto auto;
   gap: u.rem(4);
   background-color: var(--search-background-color);
   color: var(--text-color);
@@ -26,10 +26,6 @@
 
   &:focus-within {
     outline-color: var(--color-primary);
-  }
-
-  @include u.breakpoint-up('medium') {
-    grid-template-columns: minmax(u.rem(200), 1fr) auto auto;
   }
 }
 

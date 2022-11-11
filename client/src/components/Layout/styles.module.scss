@@ -1,10 +1,5 @@
 @use '../../assets/styles/util' as u;
 
-:root {
-  --header-height: #{u.rem(71)};
-  --sidebar-padding-top: #{u.rem(30)};
-}
-
 [data-theme='light'] {
   --bottom-panel-background-color: rgb(var(--color-light-80-rgb) / 85%);
 }
@@ -16,25 +11,36 @@
 .container {
   min-height: 100vh;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr auto;
 }
 
 .grid {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr auto;
+
+  @include u.breakpoint-up('small') {
+    grid-template-columns: u.rem(90) auto;
+  }
 
   @include u.breakpoint-up('medium') {
-    grid-template-columns: 1fr 6fr 1fr;
-    grid-template-rows: 1fr;
+    grid-template-columns:
+      minmax(u.rem(90), 1fr)
+      minmax(auto, u.rem(650))
+      1fr;
   }
 
   @include u.breakpoint-up('large') {
-    grid-template-columns: 1fr minmax(u.rem(530), 2fr) 1fr;
+    grid-template-columns:
+      minmax(u.rem(90), 1fr)
+      minmax(auto, u.rem(650))
+      minmax(u.rem(250), 1fr);
   }
 
   @include u.breakpoint-up('xlarge') {
-    grid-template-columns: u.rem(300) u.rem(700) u.rem(300);
+    grid-template-columns:
+      u.rem(250)
+      u.rem(650)
+      minmax(u.rem(250), u.rem(300));
     justify-content: center;
   }
 }
@@ -44,32 +50,27 @@
 }
 
 .sidebar {
-  display: grid;
-  grid-template-columns: 1fr;
-  justify-content: center;
-  align-content: start;
+  position: sticky;
+  top: u.rem(80);
+  z-index: 2;
+  align-self: start;
   padding-inline: u.rem(20);
+  padding-top: u.rem(10);
 
-  @include u.breakpoint-up('large') {
-    padding-inline: clamp(u.rem(20), u.rem(-25) + 5vw, u.rem(60));
-  }
-
-  .stickyContainer {
-    position: sticky;
-    top: var(--header-height);
-    padding-top: var(--sidebar-padding-top);
+  @include u.breakpoint-up('xlarge') {
+    padding-top: u.rem(20);
   }
 }
 
 .bottomPanel {
   position: sticky;
   bottom: 0;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   justify-content: center;
-  padding: u.rem(7) u.rem(10);
   background-color: var(--bottom-panel-background-color);
   backdrop-filter: blur(u.rem(4));
   box-shadow: var(--shadow-inverse);
+  padding: u.rem(7) u.rem(10);
   border-top: u.rem(1) solid var(--border-color);
 }

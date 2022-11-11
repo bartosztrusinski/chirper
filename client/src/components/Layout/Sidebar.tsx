@@ -1,16 +1,12 @@
-import { ReactNode } from 'react';
 import styles from './styles.module.scss';
+import { ReactNode } from 'react';
 
 interface Props {
-  children?: ReactNode;
+  children: ReactNode;
 }
 
-function Sidebar({ children }: Props) {
-  return (
-    <aside className={styles.sidebar}>
-      <div className={styles.stickyContainer}>{children}</div>
-    </aside>
-  );
-}
+const Sidebar = ({ children }: Props) => {
+  return <aside className={styles.sidebar}>{children}</aside>;
+};
 
 export default Sidebar;
