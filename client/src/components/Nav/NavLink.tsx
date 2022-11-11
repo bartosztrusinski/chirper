@@ -1,28 +1,33 @@
 import styles from './styles.module.scss';
 import { Link } from '@tanstack/react-location';
 import { IconType } from '@react-icons/all-files';
-import useMediaQuery from '../../hooks/useMediaQuery';
+import { ComponentPropsWithoutRef } from 'react';
 
-interface Props {
+interface Props extends ComponentPropsWithoutRef<'a'> {
   Icon: IconType;
   to: string;
   name: string;
+  showNames?: boolean;
 }
 
-function NavLink({ Icon, to, name }: Props) {
-  const breakpoint = 900;
-  const isLargeDown = useMediaQuery(`(max-width: ${breakpoint - 1}px)`);
+const NavLink = ({ Icon, to, name, showNames = true, ...restProps }: Props) => {
+  const classes = [
+    styles.link,
+    restProps.className,
+    showNames && styles.showNames,
+  ].join(' ');
 
   return (
     <Link
       to={to}
-      className={styles.link}
       getActiveProps={() => ({ className: styles.active })}
+      {...restProps}
+      className={classes}
     >
       <Icon className={styles.icon} />
-      <span className={isLargeDown ? 'visually-hidden' : ''}>{name}</span>
+      <span className={showNames ? '' : 'visually-hidden'}>{name}</span>
     </Link>
   );
-}
+};
 
 export default NavLink;
