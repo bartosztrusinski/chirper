@@ -1,7 +1,11 @@
+@import 'https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Roboto:wght@300;400;700&display=swap';
+
 :root {
-  --ff-primary: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --ff-primary: Roboto, Helvetica, Arial, sans-serif;
+  --ff-secondary: Poppins, Roboto, Helvetica, Arial, sans-serif;
   --ff-body: var(--ff-primary);
   --ff-heading: var(--ff-primary);
+  --ff-logo: var(--ff-secondary);
 }
 
 body {
