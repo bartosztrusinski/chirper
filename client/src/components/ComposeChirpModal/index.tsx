@@ -11,7 +11,7 @@ import defaultAvatar from '../../assets/images/default_avatar.png';
 interface Props {
   open: boolean;
   onClose: () => void;
-  chirp: IChirp;
+  chirp?: IChirp;
 }
 
 const ComposeChirpModal = ({ open, onClose, chirp }: Props) => {
@@ -31,29 +31,29 @@ const ComposeChirpModal = ({ open, onClose, chirp }: Props) => {
     <Modal
       open={open}
       onClose={onClose}
-      title={`Replying to ${chirp.author.profile.name}`}
+      title={
+        chirp ? `Replying to ${chirp.author.profile.name}` : 'Compose Chirp'
+      }
     >
-      <div className={styles.chirpContainer}>
-        <Chirp chirp={chirp} showMetrics={false} />
-      </div>
-      <div className={styles.line}></div>
+      {chirp && (
+        <>
+          <div className={styles.chirpContainer}>
+            <Chirp chirp={chirp} showMetrics={false} />
+          </div>
+          <div className={styles.line}></div>
+        </>
+      )}
       <form className={styles.form} onSubmit={handleSubmit}>
         <div
           className={styles.reply}
           onClick={() => textareaRef.current?.focus()}
         >
-          <Link to={`/users/test1`}>
-            <img
-              src={avatar}
-              alt={`test1's  avatar`}
-              className={styles.avatar}
-            />
-          </Link>
+          <img src={avatar} alt={`test1's  avatar`} className={styles.avatar} />
           <textarea
             ref={textareaRef}
             value={chirpContent}
             onChange={(e) => setChirpContent(e.target.value)}
-            placeholder='Chirp your reply'
+            placeholder={chirp ? 'Chirp your reply' : "What's happening?"}
             className={styles.textarea}
             rows={1}
             autoFocus
