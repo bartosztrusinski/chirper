@@ -1,0 +1,56 @@
+@use '../../assets/styles/util' as u;
+
+.form {
+  display: grid;
+  gap: u.rem(20);
+}
+
+.heading {
+  font-size: var(--fs-500);
+  font-weight: var(--fw-bold);
+  margin-bottom: u.rem(12);
+}
+
+.selectContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+
+  .select {
+    min-width: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: var(--fs-300);
+    padding: var(--input-padding);
+    border-radius: u.rem(4);
+    outline: none;
+    border: u.rem(2) solid var(--border-color);
+    cursor: pointer;
+
+    &:focus {
+      border-color: var(--color-primary);
+    }
+  }
+}
+
+.toggleGroup {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: u.rem(10);
+}
+
+.toggle {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dateGroup {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: u.rem(16);
+}
+
+.submitButton {
+  margin-block: u.rem(16);
+}
