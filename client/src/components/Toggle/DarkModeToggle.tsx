@@ -1,30 +1,27 @@
 import styles from './styles.module.scss';
 import useDarkMode from '../../hooks/useDarkMode';
-import { FiMoon } from '@react-icons/all-files/fi/FiMoon';
-import { FiSun } from '@react-icons/all-files/fi/FiSun';
+import { FiSun as SunIcon } from '@react-icons/all-files/fi/FiSun';
+import { FiMoon as MoonIcon } from '@react-icons/all-files/fi/FiMoon';
 
-interface Props {
-  name?: string;
-}
-
-const Toggle = ({ name = 'darkMode' }: Props) => {
+const DarkModeToggle = () => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const classes = [
+    styles.toggle,
+    styles.darkMode,
+    isDarkMode ? styles.enabled : '',
+  ].join(' ');
 
   return (
-    <label
-      htmlFor={`${name}Toggle`}
-      className={`${styles.toggle} ${isDarkMode ? styles.enabled : ''}`}
-    >
+    <label className={classes}>
       <div className={styles.icons}>
-        <FiSun className={styles.icon} />
-        <FiMoon className={styles.icon} />
+        <SunIcon className={styles.icon} />
+        <MoonIcon className={styles.icon} />
       </div>
       <span className='visually-hidden'>
-        {isDarkMode ? `Disable ${name}` : `Enable ${name}`}
+        {isDarkMode ? 'Disable dark mode' : 'Enable dark mode'}
       </span>
       <input
         type='checkbox'
-        id={`${name}Toggle`}
         className={styles.input}
         checked={isDarkMode}
         onChange={() => toggleDarkMode()}
@@ -33,4 +30,4 @@ const Toggle = ({ name = 'darkMode' }: Props) => {
   );
 };
 
-export default Toggle;
+export default DarkModeToggle;
