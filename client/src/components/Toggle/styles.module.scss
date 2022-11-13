@@ -5,15 +5,29 @@
 }
 
 [data-theme='light'] {
-  --toggle-background-color: var(--color-light-70);
-  --toggle-handle-color: var(--color-light-10);
+  --toggle-background-color: var(--color-light-50);
+  --toggle-handle-color: var(--color-light-80);
+  --toggle-enabled-color: var(--color-green-40);
   --toggle-icon-color: var(--color-dark-80);
+
+  .darkMode {
+    --toggle-background-color: var(--color-light-60);
+    --toggle-handle-color: var(--color-light-10);
+    --toggle-enabled-color: var(--toggle-background-color);
+  }
 }
 
 [data-theme='dark'] {
   --toggle-background-color: var(--color-dark-40);
-  --toggle-handle-color: var(--color-dark-80);
+  --toggle-handle-color: var(--color-light-70);
+  --toggle-enabled-color: var(--color-green-30);
   --toggle-icon-color: var(--color-light-10);
+
+  .darkMode {
+    --toggle-background-color: var(--color-dark-40);
+    --toggle-handle-color: var(--color-dark-80);
+    --toggle-enabled-color: var(--toggle-background-color);
+  }
 }
 
 .toggle {
@@ -42,11 +56,16 @@
     position: absolute;
     z-index: 2;
     transform: translate(0);
-    transition: transform 220ms ease-in-out;
+    transition: transform 180ms ease-in-out;
+    box-shadow: var(--shadow-medium);
   }
 
-  &.enabled::before {
-    transform: translateX(calc(var(--toggle-width) / 2));
+  &.enabled {
+    background-color: var(--toggle-enabled-color);
+
+    &::before {
+      transform: translate(calc(var(--toggle-width) / 2));
+    }
   }
 
   .icons {
