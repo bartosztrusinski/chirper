@@ -54,8 +54,27 @@ const getManyFollowing = async (username: string) => {
   return data;
 };
 
+const getCurrentOne = async (authToken: string, signal?: AbortSignal) => {
+  const params = {
+    userFields: 'username, profile, metrics, createdAt',
+  };
+
+  const headers = {
+    Authorization: `Bearer ${authToken}`,
+  };
+
+  const { data } = await client.get<{ data: User }>('/me', {
+    params,
+    headers,
+    signal,
+  });
+
+  return { data };
+};
+
 export default {
   getOne,
+  getCurrentOne,
   getManyLiking,
   getManyFollowed,
   getManyFollowing,
