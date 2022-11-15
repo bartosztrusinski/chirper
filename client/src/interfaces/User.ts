@@ -18,4 +18,9 @@ interface User {
   createdAt: string;
 }
 
+export interface StoredUser {
+  user: User;
+  token: string;
+}
+
 export default User;
