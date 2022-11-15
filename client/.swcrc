@@ -1,6 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/swcrc",
   "jsc": {
+    "target": "es2015",
     "transform": {
       "react": {
         "runtime": "automatic",
@@ -12,7 +13,7 @@
     }
   },
   "module": {
-    "type": "commonjs",
+    "type": "es6",
     "strict": false,
     "strictMode": true,
     "lazy": false,
