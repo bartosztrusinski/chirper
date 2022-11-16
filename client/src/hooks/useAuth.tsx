@@ -1,20 +1,36 @@
 import axios from 'axios';
 import AuthService from '../api/services/Auth';
-import UserService from '../api/services/User';
 import useUser from './useUser';
-import { useMutation } from '@tanstack/react-query';
+import { UseMutateFunction, useMutation } from '@tanstack/react-query';
+import { Token } from '../interfaces/User';
 
-const useAuth = () => {
+interface LogInData {
+  login: string;
+  password: string;
+}
+
+interface SignUpData {
+  username: string;
+  name: string;
+  email: string;
+  password: string;
+}
+interface UseAuth {
+  logIn: UseMutateFunction<Token, unknown, LogInData, unknown>;
+  signUp: UseMutateFunction<Token, unknown, SignUpData, unknown>;
+  logOut: () => void;
+}
+
+const useAuth = (): UseAuth => {
+  const { clearUser, setUser } = useUser();
+
   const SERVER_ERROR = 'There was an error contacting the server';
-  const { clearUser, updateUser } = useUser();
 
-  const logInMutation = useMutation(
-    ({ login, password }: { login: string; password: string }) =>
-      AuthService.logIn(login, password),
+  const { mutate: logIn } = useMutation(
+    ({ login, password }: LogInData) => AuthService.logIn(login, password),
     {
-      onSuccess: async (authToken: string) => {
-        const { data } = await UserService.getCurrentOne(authToken);
-        updateUser({ user: data.data, token: authToken });
+      onSuccess: (token: Token) => {
+        setUser(token);
       },
       onError: (errorResponse) => {
         const title =
@@ -27,22 +43,12 @@ const useAuth = () => {
     },
   );
 
-  const signUpMutation = useMutation(
-    ({
-      email,
-      username,
-      name,
-      password,
-    }: {
-      email: string;
-      username: string;
-      name: string;
-      password: string;
-    }) => AuthService.signUp(email, username, name, password),
+  const { mutate: signUp } = useMutation(
+    ({ username, name, email, password }: SignUpData) =>
+      AuthService.signUp(username, name, email, password),
     {
-      onSuccess: async (authToken: string) => {
-        const { data } = await UserService.getCurrentOne(authToken);
-        updateUser({ user: data.data, token: authToken });
+      onSuccess: (token: Token) => {
+        setUser(token);
       },
       onError: (errorResponse) => {
         const title =
@@ -54,19 +60,6 @@ const useAuth = () => {
       },
     },
   );
-
-  const logIn = async (login: string, password: string) => {
-    logInMutation.mutate({ login, password });
-  };
-
-  const signUp = async (
-    email: string,
-    username: string,
-    name: string,
-    password: string,
-  ) => {
-    signUpMutation.mutate({ email, username, name, password });
-  };
 
   const logOut = () => {
     clearUser();
