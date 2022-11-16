@@ -1,23 +1,30 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import UserService from '../api/services/User';
-import { StoredUser } from '../interfaces/User';
+import { StoredUser, Token } from '../interfaces/User';
 import { getStoredUser, clearStoredUser, setStoredUser } from '../user-storage';
 
 interface UseUser {
   user: StoredUser | null;
+  setUser: (token: Token) => void;
   updateUser: (user: StoredUser) => void;
   clearUser: () => void;
 }
 
 const getUser = async (
-  user: StoredUser | null,
+  token?: Token,
   signal?: AbortSignal,
 ): Promise<StoredUser | null> => {
-  if (!user) return null;
+  console.log('#2 getUser', token);
+  if (!token) return null;
 
-  const { data } = await UserService.getCurrentOne(user.token, signal);
-  return { user: data.data, token: user.token };
+  const user = await UserService.getCurrentOne(token, signal);
+
+  const storedUser: StoredUser = {
+    ...user,
+    token,
+  };
+  return storedUser;
 };
 
 const useUser = (): UseUser => {
@@ -25,7 +32,7 @@ const useUser = (): UseUser => {
 
   const { data: user } = useQuery<StoredUser | null>(
     ['user'],
-    ({ signal }): Promise<StoredUser | null> => getUser(user, signal),
+    ({ signal }): Promise<StoredUser | null> => getUser(user?.token, signal),
     {
       initialData: getStoredUser,
       staleTime: 1000 * 60 * 10,
@@ -37,6 +44,7 @@ const useUser = (): UseUser => {
   );
 
   useEffect(() => {
+    console.log('#4 storeUser');
     if (user) {
       setStoredUser(user);
     } else {
@@ -44,8 +52,19 @@ const useUser = (): UseUser => {
     }
   }, [user]);
 
-  const updateUser = (newUser: StoredUser) => {
-    queryClient.setQueryData(['user'], newUser);
+  const setUser = async (token: Token) => {
+    console.log('#1 setUser');
+
+    const user = await getUser(token);
+    if (user) {
+      updateUser(user);
+    }
+  };
+
+  const updateUser = async (user: StoredUser) => {
+    console.log('#3 updateUser');
+
+    queryClient.setQueryData(['user'], user);
   };
 
   const clearUser = () => {
@@ -54,6 +73,7 @@ const useUser = (): UseUser => {
 
   return {
     user,
+    setUser,
     updateUser,
     clearUser,
   };
