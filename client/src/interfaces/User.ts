@@ -18,9 +18,10 @@ interface User {
   createdAt: string;
 }
 
-export interface StoredUser {
-  user: User;
-  token: string;
+type Token = string;
+
+interface StoredUser extends User {
+  token: Token;
 }
 
-export default User;
+export { User, Token, StoredUser };
