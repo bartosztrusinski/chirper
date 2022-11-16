@@ -159,7 +159,7 @@ const findManyFollowing = object({
 });
 
 const signUp = object({
-  body: user,
+  body: object({ username, email, password, name }),
 });
 
 const logIn = object({

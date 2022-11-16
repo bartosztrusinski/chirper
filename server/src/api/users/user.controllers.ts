@@ -157,7 +157,7 @@ const signUp = async (
   res: Response<SuccessResponse>
 ) => {
   // verify email
-  const { username, email, password, profile } = req.body;
+  const { username, email, password, name } = req.body;
 
   res.status(400);
 
@@ -165,7 +165,7 @@ const signUp = async (
 
   const newUserId = await userService.createOne(
     username,
-    profile.name,
+    name,
     email,
     password
   );

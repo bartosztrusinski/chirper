@@ -11,22 +11,21 @@ const userProfileSchema = new Schema<User['profile']>(
     name: {
       type: String,
       required: [true, 'Profile name is required'],
-
-      picture: {
-        type: String,
-      },
-      header: {
-        type: String,
-      },
-      bio: {
-        type: String,
-      },
-      location: {
-        type: String,
-      },
-      website: {
-        type: String,
-      },
+    },
+    picture: {
+      type: String,
+    },
+    header: {
+      type: String,
+    },
+    bio: {
+      type: String,
+    },
+    location: {
+      type: String,
+    },
+    website: {
+      type: String,
     },
   },
   { _id: false }
