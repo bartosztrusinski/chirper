@@ -1,6 +1,6 @@
 import { ReactNode, useState } from 'react';
 
-const useMultiStepForm = (steps: ReactNode[]) => {
+const useMultiStep = (steps: ReactNode[]) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   const firstStepIndex = 0;
@@ -29,4 +29,4 @@ const useMultiStepForm = (steps: ReactNode[]) => {
   };
 };
 
-export default useMultiStepForm;
+export default useMultiStep;
