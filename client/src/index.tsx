@@ -8,32 +8,30 @@ import Explore from './components/Explore';
 import ChirpPage from './components/ChirpPage';
 import Landing from './components/Landing';
 import UserProfile from './components/UserProfilePage';
-import { Router, Route, Outlet, ReactLocation } from '@tanstack/react-location';
+import { Router, Route, ReactLocation } from '@tanstack/react-location';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactLocationDevtools } from '@tanstack/react-location-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import UserChirps from './components/UserChirps';
+import UserLikedChirps from './components/UserChirps/liked';
+import ReactModal from 'react-modal';
 
 const rootElement = document.getElementById('root') as HTMLElement;
 const root = createRoot(rootElement);
 const queryClient = new QueryClient();
 const location = new ReactLocation();
+ReactModal.setAppElement(rootElement);
 
 const routes: Route[] = [
   {
     path: '/',
-    element: (
-      <>
-        <Landing />
-        <Outlet />
-      </>
-    ),
+    element: <Landing />,
   },
   {
     path: 'home',
     element: (
       <Layout title='Home'>
         <Home />
-        <Outlet />
       </Layout>
     ),
   },
@@ -68,6 +66,20 @@ const routes: Route[] = [
         <UserProfile />
       </Layout>
     ),
+    children: [
+      {
+        path: '/',
+        element: <UserChirps />,
+      },
+      {
+        path: 'with-replies',
+        element: <UserChirps withReplies />,
+      },
+      {
+        path: 'likes',
+        element: <UserLikedChirps />,
+      },
+    ],
   },
   {
     element: <h1>404 Not Found 💀</h1>,
