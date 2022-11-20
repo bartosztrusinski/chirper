@@ -1,37 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
-import ChirpService from '../../api/services/Chirp';
 import Chirp from '../Chirp';
+import IChirp from '../../interfaces/Chirp';
 
-function ChirpList() {
-  const {
-    data: chirps,
-    isLoading,
-    isError,
-    error,
-  } = useQuery(['chirps'], () => ChirpService.getMany());
+interface ChirpListProps {
+  chirps: IChirp[];
+}
 
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
-
-  if (isError) {
-    return (
-      <p>
-        Error:
-        {error instanceof Error
-          ? error.message
-          : 'Oops, something went wrong...'}
-      </p>
-    );
-  }
-
+const ChirpList = ({ chirps }: ChirpListProps) => {
   return (
     <>
-      {chirps.data.map((chirp) => {
+      {chirps.map((chirp) => {
         return <Chirp key={chirp._id} chirp={chirp} />;
       })}
     </>
   );
-}
+};
 
 export default ChirpList;
