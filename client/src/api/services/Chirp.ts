@@ -1,4 +1,4 @@
-import client from '../client';
+import { publicClient } from '../client';
 import Chirp from '../../interfaces/Chirp';
 
 const getMany = async (ids?: string[]) => {
@@ -12,7 +12,10 @@ const getMany = async (ids?: string[]) => {
 
   if (ids) params.ids = ids;
 
-  const { data } = await client.get<{ data: Chirp[] }>('/chirps', { params });
+  const { data } = await publicClient.get<{ data: Chirp[] }>('/chirps', {
+    params,
+  });
+
   return data;
 };
 
@@ -23,9 +26,10 @@ const getOne = async (id: string) => {
     chirpFields: 'content, createdAt, metrics, replies',
   };
 
-  const { data } = await client.get<{ data: Chirp }>(`/chirps/${id}`, {
+  const { data } = await publicClient.get<{ data: Chirp }>(`/chirps/${id}`, {
     params,
   });
+
   return data;
 };
 
@@ -37,10 +41,11 @@ const getManyByUser = async (username: string, includeReplies = false) => {
     includeReplies,
   };
 
-  const { data } = await client.get<{ data: Chirp[] }>(
+  const { data } = await publicClient.get<{ data: Chirp[] }>(
     `/users/${username}/chirps`,
     { params },
   );
+
   return data;
 };
 
@@ -51,10 +56,26 @@ const getManyLikedByUser = async (username: string) => {
     chirpFields: 'content, createdAt, metrics, replies',
   };
 
-  const { data } = await client.get<{ data: Chirp[] }>(
+  const { data } = await publicClient.get<{ data: Chirp[] }>(
     `/users/${username}/liked-chirps`,
     { params },
   );
+
+  return data;
+};
+
+const getUserTimeline = async (username: string) => {
+  const params = {
+    expandAuthor: true,
+    userFields: 'username, profile',
+    chirpFields: 'content, createdAt, metrics, replies',
+  };
+
+  const { data } = await publicClient.get<{ data: Chirp[] }>(
+    `/users/${username}/timelines/reverse-chronological`,
+    { params },
+  );
+
   return data;
 };
 
@@ -63,4 +84,5 @@ export default {
   getOne,
   getManyByUser,
   getManyLikedByUser,
+  getUserTimeline,
 };
