@@ -1,0 +1,49 @@
+@use '../../assets/styles/util' as u;
+
+[data-theme='light'] {
+  --compose-chirp-background-color: var(--background-color);
+}
+
+[data-theme='dark'] {
+  --compose-chirp-background-color: var(--color-dark-20);
+}
+
+.reply {
+  display: grid;
+  grid-template-columns: u.rem(48) 1fr;
+  gap: u.rem(12);
+  background-color: var(--compose-chirp-background-color);
+  border: u.rem(1) solid var(--border-color);
+  border-radius: u.rem(8);
+  margin: u.rem(16);
+  padding: u.rem(12);
+  cursor: text;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: u.rem(6);
+  align-items: end;
+}
+
+.textarea {
+  font-size: var(--fs-400);
+  resize: none;
+  overflow: hidden;
+  background-color: transparent;
+  color: var(--text-color);
+  padding-block: u.rem(12);
+  border: none;
+  outline: none;
+}
+
+.submit {
+  padding: u.rem(10) clamp(u.rem(16), u.rem(14.4) + 0.5vw, u.rem(24));
+  font-size: var(--fs-200);
+  margin-bottom: u.rem(6);
+}
+
+.avatar {
+  border-radius: 50%;
+}
