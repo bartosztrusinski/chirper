@@ -55,9 +55,15 @@ const replySchema = new Schema<Reply, ReplyModel>({
 
 chirpSchema.index({ content: 'text' });
 
+chirpSchema.pre('save', function (next) {
+  this.$locals.wasNew = this.isNew;
+  next();
+});
+
 chirpSchema.post('save', async function incrementMetrics() {
-  if (!this.isNew) return;
-  await userService.incrementMetrics(this.author, 'chirpCount');
+  if (this.$locals.wasNew) {
+    await userService.incrementMetrics(this.author, 'chirpCount');
+  }
 });
 
 chirpSchema.post('remove', async function removeDependencies() {
@@ -67,8 +73,9 @@ chirpSchema.post('remove', async function removeDependencies() {
 });
 
 replySchema.post('save', async function pushToParent() {
-  if (!this.isNew) return;
-  await chirpService.pushReply(this.parent, this._id);
+  if (this.$locals.wasNew) {
+    await chirpService.pushReply(this.parent, this._id);
+  }
 });
 
 replySchema.post('remove', async function pullFromParent() {

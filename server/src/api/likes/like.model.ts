@@ -2,6 +2,7 @@ import { model, Schema } from 'mongoose';
 import { LikeModel, Like } from './like.interfaces';
 import * as chirpService from '../chirps/chirp.service';
 import * as userService from '../users/user.service';
+import { NextFunction } from 'express';
 
 const likeSchema = new Schema<Like, LikeModel>(
   {
@@ -21,10 +22,16 @@ const likeSchema = new Schema<Like, LikeModel>(
 
 likeSchema.index({ user: 1, chirp: 1 }, { unique: true });
 
+likeSchema.pre('save', function (next) {
+  this.$locals.wasNew = this.isNew;
+  next();
+});
+
 likeSchema.post('save', async function incrementMetrics() {
-  if (!this.isNew) return;
-  await chirpService.incrementMetrics(this.chirp, 'likeCount');
-  await userService.incrementMetrics(this.user, 'likedChirpCount');
+  if (this.$locals.wasNew) {
+    await chirpService.incrementMetrics(this.chirp, 'likeCount');
+    await userService.incrementMetrics(this.user, 'likedChirpCount');
+  }
 });
 
 likeSchema.post('remove', async function decrementMetrics() {

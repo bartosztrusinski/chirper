@@ -20,10 +20,16 @@ const followSchema = new Schema<Follow, FollowModel>(
 
 followSchema.index({ sourceUser: 1, targetUser: 1 }, { unique: true });
 
+followSchema.pre('save', function (next) {
+  this.$locals.wasNew = this.isNew;
+  next();
+});
+
 followSchema.post('save', async function incrementMetrics() {
-  if (!this.isNew) return;
-  await userService.incrementMetrics(this.sourceUser, 'followedCount');
-  await userService.incrementMetrics(this.targetUser, 'followingCount');
+  if (this.$locals.wasNew) {
+    await userService.incrementMetrics(this.sourceUser, 'followedCount');
+    await userService.incrementMetrics(this.targetUser, 'followingCount');
+  }
 });
 
 followSchema.post('remove', async function decrementMetrics() {
