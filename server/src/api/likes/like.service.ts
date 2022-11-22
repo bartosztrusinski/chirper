@@ -43,7 +43,8 @@ const deleteOne = async (user: Types.ObjectId, chirp: Types.ObjectId) => {
 };
 
 const handleDuplicate = async (user: Types.ObjectId, chirp: Types.ObjectId) => {
-  const like = await findOne(user, chirp);
+  const like = await LikeModel.findOne({ user, chirp });
+
   if (like) {
     throw new Error('Sorry, you have already liked this chirp');
   }
