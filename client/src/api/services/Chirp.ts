@@ -1,4 +1,4 @@
-import { publicClient } from '../client';
+import { privateClient, publicClient } from '../client';
 import Chirp from '../../interfaces/Chirp';
 
 const getMany = async (ids?: string[]) => {
@@ -16,7 +16,7 @@ const getMany = async (ids?: string[]) => {
     params,
   });
 
-  return data;
+  return data.data;
 };
 
 const getOne = async (id: string) => {
@@ -30,7 +30,7 @@ const getOne = async (id: string) => {
     params,
   });
 
-  return data;
+  return data.data;
 };
 
 const getManyByUser = async (username: string, includeReplies = false) => {
@@ -46,7 +46,7 @@ const getManyByUser = async (username: string, includeReplies = false) => {
     { params },
   );
 
-  return data;
+  return data.data;
 };
 
 const getManyLikedByUser = async (username: string) => {
@@ -61,7 +61,7 @@ const getManyLikedByUser = async (username: string) => {
     { params },
   );
 
-  return data;
+  return data.data;
 };
 
 const getUserTimeline = async (username: string) => {
@@ -76,7 +76,29 @@ const getUserTimeline = async (username: string) => {
     { params },
   );
 
-  return data;
+  return data.data;
+};
+
+const likeChirp = async (chirpId: string) => {
+  await privateClient.post(`/me/likes`, { chirpId });
+};
+
+const unlikeChirp = async (chirpId: string) => {
+  await privateClient.delete(`/me/likes/${chirpId}`);
+};
+
+const getLikedIds = async (userId: string, ids?: string[]) => {
+  const params = {
+    user: userId,
+    ids,
+  };
+
+  const { data } = await publicClient.get<{ data: { chirp: string }[] }>(
+    '/likes',
+    { params },
+  );
+
+  return data.data.map((like) => like.chirp);
 };
 
 export default {
@@ -85,4 +107,7 @@ export default {
   getManyByUser,
   getManyLikedByUser,
   getUserTimeline,
+  likeChirp,
+  unlikeChirp,
+  getLikedIds,
 };
