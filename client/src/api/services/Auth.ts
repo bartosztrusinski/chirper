@@ -1,7 +1,7 @@
-import client from '../client';
+import { publicClient } from '../client';
 
 const logIn = async (login: string, password: string) => {
-  const { data } = await client.post<{ data: { authToken: string } }>(
+  const { data } = await publicClient.post<{ data: { authToken: string } }>(
     `/users/login`,
     {
       login,
@@ -18,7 +18,7 @@ const signUp = async (
   email: string,
   password: string,
 ) => {
-  const { data } = await client.post<{ data: { authToken: string } }>(
+  const { data } = await publicClient.post<{ data: { authToken: string } }>(
     '/users',
     {
       username,
