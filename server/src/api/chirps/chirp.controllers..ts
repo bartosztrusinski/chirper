@@ -221,7 +221,8 @@ const findManyLiked = async (
   const likedChirps = await chirpService.findMany(
     { _id: likedChirpsIds },
     expandAuthor ? chirpFields + 'author' : chirpFields,
-    expandAuthor ? [{ path: 'author', select: userFields }] : []
+    expandAuthor ? [{ path: 'author', select: userFields }] : [],
+    { _id: -1 }
   );
 
   res.status(200).json(createSuccessResponse(likedChirps, { nextPage }));
