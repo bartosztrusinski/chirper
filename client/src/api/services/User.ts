@@ -1,5 +1,5 @@
 import { privateClient, publicClient } from '../client';
-import { User } from '../../interfaces/User';
+import { Token, User } from '../../interfaces/User';
 
 const getOne = async (username: string) => {
   const params = {
@@ -55,14 +55,22 @@ const getManyFollowing = async (username: string) => {
   return data;
 };
 
-const getCurrentOne = async (signal?: AbortSignal): Promise<User> => {
+const getCurrentOne = async (
+  token: Token,
+  signal?: AbortSignal,
+): Promise<User> => {
   const params = {
     userFields: 'username, profile, metrics, createdAt',
   };
 
-  const { data } = await privateClient.get<{ data: User }>('/me', {
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+
+  const { data } = await publicClient.get<{ data: User }>('/me', {
     params,
     signal,
+    headers,
   });
 
   return data.data;
