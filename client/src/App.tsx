@@ -11,7 +11,7 @@ import UserLikedChirps from './components/UserChirps/liked';
 import useUser from './hooks/useUser';
 import AuthenticatedApp from './components/AuthenticatedApp';
 import UnauthenticatedApp from './components/UnauthenticatedApp';
-import { ReactLocation, Router, Route, Outlet } from '@tanstack/react-location';
+import { ReactLocation, Router, Route } from '@tanstack/react-location';
 import { ReactLocationDevtools } from '@tanstack/react-location-devtools';
 
 const location = new ReactLocation();
@@ -84,11 +84,11 @@ const routes: Route[] = [
 ];
 
 const App = () => {
-  // const { user } = useUser();
+  const { user } = useUser();
 
   return (
     <Router location={location} routes={routes}>
-      <Outlet />
+      {user ? <AuthenticatedApp /> : <UnauthenticatedApp />}
       <ReactLocationDevtools
         initialIsOpen={false}
         toggleButtonProps={{ style: { bottom: '60px', opacity: '0.7' } }}
