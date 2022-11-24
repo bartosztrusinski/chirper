@@ -1,9 +1,16 @@
 import { RiTwitterLine } from '@react-icons/all-files/ri/RiTwitterLine';
+import { Navigate, useNavigate } from '@tanstack/react-location';
+import useUser from '../../hooks/useUser';
 import Button from '../Button';
 import styles from './styles.module.scss';
 
-function Landing() {
-  return (
+const Landing = () => {
+  const navigate = useNavigate();
+  const { user } = useUser();
+
+  return user ? (
+    <Navigate to='/home' />
+  ) : (
     <main className={styles.main}>
       <article className={styles.welcome}>
         <RiTwitterLine className={styles.icon} />
@@ -17,13 +24,27 @@ function Landing() {
         <section className={styles.card}>
           <h2>Join Chirper today</h2>
           <div className={styles.group}>
-            <Button variant='light'>Sign up</Button>
-            <Button variant='light'>Log in</Button>
+            <Button
+              variant='light'
+              onClick={() =>
+                navigate({ search: (old) => ({ ...old, signup: true }) })
+              }
+            >
+              Sign up
+            </Button>
+            <Button
+              variant='light'
+              onClick={() =>
+                navigate({ search: (old) => ({ ...old, login: true }) })
+              }
+            >
+              Log in
+            </Button>
           </div>
         </section>
       </article>
     </main>
   );
-}
+};
 
 export default Landing;
