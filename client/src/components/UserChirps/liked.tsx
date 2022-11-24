@@ -7,13 +7,14 @@ const UserLikedChirps = () => {
   const {
     params: { username },
   } = useMatch();
+  const queryKeys = [username, 'liked'];
 
   const {
     data: chirps,
     isLoading,
     isError,
     error,
-  } = useQuery(['chirps', username, 'liked'], () =>
+  } = useQuery(['chirps', ...queryKeys], () =>
     ChirpService.getManyLikedByUser(username),
   );
 
@@ -32,7 +33,7 @@ const UserLikedChirps = () => {
     );
   }
 
-  return <ChirpList chirps={chirps.data} />;
+  return <ChirpList chirps={chirps} queryKeys={queryKeys} />;
 };
 
 export default UserLikedChirps;

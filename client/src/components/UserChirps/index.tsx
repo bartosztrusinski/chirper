@@ -11,15 +11,15 @@ const UserChirps = ({ withReplies = false }: UserChirpsProps) => {
   const {
     params: { username },
   } = useMatch();
+  const queryKeys = [username, withReplies ? 'withReplies' : 'noReplies'];
 
   const {
     data: chirps,
     isLoading,
     isError,
     error,
-  } = useQuery(
-    ['chirps', username, withReplies ? 'withReplies' : 'noReplies'],
-    () => ChirpService.getManyByUser(username, withReplies),
+  } = useQuery(['chirps', ...queryKeys], () =>
+    ChirpService.getManyByUser(username, withReplies),
   );
 
   if (isLoading) {
@@ -37,7 +37,7 @@ const UserChirps = ({ withReplies = false }: UserChirpsProps) => {
     );
   }
 
-  return <ChirpList chirps={chirps.data} />;
+  return <ChirpList chirps={chirps} queryKeys={queryKeys} />;
 };
 
 export default UserChirps;
