@@ -61,8 +61,40 @@
   gap: u.rem(12);
   font-size: var(--fs-200);
   color: var(--text-muted-color);
+  transition: color 210ms ease;
 
-  svg {
-    font-size: var(--fs-300);
+  .iconBackground {
+    padding: u.rem(10);
+    border-radius: 50%;
+    transition: background-color 210ms ease;
+
+    .icon {
+      font-size: var(--fs-300);
+    }
+  }
+}
+
+.replies,
+.share {
+  &:hover {
+    color: var(--color-primary);
+
+    .iconBackground {
+      background-color: hsl(var(--color-primary-hsl) / 10%);
+    }
+  }
+}
+
+.likes {
+  &:hover {
+    color: var(--color-like);
+
+    .iconBackground {
+      background-color: hsl(var(--color-like-hsl) / 10%);
+    }
+  }
+
+  &.liked {
+    color: var(--color-like);
   }
 }
