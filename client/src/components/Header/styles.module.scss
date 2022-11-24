@@ -5,11 +5,11 @@
 }
 
 [data-theme='light'] {
-  --header-background-color: rgb(var(--color-light-80-rgb) / 85%);
+  --header-background-color: hsl(var(--color-light-80-hsl) / 85%);
 }
 
 [data-theme='dark'] {
-  --header-background-color: rgb(var(--color-dark-10-rgb) / 85%);
+  --header-background-color: hsl(var(--color-dark-10-hsl) / 85%);
 }
 
 .header {

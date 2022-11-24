@@ -19,14 +19,16 @@ $tones: 10, 20, 30, 40, 50, 60, 70, 80;
   }
 
   // Primary Color
-  --color-primary: var(--color-green-40);
+  --color-primary-hsl: var(--color-green-40-hsl);
+  --color-primary: hsl(var(--color-primary-hsl));
 
   // Semantic Colors
   --color-error: hsl(4deg 90% 41%);
   --color-warning: hsl(45deg 90% 46%);
   --color-info: hsl(207deg 90% 44%);
   --color-success: hsl(141deg 90% 38%);
-  --color-like: hsl(332deg 95% 54%);
+  --color-like-hsl: 332deg 95% 44%;
+  --color-like: hsl(var(--color-like-hsl));
 
   // Shadow Colors
   --shadow-color: hsl(0deg 0% 0% / 10%);
@@ -44,10 +46,12 @@ $tones: 10, 20, 30, 40, 50, 60, 70, 80;
   --shadow-inverse: 0 #{u.rem(-4)} #{u.rem(6)} #{u.rem(-1)} var(--shadow-color),
     0 #{u.rem(-2)} #{u.rem(4)} #{u.rem(-2)} var(--shadow-color);
 
-  &,
-  ::backdrop {
-    --backdrop-background-color: hsl(157deg 28% 34% / 40%);
-  }
+  // Default Theme
+  --background-color: var(--color-light-80);
+  --background-hover-color: var(--color-light-70);
+  --text-color: var(--color-dark-10);
+  --text-muted-color: var(--color-dark-80);
+  --border-color: var(--color-light-50);
 }
 
 // App Light Theme
@@ -70,6 +74,11 @@ $tones: 10, 20, 30, 40, 50, 60, 70, 80;
   --text-color: var(--color-light-80);
   --text-muted-color: var(--color-light-10);
   --border-color: var(--color-dark-40);
+}
+
+*::selection {
+  color: var(--text-color);
+  background-color: var(--color-primary);
 }
 
 body {

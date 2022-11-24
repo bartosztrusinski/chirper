@@ -1,11 +1,11 @@
 @use '../../assets/styles/util' as u;
 
 [data-theme='light'] {
-  --bottom-panel-background-color: rgb(var(--color-light-80-rgb) / 85%);
+  --bottom-panel-background-color: hsl(var(--color-light-80-hsl) / 85%);
 }
 
 [data-theme='dark'] {
-  --bottom-panel-background-color: rgb(var(--color-dark-10-rgb) / 85%);
+  --bottom-panel-background-color: hsl(var(--color-dark-10-hsl) / 85%);
 }
 
 .container {

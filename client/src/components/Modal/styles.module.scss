@@ -5,11 +5,11 @@
 }
 
 [data-theme='light'] {
-  --panel-background-color: rgb(var(--color-light-80-rgb) / 85%);
+  --panel-background-color: hsl(var(--color-light-80-hsl) / 85%);
 }
 
 [data-theme='dark'] {
-  --panel-background-color: rgb(var(--color-dark-10-rgb) / 85%);
+  --panel-background-color: hsl(var(--color-dark-10-hsl) / 85%);
 }
 
 .overlay {
@@ -66,7 +66,7 @@
 
     .closeButton {
       place-self: center;
-      background-color: inherit;
+      background-color: transparent;
       color: inherit;
       font-size: var(--fs-500);
       padding: u.rem(8);
