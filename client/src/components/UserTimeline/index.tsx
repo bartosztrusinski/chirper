@@ -1,18 +1,21 @@
-import ChirpList from '../ChirpList';
+import AuthenticatedChirpList from '../AuthenticatedChirpList';
 import ChirpService from '../../api/services/Chirp';
 import { useQuery } from '@tanstack/react-query';
+import useUser from '../../hooks/useUser';
+import { StoredUser } from '../../interfaces/User';
 
-interface UserTimelineProps {
-  username: string;
-}
+const UserTimeline = () => {
+  const { user } = useUser() as { user: StoredUser };
+  const queryKeys = [user.username, 'timeline'];
 
-const UserTimeline = ({ username }: UserTimelineProps) => {
   const {
     data: chirps,
     isLoading,
     isError,
     error,
-  } = useQuery(['chirps', username, 'timeline'], () => ChirpService.getMany());
+  } = useQuery(['chirps', ...queryKeys], () =>
+    ChirpService.getUserTimeline(user.username),
+  );
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -29,7 +32,7 @@ const UserTimeline = ({ username }: UserTimelineProps) => {
     );
   }
 
-  return <ChirpList chirps={chirps.data} />;
+  return <AuthenticatedChirpList chirps={chirps} queryKeys={queryKeys} />;
 };
 
 export default UserTimeline;
