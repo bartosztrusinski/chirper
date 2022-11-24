@@ -1,7 +1,7 @@
 import styles from './styles.module.scss';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import { Link, useNavigate } from '@tanstack/react-location';
-import utils from './utils';
+import utils from '../../utils/utils';
 import { MouseEvent } from 'react';
 import { FaRegCommentAlt } from '@react-icons/all-files/fa/FaRegCommentAlt';
 import { FaRegHeart } from '@react-icons/all-files/fa/FaRegHeart';
@@ -11,9 +11,18 @@ import Chirp from '../../interfaces/Chirp';
 interface Props {
   chirp: Chirp;
   showMetrics?: boolean;
+  isLiked?: boolean;
+  onLike: () => void;
+  onReply: () => void;
 }
 
-function Chirp({ chirp, showMetrics = true }: Props) {
+const Chirp = ({
+  chirp,
+  showMetrics = true,
+  isLiked = false,
+  onLike,
+  onReply,
+}: Props) => {
   const { _id, content, createdAt, author, metrics, replies } = chirp;
   const { username, profile } = author;
   const avatar = profile.picture ?? defaultAvatar;
@@ -64,22 +73,40 @@ function Chirp({ chirp, showMetrics = true }: Props) {
 
         {showMetrics && (
           <div className={styles.metrics}>
-            <div className={styles.replies}>
-              <FaRegCommentAlt />
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                onReply();
+              }}
+              className={styles.replies}
+            >
+              <div className={styles.iconBackground}>
+                <FaRegCommentAlt className={styles.icon} />
+              </div>
               <div>{utils.formatCount(replies.length || 124000)}</div>
             </div>
-            <div className={styles.likes}>
-              <FaRegHeart />
-              <div>{utils.formatCount(metrics.likeCount || 1460)}</div>
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                onLike();
+              }}
+              className={`${styles.likes} ${isLiked ? styles.liked : ''}`}
+            >
+              <div className={styles.iconBackground}>
+                <FaRegHeart className={styles.icon} />
+              </div>
+              <div>{utils.formatCount(metrics.likeCount)}</div>
             </div>
             <div className={styles.share}>
-              <FiShare />
+              <div className={styles.iconBackground}>
+                <FiShare className={styles.icon} />
+              </div>
             </div>
           </div>
         )}
       </div>
     </article>
   );
-}
+};
 
 export default Chirp;
