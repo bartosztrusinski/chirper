@@ -1,25 +1,52 @@
 import styles from './styles.module.scss';
-import { Link, useMatch, useMatchRoute } from '@tanstack/react-location';
+import {
+  Link,
+  Outlet,
+  useMatches,
+  useMatchRoute,
+  useNavigate,
+} from '@tanstack/react-location';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import Button from '../Button';
 import { useQuery } from '@tanstack/react-query';
 import UserService from '../../api/services/User';
-import ChirpService from '../../api/services/Chirp';
-import utils from '../Chirp/utils';
+import utils from '../../utils/utils';
 import { IoCalendarOutline } from '@react-icons/all-files/io5/IoCalendarOutline';
 import { HiOutlineLocationMarker } from '@react-icons/all-files/hi/HiOutlineLocationMarker';
 import { BiLinkAlt } from '@react-icons/all-files/bi/BiLinkAlt';
-import Chirp from '../Chirp';
+import useUser from '../../hooks/useUser';
+import EditProfileModal from '../EditProfileModal';
+import { useEffect, useState } from 'react';
 
 const UserProfile = () => {
-  const {
-    params: { username },
-  } = useMatch();
+  const { user: currentUser } = useUser();
 
+  const [
+    {
+      params: { username },
+    },
+    nested,
+  ] = useMatches();
+
+  const path = nested ? nested.pathname.replace(/\/+$/, '') : '';
+
+  const navigate = useNavigate();
   const matchRoute = useMatchRoute();
 
-  const withRepliesRoute = matchRoute({ to: '/users/:username/with-replies' });
-  const likesRoute = matchRoute({ to: '/users/:username/likes' });
+  const isEditRoute = matchRoute({ to: 'edit-profile' });
+
+  const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
+  const [route, setRoute] = useState<string>('');
+
+  useEffect(() => {
+    setIsEditOpen(!!isEditRoute);
+  }, [isEditRoute]);
+
+  useEffect(() => {
+    if (isEditRoute) return;
+
+    setRoute(path);
+  }, [path]);
 
   const {
     data: user,
@@ -31,27 +58,6 @@ const UserProfile = () => {
     async () => await UserService.getOne(username),
   );
 
-  const {
-    data: chirps,
-    isLoading: isChirpsLoading,
-    isError: isChirpsError,
-    error: chirpsError,
-  } = useQuery(
-    ['chirps', username, likesRoute, withRepliesRoute],
-    async () => {
-      if (likesRoute) {
-        return await ChirpService.getManyLikedByUser(username);
-      }
-      return await ChirpService.getManyByUser(
-        username,
-        Boolean(withRepliesRoute),
-      );
-    },
-    {
-      enabled: Boolean(user?.data._id),
-    },
-  );
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -60,23 +66,12 @@ const UserProfile = () => {
     return <div>{(error as Error).message}</div>;
   }
 
-  let chirpsElements: JSX.Element | JSX.Element[];
-  if (isChirpsLoading) {
-    chirpsElements = <div>Loading...</div>;
-  } else if (isChirpsError) {
-    chirpsElements = <div>{(chirpsError as Error).message}</div>;
-  } else {
-    chirpsElements = chirps.data.map((chirp) => (
-      <Chirp key={chirp._id} chirp={chirp} />
-    ));
-  }
-
   const { profile, metrics, createdAt } = user.data;
   const { name, bio, location, picture, website } = profile;
   const { chirpCount, followedCount, followingCount, likedChirpCount } =
     metrics;
   const avatar = picture ?? defaultAvatar;
-  const [formattedTime, formattedDate] = utils.formatTime(createdAt);
+  const { formattedDate } = utils.formatTime(createdAt);
 
   return (
     <>
@@ -91,7 +86,17 @@ const UserProfile = () => {
             <div className={styles.name}>John Smith 1943</div>
             <div className={styles.username}>@jsmith_1943_some_nick</div>
           </div>
-          <Button className={styles.button}>Follow</Button>
+          {currentUser && currentUser._id === user.data._id ? (
+            <Button
+              className={styles.button}
+              type='button'
+              onClick={() => navigate({ to: 'edit-profile' })}
+            >
+              Edit Profile
+            </Button>
+          ) : (
+            <Button className={styles.button}>Follow</Button>
+          )}
         </div>
 
         {bio || (
@@ -115,7 +120,7 @@ const UserProfile = () => {
               </div>
             </div>
           )}
-          {website || (
+          {!website && (
             <div className={styles.item}>
               <BiLinkAlt className={styles.icon} />
               <div className={styles.text}>
@@ -146,7 +151,7 @@ const UserProfile = () => {
         <ul role='list' className={styles.list}>
           <li className={styles.item}>
             <Link
-              to={`/users/${username}`}
+              to={`.`}
               className={styles.link}
               getActiveProps={() => ({ className: styles.active })}
               activeOptions={{ exact: true }}
@@ -156,7 +161,7 @@ const UserProfile = () => {
           </li>
           <li className={styles.item}>
             <Link
-              to={`/users/${username}/with-replies`}
+              to={`with-replies`}
               className={styles.link}
               getActiveProps={() => ({ className: styles.active })}
             >
@@ -165,7 +170,7 @@ const UserProfile = () => {
           </li>
           <li className={styles.item}>
             <Link
-              to={`/users/${username}/likes`}
+              to={`likes`}
               className={styles.link}
               getActiveProps={() => ({ className: styles.active })}
             >
@@ -174,8 +179,13 @@ const UserProfile = () => {
           </li>
         </ul>
       </nav>
-
-      <section>{chirpsElements}</section>
+      <EditProfileModal
+        open={isEditOpen}
+        onClose={() => navigate({ to: route })}
+      />
+      <section>
+        <Outlet />
+      </section>
     </>
   );
 };
