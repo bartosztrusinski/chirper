@@ -206,7 +206,7 @@ const findManyLiked = async (
   res: Response<SuccessResponse>
 ) => {
   const { username } = req.params;
-  const { ids, sinceId, userFields, chirpFields, expandAuthor, limit } =
+  const { chirpIds, sinceId, userFields, chirpFields, expandAuthor, limit } =
     req.query;
 
   res.status(400);
@@ -216,7 +216,7 @@ const findManyLiked = async (
   const { likedChirpsIds, nextPage } = await userService.findLikedChirpsIds(
     existingUser._id,
     limit,
-    ids ?? sinceId
+    chirpIds ?? sinceId
   );
 
   const likedChirps = await chirpService.findMany(

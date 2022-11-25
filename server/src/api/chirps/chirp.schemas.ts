@@ -143,7 +143,7 @@ const findManyByUser = object({
 const findManyLiked = object({
   params: usernameObject,
   query: object({
-    ids,
+    chirpIds: ids,
     sinceId,
     userFields,
     chirpFields,
