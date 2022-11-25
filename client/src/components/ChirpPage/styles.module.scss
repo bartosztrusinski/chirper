@@ -18,35 +18,35 @@
 
 .chirp {
   display: grid;
-  gap: u.rem(12);
+  gap: u.rem(10);
   padding: u.rem(16);
   border-bottom: u.rem(1) solid var(--border-color);
-}
-
-.author {
-  display: grid;
-  grid-template-columns: u.rem(48) 1fr;
-  gap: u.rem(12);
 }
 
 .avatar {
   border-radius: 50%;
 }
 
-.usernames {
+.author {
   display: grid;
-  grid-template-rows: repeat(2, auto);
-  justify-items: start;
-}
+  grid-template-columns: u.rem(48) 1fr;
+  gap: u.rem(12);
 
-.username {
-  color: var(--text-muted-color);
-}
+  .usernames {
+    display: grid;
+    grid-template-rows: repeat(2, auto);
+    justify-items: start;
 
-.name {
-  color: var(--text-color);
-  font-weight: var(--fw-bold);
-  font-size: var(--fs-400);
+    .username {
+      color: var(--text-muted-color);
+    }
+
+    .name {
+      color: var(--text-color);
+      font-weight: var(--fw-bold);
+      font-size: var(--fs-400);
+    }
+  }
 }
 
 .content {
@@ -58,7 +58,7 @@
 .meta {
   display: grid;
   grid-template-columns: 1fr;
-  justify-items: center;
+  place-items: center;
   padding-inline: u.rem(4);
   color: var(--text-muted-color);
 
@@ -66,43 +66,63 @@
     grid-template-columns: repeat(2, 1fr);
     justify-items: initial;
   }
-}
 
-.stats {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  justify-content: start;
-  gap: u.rem(20);
-}
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    justify-content: start;
+    gap: u.rem(20);
 
-.count {
-  color: var(--text-color);
-  font-weight: var(--fw-bold);
-  margin-right: u.rem(4);
-}
+    .showLikesButton {
+      background-color: inherit;
+      color: inherit;
+      padding: u.rem(5) u.rem(8);
+      border-radius: u.rem(8);
+      border: none;
+      outline: u.rem(2) solid transparent;
+      cursor: pointer;
+      transition: background-color 140ms ease;
 
-.date {
-  display: grid;
-  grid-template-columns: repeat(3, auto);
-  gap: u.rem(4);
+      &:hover {
+        background-color: var(--background-hover-color);
+      }
 
-  @include u.breakpoint-up('medium') {
-    justify-self: end;
+      &:focus-visible {
+        outline-color: var(--color-primary);
+      }
+    }
+
+    .count {
+      color: var(--text-color);
+      font-weight: var(--fw-bold);
+      margin-right: u.rem(4);
+    }
+  }
+
+  .date {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: u.rem(4);
+    padding-block: u.rem(5);
+
+    @include u.breakpoint-up('medium') {
+      justify-self: end;
+    }
   }
 }
 
 .buttonPanel {
   display: grid;
   grid-template-columns: repeat(3, auto);
-  gap: u.rem(12);
   place-items: center;
-  padding-top: u.rem(12);
-  border-top: u.rem(1) solid var(--border-color);
+  gap: u.rem(12);
+  padding: u.rem(5);
+  border-block: u.rem(1) solid var(--border-color);
 
   .button {
     background-color: transparent;
     color: var(--text-muted-color);
-    padding: u.rem(10);
+    padding: u.rem(9);
     border: none;
     border-radius: 50%;
     outline: u.rem(2) solid transparent;
@@ -143,14 +163,11 @@
   display: grid;
   grid-template-columns: u.rem(48) 1fr;
   gap: u.rem(12);
-  padding-top: u.rem(12);
-  border-top: u.rem(1) solid var(--border-color);
-  cursor: pointer;
+  cursor: text;
 
   .form {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
     gap: u.rem(6);
 
     .textarea {
