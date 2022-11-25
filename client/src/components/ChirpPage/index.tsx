@@ -93,7 +93,7 @@ const ChirpPage = () => {
           </div>
           <p className={styles.content}>{content}</p>
           <div className={styles.meta}>
-            <div className={styles.stats}>
+            <div className={styles.metrics}>
               {replies.length > 0 && (
                 <div>
                   <span className={styles.count}>
@@ -103,12 +103,12 @@ const ChirpPage = () => {
                 </div>
               )}
               {metrics.likeCount > 0 && (
-                <div>
+                <button type='button' className={styles.showLikesButton}>
                   <span className={styles.count}>
                     {utils.formatCount(metrics.likeCount)}
                   </span>
-                  Likes
-                </div>
+                  {metrics.likeCount > 1 ? 'Likes' : 'Like'}
+                </button>
               )}
             </div>
             <div className={styles.date}>
