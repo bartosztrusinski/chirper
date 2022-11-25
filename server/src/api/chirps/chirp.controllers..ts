@@ -26,7 +26,7 @@ const findMany = async (
     expandAuthor ? chirpFields + 'author' : chirpFields,
     expandAuthor ? [{ path: 'author', select: userFields }] : [],
     { _id: -1 },
-    limit
+    ids ? ids.length : limit
   );
 
   const nextPage = ids ? undefined : foundChirps[foundChirps.length - 1]?._id;
@@ -206,7 +206,8 @@ const findManyLiked = async (
   res: Response<SuccessResponse>
 ) => {
   const { username } = req.params;
-  const { sinceId, userFields, chirpFields, expandAuthor, limit } = req.query;
+  const { ids, sinceId, userFields, chirpFields, expandAuthor, limit } =
+    req.query;
 
   res.status(400);
 
@@ -215,7 +216,7 @@ const findManyLiked = async (
   const { likedChirpsIds, nextPage } = await userService.findLikedChirpsIds(
     existingUser._id,
     limit,
-    sinceId
+    ids ?? sinceId
   );
 
   const likedChirps = await chirpService.findMany(

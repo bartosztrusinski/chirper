@@ -163,12 +163,24 @@ const findFollowingUsersIds = async (
 const findLikedChirpsIds = async (
   user: Types.ObjectId,
   limit: number,
-  sinceId?: Types.ObjectId
+  idsOrSinceId?: Types.ObjectId[] | Types.ObjectId
 ) => {
   const filter: FilterQuery<Like> = { user };
-  if (sinceId) filter._id = { $lt: sinceId };
 
-  const likes = await likeService.findMany(filter, 'chirp', { _id: -1 }, limit);
+  const isIdsArray = Array.isArray(idsOrSinceId);
+
+  if (isIdsArray) {
+    filter.chirp = idsOrSinceId;
+  } else if (idsOrSinceId) {
+    filter._id = { $lt: idsOrSinceId };
+  }
+
+  const likes = await likeService.findMany(
+    filter,
+    'chirp',
+    { _id: -1 },
+    isIdsArray ? idsOrSinceId.length : limit
+  );
 
   const likedChirpsIds = likes.map((like) => like.chirp);
   const nextPage = likes[likes.length - 1]?._id;
