@@ -150,12 +150,12 @@ const findManyLiking = object({
 
 const findManyFollowed = object({
   params: usernameObject,
-  query: object({ sinceId, userFields, limit }),
+  query: object({ userIds: ids, sinceId, userFields, limit }),
 });
 
 const findManyFollowing = object({
   params: usernameObject,
-  query: object({ sinceId, userFields, limit }),
+  query: object({ userIds: ids, sinceId, userFields, limit }),
 });
 
 const signUp = object({

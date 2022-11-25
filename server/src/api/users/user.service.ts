@@ -121,16 +121,23 @@ const updateEmail = async (id: Types.ObjectId, email: User['email']) => {
 const findFollowedUsersIds = async (
   user: Types.ObjectId,
   limit?: number,
-  sinceId?: Types.ObjectId
+  userIdsOrSinceId?: Types.ObjectId[] | Types.ObjectId
 ) => {
   const filter: FilterQuery<Follow> = { sourceUser: user };
-  if (sinceId) filter._id = { $lt: sinceId };
+
+  const isUserIds = Array.isArray(userIdsOrSinceId);
+
+  if (isUserIds) {
+    filter.targetUser = userIdsOrSinceId;
+  } else if (userIdsOrSinceId) {
+    filter._id = { $lt: userIdsOrSinceId };
+  }
 
   const follows = await followService.findMany(
     filter,
     'targetUser',
     { _id: -1 },
-    limit
+    isUserIds ? userIdsOrSinceId.length : limit
   );
 
   const followedUsersIds = follows.map((follow) => follow.targetUser);
@@ -142,16 +149,23 @@ const findFollowedUsersIds = async (
 const findFollowingUsersIds = async (
   user: Types.ObjectId,
   limit: number,
-  sinceId?: Types.ObjectId
+  userIdsOrSinceId?: Types.ObjectId[] | Types.ObjectId
 ) => {
   const filter: FilterQuery<Follow> = { targetUser: user };
-  if (sinceId) filter._id = { $lt: sinceId };
+
+  const isUserIds = Array.isArray(userIdsOrSinceId);
+
+  if (isUserIds) {
+    filter.sourceUser = userIdsOrSinceId;
+  } else if (userIdsOrSinceId) {
+    filter._id = { $lt: userIdsOrSinceId };
+  }
 
   const follows = await followService.findMany(
     filter,
     'sourceUser',
     { _id: -1 },
-    limit
+    isUserIds ? userIdsOrSinceId.length : limit
   );
 
   const followingUsersIds = follows.map((follow) => follow.sourceUser);
@@ -163,23 +177,23 @@ const findFollowingUsersIds = async (
 const findLikedChirpsIds = async (
   user: Types.ObjectId,
   limit: number,
-  idsOrSinceId?: Types.ObjectId[] | Types.ObjectId
+  chirpIdsOrSinceId?: Types.ObjectId[] | Types.ObjectId
 ) => {
   const filter: FilterQuery<Like> = { user };
 
-  const isIdsArray = Array.isArray(idsOrSinceId);
+  const isChirpIds = Array.isArray(chirpIdsOrSinceId);
 
-  if (isIdsArray) {
-    filter.chirp = idsOrSinceId;
-  } else if (idsOrSinceId) {
-    filter._id = { $lt: idsOrSinceId };
+  if (isChirpIds) {
+    filter.chirp = chirpIdsOrSinceId;
+  } else if (chirpIdsOrSinceId) {
+    filter._id = { $lt: chirpIdsOrSinceId };
   }
 
   const likes = await likeService.findMany(
     filter,
     'chirp',
     { _id: -1 },
-    isIdsArray ? idsOrSinceId.length : limit
+    isChirpIds ? chirpIdsOrSinceId.length : limit
   );
 
   const likedChirpsIds = likes.map((like) => like.chirp);

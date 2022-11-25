@@ -105,7 +105,7 @@ const findManyFollowed = async (
   res: Response<SuccessResponse>
 ) => {
   const { username } = req.params;
-  const { sinceId, userFields, limit } = req.query;
+  const { userIds, sinceId, userFields, limit } = req.query;
 
   res.status(400);
 
@@ -114,7 +114,7 @@ const findManyFollowed = async (
   const { followedUsersIds, nextPage } = await userService.findFollowedUsersIds(
     sourceUser._id,
     limit,
-    sinceId
+    userIds ?? sinceId
   );
 
   const followedUsers = await userService.findMany(
@@ -135,14 +135,18 @@ const findManyFollowing = async (
   res: Response<SuccessResponse>
 ) => {
   const { username } = req.params;
-  const { sinceId, userFields, limit } = req.query;
+  const { userIds, sinceId, userFields, limit } = req.query;
 
   res.status(400);
 
   const targetUser = await userService.findOne(username);
 
   const { followingUsersIds, nextPage } =
-    await userService.findFollowingUsersIds(targetUser._id, limit, sinceId);
+    await userService.findFollowingUsersIds(
+      targetUser._id,
+      limit,
+      userIds ?? sinceId
+    );
 
   const followingUsers = await userService.findMany(
     { _id: followingUsersIds },
