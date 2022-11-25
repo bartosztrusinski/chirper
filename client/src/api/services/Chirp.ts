@@ -87,18 +87,20 @@ const unlikeChirp = async (chirpId: string) => {
   await privateClient.delete(`/me/likes/${chirpId}`);
 };
 
-const getLikedIds = async (userId: string, ids?: string[]) => {
+const getLikedChirpIds = async (
+  username: string,
+  chirpIds?: string[],
+): Promise<string[]> => {
   const params = {
-    user: userId,
-    ids,
+    chirpIds,
   };
 
-  const { data } = await publicClient.get<{ data: { chirp: string }[] }>(
-    '/likes',
+  const { data } = await publicClient.get<{ data: Chirp[] }>(
+    `/users/${username}/liked-chirps`,
     { params },
   );
 
-  return data.data.map((like) => like.chirp);
+  return data.data.map((chirp) => chirp._id);
 };
 
 export default {
@@ -109,5 +111,5 @@ export default {
   getUserTimeline,
   likeChirp,
   unlikeChirp,
-  getLikedIds,
+  getLikedChirpIds,
 };

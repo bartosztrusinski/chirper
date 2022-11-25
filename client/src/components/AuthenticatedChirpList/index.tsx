@@ -24,7 +24,7 @@ const AuthenticatedChirpList = ({ chirps, queryKeys }: ChirpListProps) => {
     isLoading,
   } = useLikedChirpIds(
     queryKeys,
-    user._id,
+    user.username,
     chirps.map((chirp) => chirp._id),
   );
 

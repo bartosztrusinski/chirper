@@ -3,11 +3,11 @@ import ChirpService from '../api/services/Chirp';
 
 const useLikedChirpIds = (
   queryKeys: string[],
-  userId: string,
+  username: string,
   chirpIds: string[],
 ) =>
   useQuery(['likedChirpIds', ...queryKeys], () =>
-    ChirpService.getLikedIds(userId, chirpIds),
+    ChirpService.getLikedChirpIds(username, chirpIds),
   );
 
 export default useLikedChirpIds;
