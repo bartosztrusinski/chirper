@@ -91,22 +91,52 @@
   }
 }
 
-.icons {
+.buttonPanel {
   display: grid;
   grid-template-columns: repeat(3, auto);
   gap: u.rem(12);
   place-items: center;
   padding-top: u.rem(12);
   border-top: u.rem(1) solid var(--border-color);
-  color: var(--text-muted-color);
-}
 
-.icon {
-  display: grid;
-  grid-template-columns: auto auto;
-  place-items: center;
-  gap: u.rem(12);
-  font-size: var(--fs-400);
+  .button {
+    background-color: transparent;
+    color: var(--text-muted-color);
+    padding: u.rem(10);
+    border: none;
+    border-radius: 50%;
+    outline: u.rem(2) solid transparent;
+    cursor: pointer;
+    transition: background-color 210ms ease, color 210ms ease;
+
+    &.liked {
+      color: var(--color-like);
+    }
+
+    .icon {
+      font-size: var(--fs-400);
+    }
+
+    &:focus-visible {
+      outline-color: var(--color-primary);
+    }
+
+    &:hover {
+      background-color: hsl(var(--color-primary-hsl) / 10%);
+
+      .icon {
+        color: var(--color-primary);
+      }
+
+      &.like {
+        background-color: hsl(var(--color-like-hsl) / 10%);
+
+        .icon {
+          color: var(--color-like);
+        }
+      }
+    }
+  }
 }
 
 .reply {
@@ -116,28 +146,28 @@
   padding-top: u.rem(12);
   border-top: u.rem(1) solid var(--border-color);
   cursor: pointer;
-}
 
-.form {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-  gap: u.rem(6);
-}
+  .form {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    gap: u.rem(6);
 
-.textarea {
-  font-size: var(--fs-400);
-  resize: none;
-  overflow: hidden;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  padding-block: u.rem(12);
-  border: none;
-  outline: none;
-}
+    .textarea {
+      font-size: var(--fs-400);
+      resize: none;
+      overflow: hidden;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      padding-block: u.rem(12);
+      border: none;
+      outline: none;
+    }
 
-.submit {
-  justify-self: end;
-  padding: u.rem(10) clamp(u.rem(16), u.rem(14.4) + 0.5vw, u.rem(24));
-  font-size: var(--fs-200);
+    .submit {
+      justify-self: end;
+      padding: u.rem(10) clamp(u.rem(16), u.rem(14.4) + 0.5vw, u.rem(24));
+      font-size: var(--fs-200);
+    }
+  }
 }
