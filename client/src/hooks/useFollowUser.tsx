@@ -6,191 +6,224 @@ import useUser from './useUser';
 
 const useFollowUser = (queryKeys: string[]) => {
   const queryClient = useQueryClient();
-  const { updateUser } = useUser();
+  const { user: currentUser, updateUser } = useUser();
   const SERVER_ERROR = 'There was an error contacting the server';
 
   const { mutate: followUser } = useMutation(
-    (username: string) => UserService.followUser(username),
+    (newFollowUsername: string) => UserService.followUser(newFollowUsername),
     {
-      onMutate: (username: string) => {
-        queryClient.cancelQueries(['followedUserIds', ...queryKeys]);
-        queryClient.cancelQueries(['users', username]);
+      onMutate: (newFollowUsername: string) => {
+        queryClient.cancelQueries(['followedUsernames', ...queryKeys]);
+        queryClient.cancelQueries(['users', newFollowUsername]);
         queryClient.cancelQueries(['user']);
 
-        const previousFollowedUsernames = queryClient.getQueryData<string[]>([
+        const followedUsernamesSnapshot = queryClient.getQueryData<string[]>([
           'followedUsernames',
           ...queryKeys,
         ]);
 
-        if (previousFollowedUsernames) {
+        if (followedUsernamesSnapshot) {
           queryClient.setQueryData(
             ['followedUsernames', ...queryKeys],
-            [...previousFollowedUsernames, username],
+            [...followedUsernamesSnapshot, newFollowUsername],
           );
         }
 
-        const previousFollowedUserData = queryClient.getQueryData<User>([
+        const newFollowSnapshot = queryClient.getQueryData<User>([
           'users',
-          username,
+          newFollowUsername,
         ]);
 
-        if (previousFollowedUserData) {
-          queryClient.setQueryData(['users', username], {
-            ...previousFollowedUserData,
+        if (newFollowSnapshot) {
+          queryClient.setQueryData(['users', newFollowUsername], {
+            ...newFollowSnapshot,
             metrics: {
-              ...previousFollowedUserData.metrics,
-              followingCount:
-                previousFollowedUserData.metrics.followingCount + 1,
+              ...newFollowSnapshot.metrics,
+              followingCount: newFollowSnapshot.metrics.followingCount + 1,
             },
           });
         }
 
-        const previousUserData = queryClient.getQueryData<StoredUser | null>([
-          'user',
-        ]);
+        const currentUserSnapshot = queryClient.getQueryData<StoredUser | null>(
+          ['user'],
+        );
 
-        if (previousUserData) {
+        if (currentUserSnapshot) {
           updateUser({
-            ...previousUserData,
+            ...currentUserSnapshot,
             metrics: {
-              ...previousUserData.metrics,
-              followedCount: previousUserData.metrics.followedCount + 1,
+              ...currentUserSnapshot.metrics,
+              followedCount: currentUserSnapshot.metrics.followedCount + 1,
             },
           });
         }
 
         return {
-          previousFollowedUsernames,
-          previousFollowedUserData,
-          previousUserData,
+          followedUsernamesSnapshot,
+          newFollowSnapshot,
+          currentUserSnapshot,
         };
       },
       onSuccess: () => {
         console.log('User followed successfully');
       },
-      onError: (error, username, context) => {
+      onError: (error, newFollowUsername, context) => {
         const title =
           axios.isAxiosError(error) && error?.response?.data?.message
             ? error?.response?.data?.message
             : SERVER_ERROR;
         console.log(title);
 
-        if (context?.previousFollowedUsernames) {
+        if (context?.followedUsernamesSnapshot) {
           queryClient.setQueryData(
             ['followedUsernames', ...queryKeys],
-            context.previousFollowedUsernames,
+            context.followedUsernamesSnapshot,
           );
         }
 
-        if (context?.previousFollowedUserData) {
+        if (context?.newFollowSnapshot) {
           queryClient.setQueryData(
-            ['users', username],
-            context.previousFollowedUserData,
+            ['users', newFollowUsername],
+            context.newFollowSnapshot,
           );
         }
 
-        if (context?.previousUserData) {
-          updateUser(context.previousUserData);
+        if (context?.currentUserSnapshot) {
+          updateUser(context.currentUserSnapshot);
         }
       },
-      onSettled: (data, error, username) => {
+      onSettled: (data, error, newFollowUsername) => {
         queryClient.invalidateQueries(['followedUsernames', ...queryKeys]);
-        queryClient.invalidateQueries(['users', username]);
+        queryClient.invalidateQueries(['users', newFollowUsername]);
         queryClient.invalidateQueries(['user']);
+        queryClient.invalidateQueries([
+          'users',
+          currentUser?.username,
+          'followed',
+        ]);
       },
     },
   );
 
   const { mutate: unfollowUser } = useMutation(
-    (username: string) => UserService.unfollowUser(username),
+    (deletedFollowUsername: string) =>
+      UserService.unfollowUser(deletedFollowUsername),
     {
-      onMutate: (username: string) => {
-        queryClient.cancelQueries(['followedUserIds', ...queryKeys]);
-        queryClient.cancelQueries(['users', username]);
+      onMutate: (deletedFollowUsername: string) => {
+        queryClient.cancelQueries(['followedUsernames', ...queryKeys]);
+        queryClient.cancelQueries(['users', deletedFollowUsername]);
         queryClient.cancelQueries(['user']);
+        queryClient.cancelQueries(['users', currentUser?.username, 'followed']);
 
-        const previousFollowedUsernames = queryClient.getQueryData<string[]>([
+        const followedUsernamesSnapshot = queryClient.getQueryData<string[]>([
           'followedUsernames',
           ...queryKeys,
         ]);
 
-        if (previousFollowedUsernames) {
+        if (followedUsernamesSnapshot) {
           queryClient.setQueryData(
             ['followedUsernames', ...queryKeys],
-            previousFollowedUsernames.filter(
-              (followedUsername) => followedUsername !== username,
+            followedUsernamesSnapshot.filter(
+              (followedUsername) => followedUsername !== deletedFollowUsername,
             ),
           );
         }
 
-        const previousFollowedUserData = queryClient.getQueryData<User>([
+        const deletedFollowSnapshot = queryClient.getQueryData<User>([
           'users',
-          username,
+          deletedFollowUsername,
         ]);
 
-        if (previousFollowedUserData) {
-          queryClient.setQueryData(['users', username], {
-            ...previousFollowedUserData,
+        if (deletedFollowSnapshot) {
+          queryClient.setQueryData(['users', deletedFollowUsername], {
+            ...deletedFollowSnapshot,
             metrics: {
-              ...previousFollowedUserData.metrics,
-              followingCount:
-                previousFollowedUserData.metrics.followingCount - 1,
+              ...deletedFollowSnapshot.metrics,
+              followingCount: deletedFollowSnapshot.metrics.followingCount - 1,
             },
           });
         }
 
-        const previousUserData = queryClient.getQueryData<StoredUser | null>([
-          'user',
-        ]);
+        const currentUserSnapshot = queryClient.getQueryData<StoredUser | null>(
+          ['user'],
+        );
 
-        if (previousUserData) {
+        if (currentUserSnapshot) {
           updateUser({
-            ...previousUserData,
+            ...currentUserSnapshot,
             metrics: {
-              ...previousUserData.metrics,
-              followedCount: previousUserData.metrics.followedCount - 1,
+              ...currentUserSnapshot.metrics,
+              followedCount: currentUserSnapshot.metrics.followedCount - 1,
             },
           });
+        }
+
+        const currentUserFollowsSnapshot = queryClient.getQueryData<User[]>([
+          'users',
+          currentUser?.username,
+          'followed',
+        ]);
+
+        if (currentUserFollowsSnapshot) {
+          queryClient.setQueryData(
+            ['users', currentUser?.username, 'followed'],
+            currentUserFollowsSnapshot.filter(
+              (follow) => follow.username !== deletedFollowUsername,
+            ),
+          );
         }
 
         return {
-          previousFollowedUsernames,
-          previousFollowedUserData,
-          previousUserData,
+          followedUsernamesSnapshot,
+          deletedFollowSnapshot,
+          currentUserSnapshot,
+          currentUserFollowsSnapshot,
         };
       },
       onSuccess: () => {
         console.log('User unfollowed successfully');
       },
-      onError: (error, username, context) => {
+      onError: (error, deletedFollowUsername, context) => {
         const title =
           axios.isAxiosError(error) && error?.response?.data?.message
             ? error?.response?.data?.message
             : SERVER_ERROR;
         console.log(title);
 
-        if (context?.previousFollowedUsernames) {
+        if (context?.followedUsernamesSnapshot) {
           queryClient.setQueryData(
             ['followedUsernames', ...queryKeys],
-            context.previousFollowedUsernames,
+            context.followedUsernamesSnapshot,
           );
         }
 
-        if (context?.previousFollowedUserData) {
+        if (context?.deletedFollowSnapshot) {
           queryClient.setQueryData(
-            ['users', username],
-            context.previousFollowedUserData,
+            ['users', deletedFollowUsername],
+            context.deletedFollowSnapshot,
           );
         }
 
-        if (context?.previousUserData) {
-          updateUser(context.previousUserData);
+        if (context?.currentUserSnapshot) {
+          updateUser(context.currentUserSnapshot);
+        }
+
+        if (context?.currentUserFollowsSnapshot) {
+          queryClient.setQueryData(
+            ['users', currentUser?.username, 'followed'],
+            context.currentUserFollowsSnapshot,
+          );
         }
       },
-      onSettled: (data, error, username) => {
+      onSettled: (data, error, deletedFollowUsername) => {
         queryClient.invalidateQueries(['followedUsernames', ...queryKeys]);
-        queryClient.invalidateQueries(['users', username]);
+        queryClient.invalidateQueries(['users', deletedFollowUsername]);
         queryClient.invalidateQueries(['user']);
+        queryClient.invalidateQueries([
+          'users',
+          currentUser?.username,
+          'followed',
+        ]);
       },
     },
   );
