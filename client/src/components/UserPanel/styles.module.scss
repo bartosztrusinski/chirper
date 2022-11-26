@@ -45,10 +45,30 @@
 
     display: grid;
     grid-template-columns: 1fr u.rem(1) 1fr;
+    padding: u.rem(8);
     gap: u.rem(8);
     text-align: center;
     color: var(--text-muted-color);
     font-size: var(--fs-200);
+
+    .button {
+      background-color: inherit;
+      color: inherit;
+      padding: u.rem(8);
+      border-radius: u.rem(8);
+      border: none;
+      outline: u.rem(2) solid transparent;
+      cursor: pointer;
+      transition: background-color 140ms ease-in-out;
+
+      &:hover {
+        background-color: var(--color-dark-30);
+      }
+
+      &:focus-visible {
+        outline-color: var(--color-primary);
+      }
+    }
 
     .line {
       padding: u.rem(1);
