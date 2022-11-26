@@ -25,17 +25,23 @@ const UserPanel = () => {
       </Link>
 
       <div className={styles.followContainer}>
-        <div>
-          <div className={styles.count}>
-            {user.metrics.followedCount || '14.2K'}
-          </div>
+        <button
+          type='button'
+          className={styles.button}
+          onClick={() => navigate({ to: `/users/${user.username}/followed` })}
+        >
+          <div className={styles.count}>{user.metrics.followedCount}</div>
           Followed
-        </div>
+        </button>
         <div className={styles.line}></div>
-        <div>
-          <div className={styles.count}> 234{user.metrics.followingCount} </div>
+        <button
+          type='button'
+          className={styles.button}
+          onClick={() => navigate({ to: `/users/${user.username}/following` })}
+        >
+          <div className={styles.count}>{user.metrics.followingCount}</div>
           Following
-        </div>
+        </button>
       </div>
 
       <div className={styles.buttonContainer}>
