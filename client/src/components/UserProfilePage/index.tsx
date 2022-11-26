@@ -20,10 +20,10 @@ import { useEffect, useState } from 'react';
 import ConfirmModal from '../ConfirmModal';
 import useFollowedUsernames from '../../hooks/useFollowedUsernames';
 import useFollowUser from '../../hooks/useFollowUser';
+import FollowedModal from '../FollowedModal';
+import FollowingModal from '../FollowingModal';
 
 const UserProfile = () => {
-  const { user: currentUser } = useUser();
-
   const [
     {
       params: { username },
@@ -31,25 +31,33 @@ const UserProfile = () => {
     nested,
   ] = useMatches();
   const queryKeys = [username];
+  const { user: currentUser } = useUser();
   const { followUser, unfollowUser } = useFollowUser(queryKeys);
-
-  const path = nested ? nested.pathname.replace(/\/+$/, '') : '';
-
   const navigate = useNavigate();
   const matchRoute = useMatchRoute();
 
-  const isEditRoute = matchRoute({ to: 'edit-profile' });
-
+  const [route, setRoute] = useState<string>('');
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
-  const [route, setRoute] = useState<string>('');
+  const [isFollowedModalOpen, setIsFollowedModalOpen] =
+    useState<boolean>(false);
+  const [isFollowingModalOpen, setIsFollowingModalOpen] =
+    useState<boolean>(false);
+
+  const path = nested ? nested.pathname.replace(/\/+$/, '') : '';
+
+  const isEditRoute = matchRoute({ to: 'edit-profile' });
+  const isFollowedRoute = matchRoute({ to: 'followed' });
+  const isFollowingRoute = matchRoute({ to: 'following' });
 
   useEffect(() => {
     setIsEditModalOpen(!!isEditRoute);
-  }, [isEditRoute]);
+    setIsFollowedModalOpen(!!isFollowedRoute);
+    setIsFollowingModalOpen(!!isFollowingRoute);
+  }, [isEditRoute, isFollowedRoute, isFollowingRoute]);
 
   useEffect(() => {
-    if (isEditRoute) return;
+    if (isEditRoute || isFollowedRoute || isFollowingRoute) return;
 
     setRoute(path);
   }, [path]);
@@ -145,19 +153,27 @@ const UserProfile = () => {
         </div>
 
         <div className={styles.follows}>
-          <div>
+          <button
+            type='button'
+            className={styles.button}
+            onClick={() => navigate({ to: 'followed' })}
+          >
             <div className={styles.count}>
               {utils.formatCount(user.metrics.followedCount)}
             </div>
             Followed
-          </div>
+          </button>
           <div className={styles.line}></div>
-          <div>
+          <button
+            type='button'
+            className={styles.button}
+            onClick={() => navigate({ to: 'following' })}
+          >
             <div className={styles.count}>
               {utils.formatCount(user.metrics.followingCount)}
             </div>
             Following
-          </div>
+          </button>
         </div>
       </div>
 
@@ -203,6 +219,17 @@ const UserProfile = () => {
         onClose={() => navigate({ to: route })}
       />
 
+      <FollowedModal
+        isOpen={isFollowedModalOpen}
+        onRequestClose={() => navigate({ to: route })}
+        username={user.username}
+      />
+      <FollowingModal
+        isOpen={isFollowingModalOpen}
+        onRequestClose={() => navigate({ to: route })}
+        username={user.username}
+      />
+
       <ConfirmModal
         isOpen={isConfirmModalOpen}
         onRequestClose={() => setIsConfirmModalOpen(false)}
@@ -212,7 +239,6 @@ const UserProfile = () => {
         onConfirm={() => {
           unfollowUser(user.username);
           setIsConfirmModalOpen(false);
-          console.log('unfollowed!!!!');
         }}
       />
     </>
