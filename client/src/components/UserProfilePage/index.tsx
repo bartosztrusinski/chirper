@@ -17,6 +17,9 @@ import { BiLinkAlt } from '@react-icons/all-files/bi/BiLinkAlt';
 import useUser from '../../hooks/useUser';
 import EditProfileModal from '../EditProfileModal';
 import { useEffect, useState } from 'react';
+import ConfirmModal from '../ConfirmModal';
+import useFollowedUsernames from '../../hooks/useFollowedUsernames';
+import useFollowUser from '../../hooks/useFollowUser';
 
 const UserProfile = () => {
   const { user: currentUser } = useUser();
@@ -27,6 +30,8 @@ const UserProfile = () => {
     },
     nested,
   ] = useMatches();
+  const queryKeys = [username];
+  const { followUser, unfollowUser } = useFollowUser(queryKeys);
 
   const path = nested ? nested.pathname.replace(/\/+$/, '') : '';
 
@@ -35,11 +40,12 @@ const UserProfile = () => {
 
   const isEditRoute = matchRoute({ to: 'edit-profile' });
 
-  const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
   const [route, setRoute] = useState<string>('');
 
   useEffect(() => {
-    setIsEditOpen(!!isEditRoute);
+    setIsEditModalOpen(!!isEditRoute);
   }, [isEditRoute]);
 
   useEffect(() => {
@@ -52,11 +58,19 @@ const UserProfile = () => {
     data: user,
     isLoading,
     isError,
+    isSuccess,
     error,
   } = useQuery(
-    ['user', username],
+    ['users', ...queryKeys],
     async () => await UserService.getOne(username),
   );
+
+  const { data: followedUsernames, isSuccess: isFollowedSuccess } =
+    useFollowedUsernames(
+      queryKeys,
+      currentUser!.username,
+      isSuccess ? [user._id] : [],
+    );
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -66,12 +80,9 @@ const UserProfile = () => {
     return <div>{(error as Error).message}</div>;
   }
 
-  const { profile, metrics, createdAt } = user.data;
-  const { name, bio, location, picture, website } = profile;
-  const { chirpCount, followedCount, followingCount, likedChirpCount } =
-    metrics;
-  const avatar = picture ?? defaultAvatar;
-  const { formattedDate } = utils.formatTime(createdAt);
+  const isFollowed =
+    isFollowedSuccess && followedUsernames.includes(user.username);
+  const isCurrentUser = currentUser && currentUser._id === user._id;
 
   return (
     <>
@@ -79,14 +90,14 @@ const UserProfile = () => {
         <div className={styles.intro}>
           <img
             className={styles.avatar}
-            src={avatar}
+            src={user.profile.picture ?? defaultAvatar}
             alt={`${username}'s avatar`}
           />
           <div className={styles.info}>
-            <div className={styles.name}>John Smith 1943</div>
-            <div className={styles.username}>@jsmith_1943_some_nick</div>
+            <div className={styles.name}>{user.profile.name}</div>
+            <div className={styles.username}>@{user.username}</div>
           </div>
-          {currentUser && currentUser._id === user.data._id ? (
+          {isCurrentUser ? (
             <Button
               className={styles.button}
               type='button'
@@ -94,38 +105,41 @@ const UserProfile = () => {
             >
               Edit Profile
             </Button>
+          ) : isFollowed ? (
+            <Button
+              className={styles.button}
+              onClick={() => setIsConfirmModalOpen(true)}
+            >
+              Unfollow
+            </Button>
           ) : (
-            <Button className={styles.button}>Follow</Button>
+            <Button
+              className={styles.button}
+              type='button'
+              onClick={() => followUser(user.username)}
+            >
+              Follow
+            </Button>
           )}
         </div>
 
-        {bio || (
-          <p className={styles.bio}>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quos
-            nostrum tempore magni dolorem tenetur sed voluptatum rem laudantium
-            mollitia illum, est aut sequi
-          </p>
-        )}
+        {user.profile.bio && <p className={styles.bio}>{user.profile.bio}</p>}
 
         <div className={styles.overview}>
           <div className={styles.item}>
             <IoCalendarOutline className={styles.icon} />
-            <div>Joined {formattedDate}</div>
+            <div>Joined {utils.formatTime(user.createdAt).formattedDate}</div>
           </div>
-          {location || (
+          {user.profile.location && (
             <div className={styles.item}>
               <HiOutlineLocationMarker className={styles.icon} />
-              <div className={styles.text}>
-                Some City, Some Country Zip-Code, Street 2/4
-              </div>
+              <div className={styles.text}>{user.profile.location}</div>
             </div>
           )}
-          {!website && (
+          {user.profile.website && (
             <div className={styles.item}>
               <BiLinkAlt className={styles.icon} />
-              <div className={styles.text}>
-                www.dkpoawfdopefksepofkspeofeskpfose.com/krogprkgdr?koewfes=fsefsdrgr
-              </div>
+              <div className={styles.text}>{user.profile.website}</div>
             </div>
           )}
         </div>
@@ -133,14 +147,14 @@ const UserProfile = () => {
         <div className={styles.follows}>
           <div>
             <div className={styles.count}>
-              {utils.formatCount(followedCount || 14203)}
+              {utils.formatCount(user.metrics.followedCount)}
             </div>
             Followed
           </div>
           <div className={styles.line}></div>
           <div>
             <div className={styles.count}>
-              {utils.formatCount(followingCount)}
+              {utils.formatCount(user.metrics.followingCount)}
             </div>
             Following
           </div>
@@ -179,13 +193,28 @@ const UserProfile = () => {
           </li>
         </ul>
       </nav>
-      <EditProfileModal
-        open={isEditOpen}
-        onClose={() => navigate({ to: route })}
-      />
+
       <section>
         <Outlet />
       </section>
+
+      <EditProfileModal
+        open={isEditModalOpen}
+        onClose={() => navigate({ to: route })}
+      />
+
+      <ConfirmModal
+        isOpen={isConfirmModalOpen}
+        onRequestClose={() => setIsConfirmModalOpen(false)}
+        heading={`Unfollow @${user.username}?`}
+        description='Their Chirps will no longer show up in your home timeline. You can still view their profile.'
+        confirmText='Unfollow'
+        onConfirm={() => {
+          unfollowUser(user.username);
+          setIsConfirmModalOpen(false);
+          console.log('unfollowed!!!!');
+        }}
+      />
     </>
   );
 };
