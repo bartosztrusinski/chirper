@@ -11,7 +11,7 @@ const getOne = async (username: string) => {
     { params },
   );
 
-  return data;
+  return data.data;
 };
 
 const getManyLiking = async (id: string) => {
@@ -24,7 +24,7 @@ const getManyLiking = async (id: string) => {
     { params },
   );
 
-  return data;
+  return data.data;
 };
 
 const getManyFollowed = async (username: string) => {
@@ -39,7 +39,7 @@ const getManyFollowed = async (username: string) => {
     },
   );
 
-  return data;
+  return data.data;
 };
 
 const getManyFollowing = async (username: string) => {
@@ -52,7 +52,7 @@ const getManyFollowing = async (username: string) => {
     { params },
   );
 
-  return data;
+  return data.data;
 };
 
 const getCurrentOne = async (
@@ -74,6 +74,30 @@ const getCurrentOne = async (
   });
 
   return data.data;
+};
+
+const getFollowedUsernames = async (
+  username: string,
+  userIds?: string[],
+): Promise<string[]> => {
+  const params = {
+    userIds,
+  };
+
+  const { data } = await publicClient.get<{ data: User[] }>(
+    `/users/${username}/followed`,
+    { params },
+  );
+
+  return data.data.map((user) => user.username);
+};
+
+const followUser = async (username: string) => {
+  await privateClient.post(`/me/followed`, { username });
+};
+
+const unfollowUser = async (username: string) => {
+  await privateClient.delete(`/me/followed/${username}`);
 };
 
 const updateProfile = async (
@@ -125,6 +149,9 @@ export default {
   getManyLiking,
   getManyFollowed,
   getManyFollowing,
+  getFollowedUsernames,
+  followUser,
+  unfollowUser,
   updateProfile,
   updateUsername,
   updateEmail,
