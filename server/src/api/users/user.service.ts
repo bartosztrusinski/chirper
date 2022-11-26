@@ -52,14 +52,13 @@ const handleDuplicate = async (
   username: User['username'],
   email: User['email']
 ) => {
-  const usernameTaken = await findOne(username);
-  if (usernameTaken) {
-    throw new Error('Username has already been taken');
-  }
+  const user = await UserModel.findOne({
+    $or: [{ username }, { email }],
+  });
 
-  const emailTaken = await findOne(email);
-  if (emailTaken) {
-    throw new Error('Email has already been taken');
+  if (user) {
+    const fieldTaken = user.username === username ? 'username' : 'email';
+    throw new Error(`Sorry, ${fieldTaken} has already been taken`);
   }
 };
 
