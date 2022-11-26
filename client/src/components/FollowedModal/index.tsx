@@ -3,19 +3,23 @@ import UserList from '../UserList';
 import UserService from '../../api/services/User';
 import { useQuery } from '@tanstack/react-query';
 
-interface Props {
+interface FollowedModalProps extends ReactModal.Props {
   username: string;
-  open: boolean;
-  onClose: () => void;
 }
 
-const FollowedModal = ({ username, open, onClose }: Props) => {
+const FollowedModal = ({
+  username,
+  isOpen,
+  onRequestClose,
+}: FollowedModalProps) => {
+  const queryKeys = [username, 'followed'];
+
   const {
     data: users,
     isLoading,
     isError,
     error,
-  } = useQuery(['users', 'liking', username], () =>
+  } = useQuery(['users', ...queryKeys], () =>
     UserService.getManyFollowed(username),
   );
 
@@ -35,8 +39,8 @@ const FollowedModal = ({ username, open, onClose }: Props) => {
   }
 
   return (
-    <Modal title='Followed' open={open} onClose={onClose}>
-      <UserList users={users.data} />
+    <Modal title='Followed' isOpen={isOpen} onRequestClose={onRequestClose}>
+      <UserList users={users} queryKeys={queryKeys} />
     </Modal>
   );
 };

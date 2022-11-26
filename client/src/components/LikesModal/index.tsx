@@ -3,19 +3,19 @@ import UserList from '../UserList';
 import UserService from '../../api/services/User';
 import { useQuery } from '@tanstack/react-query';
 
-interface Props {
+interface LikesModalProps extends ReactModal.Props {
   id: string;
-  open: boolean;
-  onClose: () => void;
 }
 
-const LikesModal = ({ id, open, onClose }: Props) => {
+const LikesModal = ({ id, isOpen, onRequestClose }: LikesModalProps) => {
+  const queryKeys = [id, 'liking'];
+
   const {
     data: users,
     isLoading,
     isError,
     error,
-  } = useQuery(['users', 'liking', id], () => UserService.getManyLiking(id));
+  } = useQuery(['users', ...queryKeys], () => UserService.getManyLiking(id));
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -33,8 +33,8 @@ const LikesModal = ({ id, open, onClose }: Props) => {
   }
 
   return (
-    <Modal title='Liked by' open={open} onClose={onClose}>
-      <UserList users={users.data} />
+    <Modal title='Liked by' isOpen={isOpen} onRequestClose={onRequestClose}>
+      <UserList users={users} queryKeys={queryKeys} />
     </Modal>
   );
 };
