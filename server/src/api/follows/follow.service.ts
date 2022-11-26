@@ -47,6 +47,7 @@ const deleteOne = async (
   targetUser: Types.ObjectId
 ) => {
   const follow = await findOne({ sourceUser, targetUser });
+
   await follow.remove();
 };
 
@@ -54,7 +55,8 @@ const handleDuplicate = async (
   sourceUser: Types.ObjectId,
   targetUser: Types.ObjectId
 ) => {
-  const follow = await findOne({ sourceUser, targetUser });
+  const follow = await FollowModel.findOne({ sourceUser, targetUser });
+
   if (follow) {
     throw new Error('Sorry, you are already following this user');
   }
