@@ -8,82 +8,77 @@ const useLikeChirp = (queryKeys: string[]) => {
   const SERVER_ERROR = 'There was an error contacting the server';
 
   const { mutate: likeChirp } = useMutation(
-    (chirpId: string) => ChirpService.likeChirp(chirpId),
+    (likedChirpId: string) => ChirpService.likeChirp(likedChirpId),
     {
-      onMutate: (chirpId: string) => {
+      onMutate: (likedChirpId: string) => {
         queryClient.cancelQueries(['chirps', ...queryKeys]);
+        queryClient.cancelQueries(['likedChirpIds', ...queryKeys]);
 
-        const previousChirps = queryClient.getQueryData<IChirp | IChirp[]>([
+        const chirpsSnapshot = queryClient.getQueryData<IChirp | IChirp[]>([
           'chirps',
           ...queryKeys,
         ]);
 
-        const previousLikedChirpIds = queryClient.getQueryData<string[]>([
+        if (chirpsSnapshot) {
+          queryClient.setQueryData(
+            ['chirps', ...queryKeys],
+            Array.isArray(chirpsSnapshot)
+              ? chirpsSnapshot.map((chirp) =>
+                  chirp._id === likedChirpId
+                    ? {
+                        ...chirp,
+                        metrics: {
+                          ...chirp.metrics,
+                          likeCount: chirp.metrics.likeCount + 1,
+                        },
+                      }
+                    : chirp,
+                )
+              : {
+                  ...chirpsSnapshot,
+                  metrics: {
+                    ...chirpsSnapshot.metrics,
+                    likeCount: chirpsSnapshot.metrics.likeCount + 1,
+                  },
+                },
+          );
+        }
+
+        const likedChirpIdsSnapshot = queryClient.getQueryData<string[]>([
           'likedChirpIds',
           ...queryKeys,
         ]);
 
-        queryClient.setQueryData(
-          ['chirps', ...queryKeys],
-          (old?: IChirp | IChirp[]) => {
-            if (!old) return;
+        if (likedChirpIdsSnapshot) {
+          queryClient.setQueryData(
+            ['likedChirpIds', ...queryKeys],
+            [...likedChirpIdsSnapshot, likedChirpId],
+          );
+        }
 
-            if (!Array.isArray(old)) {
-              return {
-                ...old,
-                metrics: {
-                  ...old.metrics,
-                  likeCount: old.metrics.likeCount + 1,
-                },
-              };
-            }
-
-            return old.map((chirp) => {
-              if (chirp._id === chirpId) {
-                return {
-                  ...chirp,
-                  metrics: {
-                    ...chirp.metrics,
-                    likeCount: chirp.metrics.likeCount + 1,
-                  },
-                };
-              }
-
-              return chirp;
-            });
-          },
-        );
-
-        queryClient.setQueryData(
-          ['likedChirpIds', ...queryKeys],
-          (old?: string[]) => {
-            if (!old) return;
-
-            return [...old, chirpId];
-          },
-        );
-
-        return { previousChirps, previousLikedChirpIds };
+        return { chirpsSnapshot, likedChirpIdsSnapshot };
       },
       onSuccess: () => {
         console.log('Chirp liked!');
       },
-      onError: (error, data, context) => {
+      onError: (error, likedChirpId, context) => {
         const title =
           axios.isAxiosError(error) && error?.response?.data?.message
             ? error?.response?.data?.message
             : SERVER_ERROR;
         console.log(title);
-        if (context?.previousChirps) {
+
+        if (context?.chirpsSnapshot) {
           queryClient.setQueryData(
             ['chirps', ...queryKeys],
-            context.previousChirps,
+            context.chirpsSnapshot,
           );
         }
-        if (context?.previousLikedChirpIds) {
+
+        if (context?.likedChirpIdsSnapshot) {
           queryClient.setQueryData(
             ['likedChirpIds', ...queryKeys],
-            context.previousLikedChirpIds,
+            context.likedChirpIdsSnapshot,
           );
         }
       },
@@ -95,82 +90,77 @@ const useLikeChirp = (queryKeys: string[]) => {
   );
 
   const { mutate: unlikeChirp } = useMutation(
-    (chirpId: string) => ChirpService.unlikeChirp(chirpId),
+    (unlikedChirpId: string) => ChirpService.unlikeChirp(unlikedChirpId),
     {
-      onMutate: (chirpId: string) => {
+      onMutate: (unlikedChirpId: string) => {
         queryClient.cancelQueries(['chirps', ...queryKeys]);
+        queryClient.cancelQueries(['likedChirpIds', ...queryKeys]);
 
-        const previousChirps = queryClient.getQueryData<IChirp | IChirp[]>([
+        const chirpsSnapshot = queryClient.getQueryData<IChirp | IChirp[]>([
           'chirps',
           ...queryKeys,
         ]);
 
-        const previousLikedChirpIds = queryClient.getQueryData<string[]>([
+        if (chirpsSnapshot) {
+          queryClient.setQueryData(
+            ['chirps', ...queryKeys],
+            Array.isArray(chirpsSnapshot)
+              ? chirpsSnapshot.map((chirp) =>
+                  chirp._id === unlikedChirpId
+                    ? {
+                        ...chirp,
+                        metrics: {
+                          ...chirp.metrics,
+                          likeCount: chirp.metrics.likeCount - 1,
+                        },
+                      }
+                    : chirp,
+                )
+              : {
+                  ...chirpsSnapshot,
+                  metrics: {
+                    ...chirpsSnapshot.metrics,
+                    likeCount: chirpsSnapshot.metrics.likeCount - 1,
+                  },
+                },
+          );
+        }
+
+        const likedChirpIdsSnapshot = queryClient.getQueryData<string[]>([
           'likedChirpIds',
           ...queryKeys,
         ]);
 
-        queryClient.setQueryData(
-          ['chirps', ...queryKeys],
-          (old?: IChirp | IChirp[]) => {
-            if (!old) return;
+        if (likedChirpIdsSnapshot) {
+          queryClient.setQueryData(
+            ['likedChirpIds', ...queryKeys],
+            likedChirpIdsSnapshot.filter((id) => id !== unlikedChirpId),
+          );
+        }
 
-            if (!Array.isArray(old)) {
-              return {
-                ...old,
-                metrics: {
-                  ...old.metrics,
-                  likeCount: old.metrics.likeCount - 1,
-                },
-              };
-            }
-
-            return old.map((chirp) => {
-              if (chirp._id === chirpId) {
-                return {
-                  ...chirp,
-                  metrics: {
-                    ...chirp.metrics,
-                    likeCount: chirp.metrics.likeCount - 1,
-                  },
-                };
-              }
-
-              return chirp;
-            });
-          },
-        );
-
-        queryClient.setQueryData(
-          ['likedChirpIds', ...queryKeys],
-          (old?: string[]) => {
-            if (!old) return;
-
-            return old.filter((id) => id !== chirpId);
-          },
-        );
-
-        return { previousChirps, previousLikedChirpIds };
+        return { chirpsSnapshot, likedChirpIdsSnapshot };
       },
       onSuccess: () => {
         console.log('Chirp unliked!');
       },
-      onError: (error, data, context) => {
+      onError: (error, unlikedChirpId, context) => {
         const title =
           axios.isAxiosError(error) && error?.response?.data?.message
             ? error?.response?.data?.message
             : SERVER_ERROR;
         console.log(title);
-        if (context?.previousChirps) {
+
+        if (context?.chirpsSnapshot) {
           queryClient.setQueryData(
             ['chirps', ...queryKeys],
-            context.previousChirps,
+            context.chirpsSnapshot,
           );
         }
-        if (context?.previousLikedChirpIds) {
+
+        if (context?.likedChirpIdsSnapshot) {
           queryClient.setQueryData(
             ['likedChirpIds', ...queryKeys],
-            context.previousLikedChirpIds,
+            context.likedChirpIdsSnapshot,
           );
         }
       },
