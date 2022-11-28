@@ -1,34 +1,42 @@
 import Chirp from '../Chirp';
 import IChirp from '../../interfaces/Chirp';
-import LikePrompt from '../Prompt/LikePrompt';
-import { useState } from 'react';
 import Modal from '../Modal';
+import LikePrompt from '../Prompt/LikePrompt';
 import ReplyPrompt from '../Prompt/ReplyPrompt';
+import { forwardRef, useState } from 'react';
 
-interface ChirpListProps {
+interface UnauthenticatedChirpListProps {
   chirps: IChirp[];
 }
 
-const UnauthenticatedChirpList = ({ chirps }: ChirpListProps) => {
-  const [isLikeModalOpen, setIsLikeModalOpen] = useState(false);
-  const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
-  const [author, setAuthor] = useState('');
+type LastChirpRef = HTMLElement | null;
+
+const UnauthenticatedChirpList = forwardRef<
+  LastChirpRef,
+  UnauthenticatedChirpListProps
+>(function UnauthenticatedChirpList({ chirps }, ref) {
+  const [isLikeModalOpen, setIsLikeModalOpen] = useState<boolean>(false);
+  const [isReplyModalOpen, setIsReplyModalOpen] = useState<boolean>(false);
+  const [selectedAuthor, setSelectedAuthor] = useState<string>('');
 
   const handleLike = (author: string) => {
-    setAuthor(author);
+    setSelectedAuthor(author);
     setIsLikeModalOpen(true);
   };
 
   const handleReply = (author: string) => {
-    setAuthor(author);
+    setSelectedAuthor(author);
     setIsReplyModalOpen(true);
   };
 
   return (
     <>
-      {chirps.map((chirp) => {
+      {chirps.map((chirp, index) => {
+        const isLastChirp = index === chirps.length - 1;
+
         return (
           <Chirp
+            ref={isLastChirp ? ref : null}
             key={chirp._id}
             chirp={chirp}
             onLike={() => handleLike(chirp.author.username)}
@@ -36,22 +44,24 @@ const UnauthenticatedChirpList = ({ chirps }: ChirpListProps) => {
           />
         );
       })}
+
       <Modal
         isOpen={isLikeModalOpen}
         onRequestClose={() => setIsLikeModalOpen(false)}
         title=' '
       >
-        <LikePrompt username={author} />
+        <LikePrompt username={selectedAuthor} />
       </Modal>
+
       <Modal
         isOpen={isReplyModalOpen}
         onRequestClose={() => setIsReplyModalOpen(false)}
         title=' '
       >
-        <ReplyPrompt username={author} />
+        <ReplyPrompt username={selectedAuthor} />
       </Modal>
     </>
   );
-};
+});
 
 export default UnauthenticatedChirpList;
