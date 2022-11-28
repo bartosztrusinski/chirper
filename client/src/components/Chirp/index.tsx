@@ -1,14 +1,14 @@
 import styles from './styles.module.scss';
 import defaultAvatar from '../../assets/images/default_avatar.png';
-import { Link, useNavigate } from '@tanstack/react-location';
 import utils from '../../utils/utils';
-import { MouseEvent } from 'react';
+import Chirp from '../../interfaces/Chirp';
+import { forwardRef, MouseEvent } from 'react';
+import { Link, useNavigate } from '@tanstack/react-location';
 import { FaRegCommentAlt } from '@react-icons/all-files/fa/FaRegCommentAlt';
 import { FaRegHeart } from '@react-icons/all-files/fa/FaRegHeart';
 import { FiShare } from '@react-icons/all-files/fi/FiShare';
-import Chirp from '../../interfaces/Chirp';
 
-interface Props {
+interface ChirpProps {
   chirp: Chirp;
   showMetrics?: boolean;
   isLiked?: boolean;
@@ -16,13 +16,12 @@ interface Props {
   onReply: () => void;
 }
 
-const Chirp = ({
-  chirp,
-  showMetrics = true,
-  isLiked = false,
-  onLike,
-  onReply,
-}: Props) => {
+type Ref = HTMLElement | null;
+
+const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
+  { chirp, showMetrics = true, isLiked = false, onLike, onReply },
+  ref,
+) {
   const { _id, content, createdAt, author, metrics, replies } = chirp;
   const { username, profile } = author;
   const avatar = profile.picture ?? defaultAvatar;
@@ -32,6 +31,7 @@ const Chirp = ({
 
   return (
     <article
+      ref={ref}
       onClick={() => navigate({ to: `/chirps/${_id}` })}
       className={styles.chirp}
     >
@@ -83,7 +83,7 @@ const Chirp = ({
               <div className={styles.iconBackground}>
                 <FaRegCommentAlt className={styles.icon} />
               </div>
-              <div>{utils.formatCount(replies.length || 124000)}</div>
+              <div>{utils.formatCount(replies.length)}</div>
             </div>
             <div
               onClick={(e) => {
@@ -107,6 +107,6 @@ const Chirp = ({
       </div>
     </article>
   );
-};
+});
 
 export default Chirp;
