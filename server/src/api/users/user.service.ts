@@ -140,7 +140,10 @@ const findFollowedUsersIds = async (
   );
 
   const followedUsersIds = follows.map((follow) => follow.targetUser);
-  const nextPage = follows[follows.length - 1]?._id;
+  const nextPage =
+    !isUserIds && follows.length === limit
+      ? follows[follows.length - 1]._id
+      : undefined;
 
   return { followedUsersIds, nextPage };
 };
@@ -168,7 +171,10 @@ const findFollowingUsersIds = async (
   );
 
   const followingUsersIds = follows.map((follow) => follow.sourceUser);
-  const nextPage = follows[follows.length - 1]?._id;
+  const nextPage =
+    !isUserIds && follows.length === limit
+      ? follows[follows.length - 1]._id
+      : undefined;
 
   return { followingUsersIds, nextPage };
 };
@@ -196,7 +202,10 @@ const findLikedChirpsIds = async (
   );
 
   const likedChirpsIds = likes.map((like) => like.chirp);
-  const nextPage = likes[likes.length - 1]?._id;
+  const nextPage =
+    !isChirpIds && likes.length === limit
+      ? likes[likes.length - 1]._id
+      : undefined;
 
   return { likedChirpsIds, nextPage };
 };

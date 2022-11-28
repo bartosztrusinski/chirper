@@ -29,7 +29,10 @@ const findMany = async (
     ids ? ids.length : limit
   );
 
-  const nextPage = ids ? undefined : foundChirps[foundChirps.length - 1]?._id;
+  const nextPage =
+    !ids && foundChirps.length === limit
+      ? foundChirps[foundChirps.length - 1]._id
+      : undefined;
 
   res.status(200).json(createSuccessResponse(foundChirps, { nextPage }));
 };
@@ -149,7 +152,10 @@ const getUserTimeline = async (
     limit
   );
 
-  const nextPage = timelineChirps[timelineChirps.length - 1]?._id;
+  const nextPage =
+    timelineChirps.length === limit
+      ? timelineChirps[timelineChirps.length - 1]._id
+      : undefined;
 
   res.status(200).json(createSuccessResponse(timelineChirps, { nextPage }));
 };
@@ -191,7 +197,10 @@ const findManyByUser = async (
     limit
   );
 
-  const nextPage = foundUsersChirps[foundUsersChirps.length - 1]?._id;
+  const nextPage =
+    foundUsersChirps.length === limit
+      ? foundUsersChirps[foundUsersChirps.length - 1]._id
+      : undefined;
 
   res.status(200).json(createSuccessResponse(foundUsersChirps, { nextPage }));
 };

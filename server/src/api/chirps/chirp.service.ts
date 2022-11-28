@@ -101,7 +101,8 @@ const findLikingUsersIds = async (
   const likes = await likeService.findMany(filter, 'user', { _id: -1 }, limit);
 
   const likingUsersIds = likes.map((like) => like.user);
-  const nextPage = likes[likes.length - 1]?._id;
+  const nextPage =
+    likes.length === limit ? likes[likes.length - 1]._id : undefined;
 
   return { likingUsersIds, nextPage };
 };
