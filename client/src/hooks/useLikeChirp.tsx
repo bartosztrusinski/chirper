@@ -1,59 +1,97 @@
 import IChirp from '../interfaces/Chirp';
 import ChirpService from '../api/services/Chirp';
 import axios from 'axios';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 
-const useLikeChirp = (queryKeys: string[]) => {
+const changeQueryDataLikes = (
+  chirpsData:
+    | IChirp
+    | InfiniteData<{ data: IChirp[]; meta?: { nextPage: string } }>,
+  chirpId: string,
+  delta: number,
+) => {
+  if ('pages' in chirpsData) {
+    return {
+      ...chirpsData,
+      pages: chirpsData.pages.map((page) => ({
+        ...page,
+        data: page.data.map((chirp) => {
+          if (chirpId === chirp._id) {
+            return {
+              ...chirp,
+              metrics: {
+                ...chirp.metrics,
+                likeCount: chirp.metrics.likeCount + delta,
+              },
+            };
+          }
+
+          return chirp;
+        }),
+      })),
+    };
+  }
+
+  return {
+    ...chirpsData,
+    metrics: {
+      ...chirpsData.metrics,
+      likeCount: chirpsData.metrics.likeCount + delta,
+    },
+  };
+};
+
+const incrementLikedChirpMetrics = (
+  chirpsData:
+    | IChirp
+    | InfiniteData<{ data: IChirp[]; meta?: { nextPage: string } }>,
+  likedChirpId: string,
+) => changeQueryDataLikes(chirpsData, likedChirpId, 1);
+
+const decrementLikedChirpMetrics = (
+  chirpsData:
+    | IChirp
+    | InfiniteData<{ data: IChirp[]; meta?: { nextPage: string } }>,
+  likedChirpId: string,
+) => changeQueryDataLikes(chirpsData, likedChirpId, -1);
+
+const useLikeChirp = (queryKeys: string[], page: number) => {
   const queryClient = useQueryClient();
   const SERVER_ERROR = 'There was an error contacting the server';
+  const chirpsQueryKeys = ['chirps', ...queryKeys];
+  const likedChirpIdsQueryKeys = ['likedChirpIds', ...queryKeys, `${page}`];
 
   const { mutate: likeChirp } = useMutation(
     (likedChirpId: string) => ChirpService.likeChirp(likedChirpId),
     {
       onMutate: (likedChirpId: string) => {
-        queryClient.cancelQueries(['chirps', ...queryKeys]);
-        queryClient.cancelQueries(['likedChirpIds', ...queryKeys]);
+        queryClient.cancelQueries(chirpsQueryKeys);
+        queryClient.cancelQueries(likedChirpIdsQueryKeys);
 
-        const chirpsSnapshot = queryClient.getQueryData<IChirp | IChirp[]>([
-          'chirps',
-          ...queryKeys,
-        ]);
+        const chirpsSnapshot = queryClient.getQueryData<
+          IChirp | InfiniteData<{ data: IChirp[]; meta?: { nextPage: string } }>
+        >(chirpsQueryKeys);
 
         if (chirpsSnapshot) {
           queryClient.setQueryData(
-            ['chirps', ...queryKeys],
-            Array.isArray(chirpsSnapshot)
-              ? chirpsSnapshot.map((chirp) =>
-                  chirp._id === likedChirpId
-                    ? {
-                        ...chirp,
-                        metrics: {
-                          ...chirp.metrics,
-                          likeCount: chirp.metrics.likeCount + 1,
-                        },
-                      }
-                    : chirp,
-                )
-              : {
-                  ...chirpsSnapshot,
-                  metrics: {
-                    ...chirpsSnapshot.metrics,
-                    likeCount: chirpsSnapshot.metrics.likeCount + 1,
-                  },
-                },
+            chirpsQueryKeys,
+            incrementLikedChirpMetrics(chirpsSnapshot, likedChirpId),
           );
         }
 
-        const likedChirpIdsSnapshot = queryClient.getQueryData<string[]>([
-          'likedChirpIds',
-          ...queryKeys,
-        ]);
+        const likedChirpIdsSnapshot = queryClient.getQueryData<string[]>(
+          likedChirpIdsQueryKeys,
+        );
 
         if (likedChirpIdsSnapshot) {
-          queryClient.setQueryData(
-            ['likedChirpIds', ...queryKeys],
-            [...likedChirpIdsSnapshot, likedChirpId],
-          );
+          queryClient.setQueryData(likedChirpIdsQueryKeys, [
+            ...likedChirpIdsSnapshot,
+            likedChirpId,
+          ]);
         }
 
         return { chirpsSnapshot, likedChirpIdsSnapshot };
@@ -69,22 +107,19 @@ const useLikeChirp = (queryKeys: string[]) => {
         console.log(title);
 
         if (context?.chirpsSnapshot) {
-          queryClient.setQueryData(
-            ['chirps', ...queryKeys],
-            context.chirpsSnapshot,
-          );
+          queryClient.setQueryData(chirpsQueryKeys, context.chirpsSnapshot);
         }
 
         if (context?.likedChirpIdsSnapshot) {
           queryClient.setQueryData(
-            ['likedChirpIds', ...queryKeys],
+            likedChirpIdsQueryKeys,
             context.likedChirpIdsSnapshot,
           );
         }
       },
       onSettled: () => {
-        queryClient.invalidateQueries(['chirps', ...queryKeys]);
-        queryClient.invalidateQueries(['likedChirpIds', ...queryKeys]);
+        queryClient.invalidateQueries(chirpsQueryKeys);
+        queryClient.invalidateQueries(likedChirpIdsQueryKeys);
       },
     },
   );
@@ -93,47 +128,27 @@ const useLikeChirp = (queryKeys: string[]) => {
     (unlikedChirpId: string) => ChirpService.unlikeChirp(unlikedChirpId),
     {
       onMutate: (unlikedChirpId: string) => {
-        queryClient.cancelQueries(['chirps', ...queryKeys]);
-        queryClient.cancelQueries(['likedChirpIds', ...queryKeys]);
+        queryClient.cancelQueries(chirpsQueryKeys);
+        queryClient.cancelQueries(likedChirpIdsQueryKeys);
 
-        const chirpsSnapshot = queryClient.getQueryData<IChirp | IChirp[]>([
-          'chirps',
-          ...queryKeys,
-        ]);
+        const chirpsSnapshot = queryClient.getQueryData<
+          IChirp | InfiniteData<{ data: IChirp[]; meta?: { nextPage: string } }>
+        >(chirpsQueryKeys);
 
         if (chirpsSnapshot) {
           queryClient.setQueryData(
-            ['chirps', ...queryKeys],
-            Array.isArray(chirpsSnapshot)
-              ? chirpsSnapshot.map((chirp) =>
-                  chirp._id === unlikedChirpId
-                    ? {
-                        ...chirp,
-                        metrics: {
-                          ...chirp.metrics,
-                          likeCount: chirp.metrics.likeCount - 1,
-                        },
-                      }
-                    : chirp,
-                )
-              : {
-                  ...chirpsSnapshot,
-                  metrics: {
-                    ...chirpsSnapshot.metrics,
-                    likeCount: chirpsSnapshot.metrics.likeCount - 1,
-                  },
-                },
+            chirpsQueryKeys,
+            decrementLikedChirpMetrics(chirpsSnapshot, unlikedChirpId),
           );
         }
 
-        const likedChirpIdsSnapshot = queryClient.getQueryData<string[]>([
-          'likedChirpIds',
-          ...queryKeys,
-        ]);
+        const likedChirpIdsSnapshot = queryClient.getQueryData<string[]>(
+          likedChirpIdsQueryKeys,
+        );
 
         if (likedChirpIdsSnapshot) {
           queryClient.setQueryData(
-            ['likedChirpIds', ...queryKeys],
+            likedChirpIdsQueryKeys,
             likedChirpIdsSnapshot.filter((id) => id !== unlikedChirpId),
           );
         }
@@ -151,22 +166,19 @@ const useLikeChirp = (queryKeys: string[]) => {
         console.log(title);
 
         if (context?.chirpsSnapshot) {
-          queryClient.setQueryData(
-            ['chirps', ...queryKeys],
-            context.chirpsSnapshot,
-          );
+          queryClient.setQueryData(chirpsQueryKeys, context.chirpsSnapshot);
         }
 
         if (context?.likedChirpIdsSnapshot) {
           queryClient.setQueryData(
-            ['likedChirpIds', ...queryKeys],
+            likedChirpIdsQueryKeys,
             context.likedChirpIdsSnapshot,
           );
         }
       },
       onSettled: () => {
-        queryClient.invalidateQueries(['chirps', ...queryKeys]);
-        queryClient.invalidateQueries(['likedChirpIds', ...queryKeys]);
+        queryClient.invalidateQueries(chirpsQueryKeys);
+        queryClient.invalidateQueries(likedChirpIdsQueryKeys);
       },
     },
   );
