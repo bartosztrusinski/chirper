@@ -20,8 +20,12 @@ const UserLikedChirps = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteQuery(['chirps', ...queryKeys], () =>
-    ChirpService.getManyLikedByUser(username),
+  } = useInfiniteQuery(
+    ['chirps', ...queryKeys],
+    ({ pageParam }) => ChirpService.getManyLikedByUser(username, pageParam),
+    {
+      getNextPageParam: (lastPage) => lastPage.meta?.nextPage,
+    },
   );
 
   const intersectionObserver = useRef<IntersectionObserver>();

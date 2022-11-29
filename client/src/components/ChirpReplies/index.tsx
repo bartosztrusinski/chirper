@@ -1,32 +1,88 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useCallback, useRef } from 'react';
 import ChirpService from '../../api/services/Chirp';
+import useUser from '../../hooks/useUser';
 import IChirp from '../../interfaces/Chirp';
-import ChirpList from '../ChirpList';
+import AuthenticatedChirpList from '../AuthenticatedChirpList';
+import UnauthenticatedChirpList from '../UnauthenticatedChirpList';
 
 interface ChirpRepliesProps {
   chirp: IChirp;
 }
 
 const ChirpReplies = ({ chirp }: ChirpRepliesProps) => {
+  const { user } = useUser();
   const queryKeys = [chirp._id, 'replies'];
 
   const {
-    data: replies,
+    data,
     isLoading,
     isError,
-  } = useQuery(['chirps', ...queryKeys], () =>
-    ChirpService.getMany(chirp.replies),
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery(
+    ['chirps', ...queryKeys],
+    ({ pageParam }) => ChirpService.getReplies(chirp._id, pageParam),
+    {
+      getNextPageParam: (lastPage) => lastPage.meta?.nextPage,
+    },
+  );
+
+  const intersectionObserver = useRef<IntersectionObserver>();
+
+  const lastChirpRef = useCallback(
+    (chirp: HTMLElement | null) => {
+      if (isFetchingNextPage) return;
+
+      if (intersectionObserver.current) {
+        intersectionObserver.current.disconnect();
+      }
+
+      intersectionObserver.current = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting && hasNextPage) {
+          fetchNextPage();
+        }
+      });
+
+      if (chirp) {
+        intersectionObserver.current.observe(chirp);
+      }
+    },
+    [fetchNextPage, hasNextPage, isFetchingNextPage],
   );
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <div>Loading...</div>;
   }
 
   if (isError) {
-    return <p>Error: Oops, something went wrong...</p>;
+    return <div>Oops something went wrong...</div>;
   }
 
-  return <ChirpList chirps={replies} queryKeys={queryKeys} />;
+  return (
+    <>
+      {data.pages.map((page, index) => {
+        const isLastPage = index === data.pages.length - 1;
+
+        return user ? (
+          <AuthenticatedChirpList
+            ref={isLastPage ? lastChirpRef : null}
+            key={index}
+            chirps={page.data}
+            queryKeys={queryKeys}
+            page={index}
+          />
+        ) : (
+          <UnauthenticatedChirpList
+            ref={isLastPage ? lastChirpRef : null}
+            key={index}
+            chirps={page.data}
+          />
+        );
+      })}
+    </>
+  );
 };
 
 export default ChirpReplies;
