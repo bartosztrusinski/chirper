@@ -4,29 +4,36 @@ import useFollowedUsernames from '../../hooks/useFollowedUsernames';
 import useUser from '../../hooks/useUser';
 import useFollowUser from '../../hooks/useFollowUser';
 import ConfirmModal from '../ConfirmModal';
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 
 interface UserListProps {
   users: IUser[];
   queryKeys: string[];
+  page: number;
 }
 
-const UserList = ({ users, queryKeys }: UserListProps) => {
+type LastUserRef = HTMLDivElement | null;
+
+const UserList = forwardRef<LastUserRef, UserListProps>(function UserList(
+  { users, queryKeys, page },
+  ref,
+) {
   const { user: currentUser } = useUser() as { user: StoredUser };
-  const { followUser, unfollowUser } = useFollowUser(queryKeys);
+  const { followUser, unfollowUser } = useFollowUser(queryKeys, page);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
   const [selectedUsername, setSelectedUsername] = useState<string>('');
   const {
     data: followedUsernames,
     isError,
     isLoading,
+    isSuccess,
   } = useFollowedUsernames(
-    queryKeys,
+    [...queryKeys, `${page}`],
     currentUser.username,
     users.map((user) => user._id),
   );
 
-  if (isLoading) {
+  if (isLoading && users.length) {
     return <div>Loading...</div>;
   }
 
@@ -34,12 +41,8 @@ const UserList = ({ users, queryKeys }: UserListProps) => {
     return <div>Oops something went wrong</div>;
   }
 
-  if (!users.length) {
-    return <p>No users found</p>;
-  }
-
   const isUserFollowed = (username: string) =>
-    followedUsernames.includes(username);
+    isSuccess && followedUsernames.includes(username);
 
   const handleFollow = (username: string) => {
     if (isUserFollowed(username)) {
@@ -52,14 +55,19 @@ const UserList = ({ users, queryKeys }: UserListProps) => {
 
   return (
     <>
-      {users.map((user) => (
-        <User
-          key={user._id}
-          user={user}
-          isFollowed={isUserFollowed(user.username)}
-          onFollow={handleFollow}
-        />
-      ))}
+      {users.map((user, index) => {
+        const isLastUser = index === users.length - 1;
+
+        return (
+          <User
+            ref={isLastUser ? ref : null}
+            key={user._id}
+            user={user}
+            isFollowed={isUserFollowed(user.username)}
+            onFollow={handleFollow}
+          />
+        );
+      })}
       <ConfirmModal
         isOpen={isConfirmModalOpen}
         onRequestClose={() => setIsConfirmModalOpen(false)}
@@ -73,6 +81,6 @@ const UserList = ({ users, queryKeys }: UserListProps) => {
       />
     </>
   );
-};
+});
 
 export default UserList;
