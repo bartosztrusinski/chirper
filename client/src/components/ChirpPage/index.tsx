@@ -16,6 +16,7 @@ import useLikedChirpIds from '../../hooks/useLikedChirpIds';
 import useUser from '../../hooks/useUser';
 import useLikeChirp from '../../hooks/useLikeChirp';
 import ComposeChirpModal from '../ComposeChirpModal';
+import LikesModal from '../LikesModal';
 
 const ChirpPage = () => {
   const {
@@ -25,10 +26,11 @@ const ChirpPage = () => {
   const { user } = useUser();
   const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys);
 
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState<string>('');
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
-  const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
+  const [isReplyModalOpen, setIsReplyModalOpen] = useState<boolean>(false);
+  const [isLikesModalOpen, setIsLikesModalOpen] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target?.value;
@@ -41,80 +43,86 @@ const ChirpPage = () => {
     data: chirp,
     isLoading,
     isError,
-    error,
   } = useQuery(['chirps', ...queryKeys], () => ChirpService.getOne(id));
 
-  const { data: likedChirpIds, isSuccess } = useLikedChirpIds(
-    queryKeys,
-    user!.username,
-    [id],
-  );
+  const {
+    data: likedChirpIds,
+    isSuccess,
+    isLoading: isLikedLoading,
+  } = useLikedChirpIds(queryKeys, user!.username, [id]);
 
   const isLiked = isSuccess && likedChirpIds.includes(id);
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <div>Loading...</div>;
   }
 
   if (isError) {
-    return <p>Error: {(error as Error).message}</p>;
+    return <div>Oops something went wrong...</div>;
   }
-
-  const { content, author, createdAt, replies, metrics } = chirp;
-  const { username, profile } = author;
-  const avatar = profile.picture ?? defaultAvatar;
-  const { formattedTime, formattedDate } = utils.formatTime(createdAt);
 
   return (
     <>
       <section className={styles.section}>
         <h2 className='visually-hidden'>Conversation</h2>
+
         <div className={styles.navigation} onClick={() => history.back()}>
           <FaArrowLeft />
           Back
         </div>
+
         <article className={styles.chirp}>
           <div className={styles.author}>
-            <Link to={`/users/${username}`}>
+            <Link to={`/users/${chirp.author.username}`}>
               <img
-                src={avatar}
-                alt={`${username}'s  avatar`}
+                src={chirp.author.profile.picture ?? defaultAvatar}
+                alt={`${chirp.author.username}'s  avatar`}
                 className={styles.avatar}
               />
             </Link>
             <div className={styles.usernames}>
-              <Link to={`/users/${username}`} className={styles.name}>
-                {profile.name}
+              <Link
+                to={`/users/${chirp.author.username}`}
+                className={styles.name}
+              >
+                {chirp.author.profile.name}
               </Link>
-              <Link to={`/users/${username}`} className={styles.username}>
-                @{username}
+              <Link
+                to={`/users/${chirp.author.username}`}
+                className={styles.username}
+              >
+                @{chirp.author.username}
               </Link>
             </div>
           </div>
-          <p className={styles.content}>{content}</p>
+          <p className={styles.content}>{chirp.content}</p>
           <div className={styles.meta}>
             <div className={styles.metrics}>
-              {replies.length > 0 && (
+              {chirp.replies.length > 0 && (
                 <div>
                   <span className={styles.count}>
-                    {utils.formatCount(replies.length)}
+                    {utils.formatCount(chirp.replies.length)}
                   </span>
                   Replies
                 </div>
               )}
-              {metrics.likeCount > 0 && (
-                <button type='button' className={styles.showLikesButton}>
+              {chirp.metrics.likeCount > 0 && (
+                <button
+                  type='button'
+                  className={styles.showLikesButton}
+                  onClick={() => setIsLikesModalOpen(true)}
+                >
                   <span className={styles.count}>
-                    {utils.formatCount(metrics.likeCount)}
+                    {utils.formatCount(chirp.metrics.likeCount)}
                   </span>
-                  {metrics.likeCount > 1 ? 'Likes' : 'Like'}
+                  {chirp.metrics.likeCount > 1 ? 'Likes' : 'Like'}
                 </button>
               )}
             </div>
             <div className={styles.date}>
-              <span>{formattedTime}</span>
+              <span>{utils.formatTime(chirp.createdAt).formattedTime}</span>
               <span>·</span>
-              <span>{formattedDate}</span>
+              <span>{utils.formatTime(chirp.createdAt).formattedDate}</span>
             </div>
           </div>
           <div className={styles.buttonPanel}>
@@ -127,12 +135,13 @@ const ChirpPage = () => {
             </button>
 
             <button
+              disabled={isLikedLoading}
               type='button'
               className={`${styles.button} ${styles.like} ${
                 isLiked ? styles.liked : ''
               }`}
               onClick={() => {
-                isLiked ? unlikeChirp(chirp._id) : likeChirp(chirp._id);
+                isLiked ? unlikeChirp(chirp) : likeChirp(chirp);
               }}
             >
               <FaRegHeart className={styles.icon} />
@@ -147,10 +156,10 @@ const ChirpPage = () => {
             onClick={() => textAreaRef.current?.focus()}
           >
             <div>
-              <Link to={`/users/${username}`}>
+              <Link to={`/users/${chirp.author.username}`}>
                 <img
-                  src={avatar}
-                  alt={`${username}'s  avatar`}
+                  src={chirp.author.profile.picture ?? defaultAvatar}
+                  alt={`${chirp.author.username}'s  avatar`}
                   className={styles.avatar}
                 />
               </Link>
@@ -170,6 +179,7 @@ const ChirpPage = () => {
             </form>
           </div>
         </article>
+
         <ChirpReplies chirp={chirp} />
       </section>
 
@@ -180,6 +190,12 @@ const ChirpPage = () => {
           console.log(isReplyModalOpen);
           setIsReplyModalOpen(false);
         }}
+      />
+
+      <LikesModal
+        isOpen={isLikesModalOpen}
+        onRequestClose={() => setIsLikesModalOpen(false)}
+        chirpId={chirp._id}
       />
     </>
   );
