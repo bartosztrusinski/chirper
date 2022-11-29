@@ -33,6 +33,12 @@ router.get(
 );
 
 router.get(
+  '/chirps/:chirpId/replies',
+  [validateRequest(chirpSchemas.getReplies)],
+  chirpControllers.getReplies
+);
+
+router.get(
   '/users/:username/chirps',
   [validateRequest(chirpSchemas.findManyByUser)],
   chirpControllers.findManyByUser

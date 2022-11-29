@@ -117,6 +117,17 @@ const searchMany = object({
   }),
 });
 
+const getReplies = object({
+  params: chirpIdObject,
+  query: object({
+    chirpFields,
+    userFields,
+    expandAuthor,
+    limit,
+    sinceId,
+  }),
+});
+
 const getUserTimeline = object({
   params: usernameObject,
   query: object({
@@ -173,6 +184,7 @@ export {
   findMany,
   findOne,
   searchMany,
+  getReplies,
   sortOrder,
   deleteOne,
   createOne,

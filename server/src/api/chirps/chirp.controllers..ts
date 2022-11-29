@@ -17,6 +17,8 @@ const findMany = async (
   const { sinceId, ids, userFields, chirpFields, expandAuthor, limit } =
     req.query;
 
+  res.status(400);
+
   const filter: FilterQuery<Chirp> = {};
   if (sinceId) filter._id = { $lt: sinceId };
   if (ids) filter._id = ids;
@@ -117,6 +119,42 @@ const searchMany = async (
   const nextPage = foundChirps.length ? page + 1 : undefined;
 
   res.status(200).json(createSuccessResponse(foundChirps, { nextPage }));
+};
+
+const getReplies = async (
+  req: Request<
+    ChirpControllers.GetReplies['params'],
+    SuccessResponse,
+    {},
+    ChirpControllers.GetReplies['query']
+  >,
+  res: Response<SuccessResponse>
+) => {
+  const { chirpId } = req.params;
+  const { sinceId, userFields, chirpFields, expandAuthor, limit } = req.query;
+
+  res.status(400);
+
+  const filter: FilterQuery<Chirp> = {
+    kind: 'reply',
+    parent: chirpId,
+  };
+  if (sinceId) filter._id = { $lt: sinceId };
+
+  const foundReplies = await chirpService.findMany(
+    filter,
+    expandAuthor ? chirpFields + 'author' : chirpFields,
+    expandAuthor ? [{ path: 'author', select: userFields }] : [],
+    { _id: -1 },
+    limit
+  );
+
+  const nextPage =
+    foundReplies.length === limit
+      ? foundReplies[foundReplies.length - 1]._id
+      : undefined;
+
+  res.status(200).json(createSuccessResponse(foundReplies, { nextPage }));
 };
 
 const getUserTimeline = async (
@@ -275,6 +313,7 @@ export {
   findMany,
   findOne,
   searchMany,
+  getReplies,
   findManyByUser,
   findManyLiked,
   getUserTimeline,
