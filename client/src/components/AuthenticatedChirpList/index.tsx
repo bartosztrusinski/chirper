@@ -28,27 +28,21 @@ const AuthenticatedChirpList = forwardRef<
     data: likedChirpIds,
     isError,
     isLoading,
+    isSuccess,
   } = useLikedChirpIds(
     [...queryKeys, `${page}`],
     user.username,
     chirps.map((chirp) => chirp._id),
   );
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const isChirpLiked = (chirp: IChirp) =>
+    isSuccess && likedChirpIds.includes(chirp._id);
 
-  if (isError) {
-    return <div>Oops something went wrong...</div>;
-  }
-
-  const isChirpLiked = (chirpId: string) => likedChirpIds.includes(chirpId);
-
-  const handleLike = (chirpId: string) => {
-    if (isChirpLiked(chirpId)) {
-      unlikeChirp(chirpId);
+  const handleLike = (chirp: IChirp) => {
+    if (isChirpLiked(chirp)) {
+      unlikeChirp(chirp);
     } else {
-      likeChirp(chirpId);
+      likeChirp(chirp);
     }
   };
 
@@ -56,6 +50,14 @@ const AuthenticatedChirpList = forwardRef<
     setChirpToReplyTo(chirp);
     setIsReplyModalOpen(true);
   };
+
+  if (isLoading && chirps.length) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Oops something went wrong...</div>;
+  }
 
   return (
     <>
@@ -67,8 +69,8 @@ const AuthenticatedChirpList = forwardRef<
             ref={isLastChirp ? ref : null}
             key={chirp._id}
             chirp={chirp}
-            isLiked={isChirpLiked(chirp._id)}
-            onLike={() => handleLike(chirp._id)}
+            isLiked={isChirpLiked(chirp)}
+            onLike={() => handleLike(chirp)}
             onReply={() => handleReply(chirp)}
           />
         );
