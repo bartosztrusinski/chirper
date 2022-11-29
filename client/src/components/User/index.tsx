@@ -4,20 +4,27 @@ import defaultAvatar from '../../assets/images/default_avatar.png';
 import styles from './styles.module.scss';
 import { Link, useNavigate } from '@tanstack/react-location';
 import useUser from '../../hooks/useUser';
+import { forwardRef } from 'react';
 
-interface Props {
+interface UserProps {
   user: User;
   isFollowed: boolean;
   onFollow: (username: string) => void;
 }
 
-const User = ({ user, isFollowed, onFollow }: Props) => {
+type Ref = HTMLDivElement | null;
+
+const User = forwardRef<Ref, UserProps>(function User(
+  { user, isFollowed, onFollow },
+  ref,
+) {
   const { user: currentUser } = useUser();
   const navigate = useNavigate();
   const isCurrentUser = currentUser?.username === user.username;
 
   return (
     <div
+      ref={ref}
       className={styles.userContainer}
       onClick={() => navigate({ to: `/users/${user.username}` })}
     >
@@ -56,6 +63,6 @@ const User = ({ user, isFollowed, onFollow }: Props) => {
       </div>
     </div>
   );
-};
+});
 
 export default User;
