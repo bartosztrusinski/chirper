@@ -6,8 +6,12 @@ const useLikedChirpIds = (
   username: string,
   chirpIds: string[],
 ) =>
-  useQuery(['likedChirpIds', ...queryKeys], () =>
-    ChirpService.getLikedChirpIds(username, chirpIds),
+  useQuery(
+    ['likedChirpIds', ...queryKeys],
+    () => ChirpService.getLikedChirpIds(username, chirpIds),
+    {
+      enabled: !!chirpIds.length,
+    },
   );
 
 export default useLikedChirpIds;

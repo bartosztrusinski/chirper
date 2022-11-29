@@ -6,8 +6,12 @@ const useFollowedUsernames = (
   username: string,
   userIds: string[],
 ) =>
-  useQuery(['followedUsernames', ...queryKeys], () =>
-    UserService.getFollowedUserIds(username, userIds),
+  useQuery(
+    ['followedUsernames', ...queryKeys],
+    () => UserService.getFollowedUsernames(username, userIds),
+    {
+      enabled: !!userIds.length,
+    },
   );
 
 export default useFollowedUsernames;
