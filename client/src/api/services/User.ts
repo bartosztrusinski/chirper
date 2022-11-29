@@ -1,6 +1,13 @@
 import { privateClient, publicClient } from '../client';
 import { Token, User } from '../../interfaces/User';
 
+interface UsersResponse {
+  data: User[];
+  meta?: {
+    nextPage?: string;
+  };
+}
+
 const getOne = async (username: string) => {
   const params = {
     userFields: 'username, profile, metrics, createdAt',
@@ -14,45 +21,48 @@ const getOne = async (username: string) => {
   return data.data;
 };
 
-const getManyLiking = async (id: string) => {
+const getManyLiking = async (chirpId: string, sinceId?: string) => {
   const params = {
     userFields: 'username, profile',
+    sinceId,
   };
 
-  const { data } = await publicClient.get<{ data: User[] }>(
-    `/chirps/${id}/liking-users`,
+  const { data } = await publicClient.get<UsersResponse>(
+    `/chirps/${chirpId}/liking-users`,
     { params },
   );
 
-  return data.data;
+  return data;
 };
 
-const getManyFollowed = async (username: string) => {
+const getManyFollowed = async (username: string, sinceId?: string) => {
   const params = {
     userFields: 'username, profile',
+    sinceId,
   };
 
-  const { data } = await publicClient.get<{ data: User[] }>(
+  const { data } = await publicClient.get<UsersResponse>(
     `/users/${username}/followed`,
     {
       params,
     },
   );
 
-  return data.data;
+  return data;
 };
 
-const getManyFollowing = async (username: string) => {
+const getManyFollowing = async (username: string, sinceId?: string) => {
   const params = {
     userFields: 'username, profile',
+    sinceId,
   };
 
-  const { data } = await publicClient.get<{ data: User[] }>(
+  const { data } = await publicClient.get<UsersResponse>(
     `/users/${username}/following`,
     { params },
   );
 
-  return data.data;
+  return data;
 };
 
 const getCurrentOne = async (
@@ -84,7 +94,7 @@ const getFollowedUsernames = async (
     userIds,
   };
 
-  const { data } = await publicClient.get<{ data: User[] }>(
+  const { data } = await publicClient.get<UsersResponse>(
     `/users/${username}/followed`,
     { params },
   );
