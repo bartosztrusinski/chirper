@@ -18,6 +18,7 @@
     "format": "npm run prettier-fix && npm run lint-fix"
   },
   "dependencies": {
+    "@hookform/resolvers": "^2.9.10",
     "@react-icons/all-files": "^4.1.0",
     "@tanstack/react-location": "^3.7.4",
     "@tanstack/react-query": "^4.12.0",
@@ -26,7 +27,9 @@
     "core-js": "^3.25.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-modal": "^3.16.1"
+    "react-hook-form": "^7.40.0",
+    "react-modal": "^3.16.1",
+    "zod": "^3.19.1"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
