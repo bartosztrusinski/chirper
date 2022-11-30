@@ -1,168 +1,103 @@
-import { FormEvent, useState } from 'react';
-import useMultiStepForm from '../../hooks/useMultiStepForm';
-import Button from '../Button';
-import { FaArrowLeft } from '@react-icons/all-files/fa/FaArrowLeft';
-import styles from './styles.module.scss';
-import Input from '../Input';
-import { Link } from '@tanstack/react-location';
-import PasswordInput from '../PasswordInput';
+import { createContext, useState } from 'react';
+import useMultiStep from '../../hooks/useMultiStep';
 import Modal from '../Modal';
+import ReactModal from 'react-modal';
+import Step1 from './Step1';
+import Step2 from './Step2';
+import Step3 from './Step3';
+import Step4 from './Step4';
 
-interface Props {
-  open: boolean;
-  onClose: () => void;
+type RegisterFormProps = ReactModal.Props;
+
+export const MultiStepContext = createContext<{
+  currentStepIndex: number;
+  step: React.ReactNode;
+  steps: React.ReactNode[];
+  isFirstStep: boolean;
+  isLastStep: boolean;
+  next: () => void;
+  back: () => void;
+} | null>(null);
+
+export interface FormData {
+  email: string;
+  name: string;
+  verificationCode: string;
+  generatedVerificationCode: string;
+  password: string;
+  passwordConfirm: string;
+  username: string;
 }
 
-const RegisterForm = ({ onClose, open }: Props) => {
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
+const RegisterForm = ({ isOpen, onRequestClose }: RegisterFormProps) => {
+  const [formData, setFormData] = useState<FormData>({
+    email: '',
+    name: '',
+    generatedVerificationCode: (
+      Math.floor(Math.random() * 900000) + 100000
+    ).toString(),
+    verificationCode: '',
+    password: '',
+    passwordConfirm: '',
+    username: '',
+  });
 
-  const [generatedCode] = useState(Math.floor(Math.random() * 90000) + 10000);
-  const [verificationCode, setVerificationCode] = useState('');
+  const clearFormData = () => {
+    setFormData({
+      email: '',
+      name: '',
+      verificationCode: '',
+      generatedVerificationCode: '',
+      password: '',
+      passwordConfirm: '',
+      username: '',
+    });
+  };
 
-  const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
-
-  const [username, setUsername] = useState('');
-
-  const emailForm = (
-    <>
-      <div className={styles.heading}>Create your account</div>
-      <Input
-        placeholder='Email'
-        type='email'
-        autoFocus
-        required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <Input
-        required
-        placeholder='Name'
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-    </>
-  );
-
-  const verifyForm = (
-    <>
-      <div>
-        <div className={styles.heading}>We sent you a code</div>
-        <div className={styles.description}>
-          Enter it below to verify {email}
-        </div>
-      </div>
-      <Input
-        placeholder='Verification code'
-        autoFocus
-        required
-        value={verificationCode}
-        onChange={(e) => setVerificationCode(e.target.value)}
-      />
-    </>
-  );
-
-  const passwordForm = (
-    <>
-      <div className={styles.heading}>You&apos;ll need a password</div>
-      <PasswordInput
-        autoFocus
-        required
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <PasswordInput
-        placeholder='Confirm password'
-        required
-        value={passwordConfirm}
-        onChange={(e) => setPasswordConfirm(e.target.value)}
-      />
-      <div className={styles.description}>
-        Password must be at least 8 characters long and contain:
-        <ul style={{ listStylePosition: 'inside' }}>
-          <li>uppercase letter</li>
-          <li>lowercase letter</li>
-          <li>number</li>
-        </ul>
-      </div>
-    </>
-  );
-
-  const usernameForm = (
-    <>
-      <div className={styles.heading}>What should we call you?</div>
-      <div className={styles.description}>
-        Your @username is unique. You can always change it later
-      </div>
-      <Input
-        placeholder='Username'
-        required
-        autoFocus
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-    </>
-  );
-
-  const { currentStepIndex, step, steps, isFirstStep, isLastStep, next, back } =
-    useMultiStepForm([emailForm, verifyForm, passwordForm, usernameForm]);
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (isFirstStep) {
-      // send verification code
-      console.log(generatedCode);
-    }
-
-    if (currentStepIndex === 1) {
-      // verify code
-      if (verificationCode !== generatedCode.toString()) {
-        console.log('Incorrect code');
-        return;
-      }
-    }
+  const handleSubmit = (data: Partial<FormData>) => {
+    setFormData((prev) => ({ ...prev, ...data }));
 
     if (isLastStep) {
-      console.log('submitting form');
+      console.table(formData);
+      // registerUser(formValues);
+      //navigate({to: `/users/${formValues.username}`});
+      //clearFormData();
     }
 
     next();
   };
 
+  const { currentStepIndex, step, steps, isFirstStep, isLastStep, next, back } =
+    useMultiStep([
+      <Step1 key={1} data={formData} onSubmit={handleSubmit} />,
+      <Step2 key={2} data={formData} onSubmit={handleSubmit} />,
+      <Step3 key={3} data={formData} onSubmit={handleSubmit} />,
+      <Step4 key={4} data={formData} onSubmit={handleSubmit} />,
+      //<Navigate key={5} to={`/users/${formValues.username}`} />,
+    ]);
+
   return (
     <Modal
-      open={open}
-      onClose={onClose}
-      closeOnCancel={isFirstStep}
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      onAfterClose={clearFormData}
+      shouldCloseOnEsc={isFirstStep}
+      shouldCloseOnOverlayClick={isFirstStep}
       hasCloseButton={isFirstStep}
     >
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.stepContainer}>
-          <div className={styles.stepIndexPanel}>
-            {!isFirstStep && (
-              <button
-                type='button'
-                onClick={back}
-                className={styles.backButton}
-              >
-                <FaArrowLeft />
-              </button>
-            )}
-            Step {currentStepIndex + 1} of {steps.length}
-          </div>
-          {step}
-        </div>
-        <Button type='submit' className={styles.submitButton}>
-          {isLastStep ? 'Create Account' : 'Next'}
-        </Button>
-        {isFirstStep && (
-          <div className={styles.logInLink}>
-            Have an account already? <Link to='/'>Log In</Link>
-          </div>
-        )}
-      </form>
+      <MultiStepContext.Provider
+        value={{
+          currentStepIndex,
+          step,
+          steps,
+          isFirstStep,
+          isLastStep,
+          next,
+          back,
+        }}
+      >
+        {step}
+      </MultiStepContext.Provider>
     </Modal>
   );
 };
