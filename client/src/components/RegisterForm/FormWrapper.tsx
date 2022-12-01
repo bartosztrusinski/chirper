@@ -5,13 +5,17 @@ import Button from '../Button';
 import { Link } from '@tanstack/react-location';
 import { MultiStepContext } from '.';
 
-interface FormProps extends ComponentPropsWithoutRef<'form'> {
+interface FormWrapperProps extends ComponentPropsWithoutRef<'form'> {
   isInvalid?: boolean;
 }
 
-const Form = ({ children, isInvalid = false, ...restProps }: FormProps) => {
+const FormWrapper = ({
+  children,
+  isInvalid = false,
+  ...restProps
+}: FormWrapperProps) => {
   const context = useContext(MultiStepContext);
-  const { back, currentStepIndex, isFirstStep, isLastStep, steps } = context!;
+  const { back, currentStepIndex, isFirstStep, isLastStep, steps } = context;
 
   return (
     <form {...restProps} className={styles.form}>
@@ -35,11 +39,11 @@ const Form = ({ children, isInvalid = false, ...restProps }: FormProps) => {
       </Button>
       {isFirstStep && (
         <div className={styles.logInLink}>
-          Have an account already? <Link to='.?login=true'>Log In</Link>
+          Have an account already? <Link to='?login=true'>Log In</Link>
         </div>
       )}
     </form>
   );
 };
 
-export default Form;
+export default FormWrapper;
