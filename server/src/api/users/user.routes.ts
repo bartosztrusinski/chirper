@@ -12,6 +12,7 @@ const router = Router();
 
 router
   .route('/users')
+  .head([validateRequest(userSchemas.exists)], userControllers.exists)
   .get([validateRequest(userSchemas.findMany)], userControllers.findMany)
   .post([validateRequest(userSchemas.signUp)], userControllers.signUp);
 

@@ -40,6 +40,28 @@ const findOne = async (
   res.status(200).json(createSuccessResponse(foundUser));
 };
 
+const exists = async (
+  req: Request<{}, SuccessResponse, {}, UserControllers.Exists['query']>,
+  res: Response<SuccessResponse>
+) => {
+  const { username, email } = req.query;
+  const id = username ?? email;
+
+  res.status(400);
+
+  if (!id) {
+    throw new Error('Please provide a username or email');
+  }
+
+  const userExists = await userService.exists(id);
+
+  if (!userExists) {
+    res.status(404).end();
+  }
+
+  res.status(200).end();
+};
+
 const searchMany = async (
   req: Request<{}, SuccessResponse, {}, UserControllers.SearchMany['query']>,
   res: Response<SuccessResponse>
@@ -298,6 +320,7 @@ const deleteOne = async (req: Request, res: Response<SuccessResponse>) => {
 export {
   findMany,
   findOne,
+  exists,
   findCurrentOne,
   searchMany,
   findManyFollowed,

@@ -3,6 +3,7 @@ import * as userSchemas from './user.schemas.';
 
 type FindMany = TypeOf<typeof userSchemas.findMany>;
 type FindOne = TypeOf<typeof userSchemas.findOne>;
+type Exists = TypeOf<typeof userSchemas.exists>;
 type FindCurrentOne = TypeOf<typeof userSchemas.findCurrentOne>;
 type SearchMany = TypeOf<typeof userSchemas.searchMany>;
 type FindManyLiking = TypeOf<typeof userSchemas.findManyLiking>;
@@ -19,6 +20,7 @@ type DeleteOne = TypeOf<typeof userSchemas.deleteOne>;
 export {
   FindMany,
   FindOne,
+  Exists,
   FindCurrentOne,
   SearchMany,
   FindManyLiking,

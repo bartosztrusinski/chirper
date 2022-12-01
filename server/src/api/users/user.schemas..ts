@@ -13,7 +13,6 @@ import {
   objectId,
   usernameObject,
   chirpIdObject,
-  passwordInput,
 } from '../../schemas';
 
 const username = usernameInput
@@ -30,10 +29,14 @@ const username = usernameInput
     'Username must only contain letters, numbers, and underscores'
   );
 
-const email = createInputSchema('email').regex(
+const emailInput = createInputSchema('email');
+
+const email = emailInput.regex(
   /^([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
   'Please enter a valid email address'
 );
+
+const passwordInput = createInputSchema('password');
 
 const password = passwordInput
   .min(
@@ -127,6 +130,13 @@ const findOne = object({
   query: object({ userFields }),
 });
 
+const exists = object({
+  query: object({
+    username: usernameInput.optional(),
+    email: emailInput.optional(),
+  }),
+});
+
 const findCurrentOne = object({
   currentUserId: objectId,
   query: object({ userFields }),
@@ -209,6 +219,7 @@ export {
   findOne,
   findCurrentOne,
   searchMany,
+  exists,
   findManyLiking,
   findManyFollowed,
   findManyFollowing,

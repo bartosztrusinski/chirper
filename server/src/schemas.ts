@@ -28,8 +28,6 @@ const chirpIdObject = object({
 
 const usernameInput = createInputSchema('username');
 
-const passwordInput = createInputSchema('password');
-
 const usernameObject = object({
   username: usernameInput,
 });
@@ -70,7 +68,6 @@ export {
   sinceId,
   chirpIdObject,
   usernameInput,
-  passwordInput,
   usernameObject,
   ids,
   followedOnly,

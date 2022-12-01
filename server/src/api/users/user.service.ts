@@ -48,6 +48,19 @@ const findOne = async (
   return user;
 };
 
+const exists = async (
+  id: Types.ObjectId | User['username'] | User['email']
+) => {
+  const filter =
+    id instanceof Types.ObjectId
+      ? { _id: id }
+      : { $or: [{ username: id }, { email: id }] };
+
+  const existingUser = await UserModel.exists(filter);
+
+  return Boolean(existingUser);
+};
+
 const handleDuplicate = async (
   username: User['username'],
   email: User['email']
@@ -253,6 +266,7 @@ export {
   findOne,
   createOne,
   deleteOne,
+  exists,
   handleDuplicate,
   confirmPassword,
   incrementMetrics,
