@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { privateClient, publicClient } from '../client';
 import { Token, User } from '../../interfaces/User';
 
@@ -153,12 +154,40 @@ const deleteCurrentOne = async (password: string) => {
   await privateClient.delete('/me', { data: { password } });
 };
 
+const isEmailTaken = async (email: string) => {
+  try {
+    await publicClient.head('/users', { params: { email } });
+    return true;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return false;
+    }
+
+    throw error;
+  }
+};
+
+const isUsernameTaken = async (username: string) => {
+  try {
+    await publicClient.head('/users', { params: { username } });
+    return true;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return false;
+    }
+
+    throw error;
+  }
+};
+
 export default {
   getOne,
   getCurrentOne,
   getManyLiking,
   getManyFollowed,
   getManyFollowing,
+  isEmailTaken,
+  isUsernameTaken,
   getFollowedUsernames,
   followUser,
   unfollowUser,
