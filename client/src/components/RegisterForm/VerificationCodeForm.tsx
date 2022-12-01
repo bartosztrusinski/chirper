@@ -1,15 +1,20 @@
 import styles from './styles.module.scss';
+import FormWrapper from './FormWrapper';
 import Input from '../Input';
+import { FormData } from '.';
+import { verificationCode } from './schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { verificationCode } from './schemas';
-import Form from './Form';
-import { FormData } from '.';
 
-type Inputs = Pick<FormData, 'verificationCode' | 'generatedVerificationCode'>;
+interface VerificationCodeFormProps {
+  formData: FormData;
+  onSubmit: (data: Partial<FormData>) => void;
+}
 
-const schema = z
+type Inputs = z.infer<typeof inputsSchema>;
+
+const inputsSchema = z
   .object({
     verificationCode,
     generatedVerificationCode: z.string(),
@@ -19,38 +24,33 @@ const schema = z
     path: ['verificationCode'],
   });
 
-interface Props {
-  onSubmit: (data: Partial<FormData>) => void;
-  data: FormData;
-}
-
-const Step1 = ({ data, onSubmit }: Props) => {
+const VerificationCodeForm = ({
+  formData,
+  onSubmit,
+}: VerificationCodeFormProps) => {
   const {
     register,
     handleSubmit,
     watch,
-    getValues,
     formState: { errors },
   } = useForm<Inputs>({
     reValidateMode: 'onSubmit',
-    resolver: zodResolver(schema),
+    resolver: zodResolver(inputsSchema),
     defaultValues: {
-      verificationCode: data.verificationCode,
-      generatedVerificationCode: data.generatedVerificationCode,
+      verificationCode: formData.verificationCode,
+      generatedVerificationCode: formData.generatedVerificationCode,
     },
   });
 
   return (
-    <Form
-      onSubmit={handleSubmit(onSubmit)}
-      isInvalid={Boolean(getValues('verificationCode') === '')}
-    >
+    <FormWrapper onSubmit={handleSubmit(onSubmit)} isInvalid={false}>
       <div>
         <div className={styles.heading}>We sent you a code</div>
         <div className={styles.description}>
-          Enter it below to verify {data.email}
+          Enter it below to verify {formData.email}
         </div>
       </div>
+
       <Input
         placeholder='Verification code'
         autoFocus
@@ -59,9 +59,10 @@ const Step1 = ({ data, onSubmit }: Props) => {
       <div className={styles.description}>
         {errors.verificationCode?.message}
       </div>
+
       <div>{JSON.stringify(watch())}</div>
-    </Form>
+    </FormWrapper>
   );
 };
 
-export default Step1;
+export default VerificationCodeForm;
