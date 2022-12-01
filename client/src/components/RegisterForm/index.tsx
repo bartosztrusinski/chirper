@@ -2,24 +2,12 @@ import { createContext, useState } from 'react';
 import useMultiStep from '../../hooks/useMultiStep';
 import Modal from '../Modal';
 import ReactModal from 'react-modal';
-import Step1 from './Step1';
-import Step2 from './Step2';
-import Step3 from './Step3';
-import Step4 from './Step4';
+import EmailForm from './EmailForm';
+import VerificationCodeForm from './VerificationCodeForm';
+import PasswordForm from './PasswordForm';
+import UsernameForm from './UsernameForm';
 
-type RegisterFormProps = ReactModal.Props;
-
-export const MultiStepContext = createContext<{
-  currentStepIndex: number;
-  step: React.ReactNode;
-  steps: React.ReactNode[];
-  isFirstStep: boolean;
-  isLastStep: boolean;
-  next: () => void;
-  back: () => void;
-} | null>(null);
-
-export interface FormData {
+interface FormData {
   email: string;
   name: string;
   verificationCode: string;
@@ -29,52 +17,75 @@ export interface FormData {
   username: string;
 }
 
+type RegisterFormProps = ReactModal.Props;
+
+const MultiStepContext = createContext<{
+  currentStepIndex: number;
+  isFirstStep: boolean;
+  isLastStep: boolean;
+  step: React.ReactNode;
+  steps: React.ReactNode[];
+  next: () => void;
+  back: () => void;
+}>({
+  currentStepIndex: 0,
+  isFirstStep: false,
+  isLastStep: false,
+  step: null,
+  steps: [],
+  next: () => null,
+  back: () => null,
+});
+
+const multiStepElements = [
+  EmailForm,
+  VerificationCodeForm,
+  PasswordForm,
+  UsernameForm,
+];
+
+const getDefaultFormData = (): FormData => ({
+  email: '',
+  name: '',
+  verificationCode: '',
+  generatedVerificationCode: generateCode().toString(),
+  password: '',
+  passwordConfirm: '',
+  username: '',
+});
+
+const generateCode = () => Math.floor(Math.random() * 900000) + 100000;
+
 const RegisterForm = ({ isOpen, onRequestClose }: RegisterFormProps) => {
-  const [formData, setFormData] = useState<FormData>({
-    email: '',
-    name: '',
-    generatedVerificationCode: (
-      Math.floor(Math.random() * 900000) + 100000
-    ).toString(),
-    verificationCode: '',
-    password: '',
-    passwordConfirm: '',
-    username: '',
-  });
+  const [formData, setFormData] = useState<FormData>(getDefaultFormData());
 
   const clearFormData = () => {
-    setFormData({
-      email: '',
-      name: '',
-      verificationCode: '',
-      generatedVerificationCode: '',
-      password: '',
-      passwordConfirm: '',
-      username: '',
-    });
+    setFormData(getDefaultFormData());
   };
 
   const handleSubmit = (data: Partial<FormData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
 
+    if (isFirstStep) {
+      // Send verification code to email
+    }
+
     if (isLastStep) {
       console.table(formData);
       // registerUser(formValues);
-      //navigate({to: `/users/${formValues.username}`});
       //clearFormData();
+      //navigate({to: `/users/${formValues.username}`});
     }
 
     next();
   };
 
   const { currentStepIndex, step, steps, isFirstStep, isLastStep, next, back } =
-    useMultiStep([
-      <Step1 key={1} data={formData} onSubmit={handleSubmit} />,
-      <Step2 key={2} data={formData} onSubmit={handleSubmit} />,
-      <Step3 key={3} data={formData} onSubmit={handleSubmit} />,
-      <Step4 key={4} data={formData} onSubmit={handleSubmit} />,
-      //<Navigate key={5} to={`/users/${formValues.username}`} />,
-    ]);
+    useMultiStep(
+      multiStepElements.map((Step, index) => (
+        <Step key={index} formData={formData} onSubmit={handleSubmit} />
+      )),
+    );
 
   return (
     <Modal
@@ -103,3 +114,4 @@ const RegisterForm = ({ isOpen, onRequestClose }: RegisterFormProps) => {
 };
 
 export default RegisterForm;
+export { FormData, MultiStepContext };
