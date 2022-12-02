@@ -40,17 +40,38 @@ const PasswordForm = ({ formData, onSubmit }: PasswordFormProps) => {
 
   return (
     <FormWrapper onSubmit={handleSubmit(onSubmit)} isInvalid={!isValid}>
-      <div className={styles.heading}>You&apos;ll need a password</div>
+      <h3 className={styles.heading}>You&apos;ll need a password</h3>
 
-      <PasswordInput autoFocus {...register('password')} />
-      <div className={styles.description}>{errors.password?.message}</div>
+      <div>
+        <PasswordInput
+          autoFocus
+          className={errors.password && styles.invalidInput}
+          placeholderClassName={errors.password && styles.placeholder}
+          aria-invalid={errors.password ? 'true' : 'false'}
+          {...register('password')}
+        />
 
-      <PasswordInput
-        placeholder='Confirm password'
-        {...register('passwordConfirm')}
-      />
-      <div className={styles.description}>
-        {errors.passwordConfirm?.message}
+        {errors.password && (
+          <p role='alert' className={styles.errorMessage}>
+            {errors.password?.message}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <PasswordInput
+          placeholder='Confirm password'
+          className={errors.passwordConfirm && styles.invalidInput}
+          placeholderClassName={errors.passwordConfirm && styles.placeholder}
+          aria-invalid={errors.passwordConfirm ? 'true' : 'false'}
+          {...register('passwordConfirm')}
+        />
+
+        {errors.passwordConfirm && (
+          <p role='alert' className={styles.errorMessage}>
+            {errors.passwordConfirm?.message}
+          </p>
+        )}
       </div>
     </FormWrapper>
   );

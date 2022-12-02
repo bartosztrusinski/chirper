@@ -47,11 +47,25 @@
     font-size: var(--fs-200);
   }
 
+  .errorMessage {
+    color: var(--color-error);
+    font-size: var(--fs-200);
+  }
+
+  .invalidInput:focus-within {
+    border-color: var(--color-error);
+
+    .placeholder {
+      color: var(--color-error);
+    }
+  }
+
   .submitButton {
     margin-top: u.rem(24);
   }
 
   .logInLink {
     color: var(--text-muted-color);
+    font-size: var(--fs-300);
   }
 }

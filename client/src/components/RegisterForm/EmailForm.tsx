@@ -54,13 +54,40 @@ const EmailForm = ({ formData, onSubmit }: EmailFormProps) => {
 
   return (
     <FormWrapper onSubmit={handleSubmit(onEmailSubmit)} isInvalid={!isValid}>
-      <div className={styles.heading}>Create your account</div>
+      <h3 className={styles.heading}>Create your account</h3>
 
-      <Input placeholder='Email' autoFocus {...register('email')} />
-      <div className={styles.description}>{errors.email?.message}</div>
+      <div>
+        <Input
+          autoFocus
+          placeholder='Email'
+          className={errors.email && styles.invalidInput}
+          placeholderClassName={errors.email && styles.placeholder}
+          aria-invalid={errors.email ? 'true' : 'false'}
+          {...register('email')}
+        />
 
-      <Input placeholder='Name' type='text' {...register('name')} />
-      <div className={styles.description}>{errors.name?.message}</div>
+        {errors.email && (
+          <p role='alert' className={styles.errorMessage}>
+            {errors.email?.message}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <Input
+          placeholder='Name'
+          className={errors.name && styles.invalidInput}
+          placeholderClassName={errors.name && styles.placeholder}
+          aria-invalid={errors.name ? 'true' : 'false'}
+          {...register('name')}
+        />
+
+        {errors.name && (
+          <p role='alert' className={styles.errorMessage}>
+            {errors.name?.message}
+          </p>
+        )}
+      </div>
     </FormWrapper>
   );
 };

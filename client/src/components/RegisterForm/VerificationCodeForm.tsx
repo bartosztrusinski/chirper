@@ -31,7 +31,6 @@ const VerificationCodeForm = ({
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<Inputs>({
     reValidateMode: 'onSubmit',
@@ -43,24 +42,30 @@ const VerificationCodeForm = ({
   });
 
   return (
-    <FormWrapper onSubmit={handleSubmit(onSubmit)} isInvalid={false}>
+    <FormWrapper onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <div className={styles.heading}>We sent you a code</div>
-        <div className={styles.description}>
+        <h3 className={styles.heading}>We sent you a code</h3>
+        <p className={styles.description}>
           Enter it below to verify {formData.email}
-        </div>
+        </p>
       </div>
 
-      <Input
-        placeholder='Verification code'
-        autoFocus
-        {...register('verificationCode')}
-      />
-      <div className={styles.description}>
-        {errors.verificationCode?.message}
-      </div>
+      <div>
+        <Input
+          autoFocus
+          placeholder='Verification code'
+          className={errors.verificationCode && styles.invalidInput}
+          placeholderClassName={errors.verificationCode && styles.placeholder}
+          aria-invalid={errors.verificationCode ? 'true' : 'false'}
+          {...register('verificationCode')}
+        />
 
-      <div>{JSON.stringify(watch())}</div>
+        {errors.verificationCode && (
+          <p role='alert' className={styles.errorMessage}>
+            {errors.verificationCode?.message}
+          </p>
+        )}
+      </div>
     </FormWrapper>
   );
 };

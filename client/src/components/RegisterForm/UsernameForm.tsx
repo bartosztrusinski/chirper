@@ -11,6 +11,7 @@ import * as z from 'zod';
 interface UsernameFormProps {
   formData: FormData;
   onSubmit: (data: Partial<FormData>) => void;
+  isSubmitting: boolean;
 }
 
 type Inputs = z.infer<typeof inputsSchema>;
@@ -19,14 +20,18 @@ const inputsSchema = z.object({
   username,
 });
 
-const UsernameForm = ({ formData, onSubmit }: UsernameFormProps) => {
+const UsernameForm = ({
+  formData,
+  onSubmit,
+  isSubmitting,
+}: UsernameFormProps) => {
   const {
     register,
     handleSubmit,
     setError,
     formState: { isValid, errors },
   } = useForm<Inputs>({
-    mode: 'onTouched',
+    mode: 'onChange',
     resolver: zodResolver(inputsSchema),
     defaultValues: {
       username: formData.username,
@@ -53,16 +58,34 @@ const UsernameForm = ({ formData, onSubmit }: UsernameFormProps) => {
   };
 
   return (
-    <FormWrapper onSubmit={handleSubmit(onUsernameSubmit)} isInvalid={!isValid}>
+    <FormWrapper
+      onSubmit={handleSubmit(onUsernameSubmit)}
+      isInvalid={!isValid}
+      isSubmitting={isSubmitting}
+    >
       <div>
-        <div className={styles.heading}>What should we call you?</div>
-        <div className={styles.description}>
+        <h3 className={styles.heading}>What should we call you?</h3>
+        <p className={styles.description}>
           Your @username is unique. You can always change it later
-        </div>
+        </p>
       </div>
 
-      <Input placeholder='Username' autoFocus {...register('username')} />
-      <div className={styles.description}>{errors.username?.message}</div>
+      <div>
+        <Input
+          autoFocus
+          placeholder='Username'
+          className={errors.username && styles.invalidInput}
+          placeholderClassName={errors.username && styles.placeholder}
+          aria-invalid={errors.username ? 'true' : 'false'}
+          {...register('username')}
+        />
+
+        {errors.username && (
+          <p role='alert' className={styles.errorMessage}>
+            {errors.username?.message}
+          </p>
+        )}
+      </div>
     </FormWrapper>
   );
 };
