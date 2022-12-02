@@ -1,33 +1,55 @@
-import { ComponentPropsWithoutRef, ReactNode } from 'react';
+import { ComponentPropsWithoutRef, forwardRef, ReactNode } from 'react';
 import styles from './styles.module.scss';
 
-interface Props extends ComponentPropsWithoutRef<'input'> {
+interface InputProps extends ComponentPropsWithoutRef<'input'> {
   placeholder: string;
+  placeholderClassName?: string;
   button?: ReactNode;
   onButtonClick?: () => void;
 }
 
-const Input = ({ placeholder, button, onButtonClick, ...restProps }: Props) => {
+const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  {
+    placeholder,
+    className,
+    placeholderClassName,
+    button,
+    onButtonClick,
+    ...restProps
+  },
+  ref,
+) {
+  const labelClasses = [styles.inputContainer, className]
+    .filter(Boolean)
+    .join(' ');
+  const placeholderClasses = [styles.placeholder, placeholderClassName]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <label className={styles.inputContainer}>
+    <label className={labelClasses}>
       <input
+        ref={ref}
         type='text'
         className={styles.input}
         placeholder=''
         {...restProps}
       />
-      <div className={styles.placeholder}>{placeholder}</div>
+      <div className={placeholderClasses}>{placeholder}</div>
       {button && (
         <button
           type='button'
           className={styles.inputButton}
-          onClick={onButtonClick}
+          onClick={(e) => {
+            e.preventDefault();
+            onButtonClick?.();
+          }}
         >
           {button}
         </button>
       )}
     </label>
   );
-};
+});
 
 export default Input;
