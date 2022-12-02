@@ -3,51 +3,93 @@ import Input from '../Input';
 import PasswordInput from '../PasswordInput';
 import Button from '../Button';
 import { Link, useNavigate } from '@tanstack/react-location';
-import { useState } from 'react';
 import useAuth from '../../hooks/useAuth';
+import { useForm } from 'react-hook-form';
+
+interface Inputs {
+  login: string;
+  password: string;
+}
 
 const LoginForm = () => {
-  const { logIn } = useAuth();
-  const [login, setLogin] = useState('');
-  const [password, setPassword] = useState('');
+  const { logIn, isLoggingIn } = useAuth();
   const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<Inputs>({
+    mode: 'onChange',
+    defaultValues: {
+      login: '',
+      password: '',
+    },
+  });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    logIn({ login, password });
-    navigate({ to: '/home' });
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (name === 'login') setLogin(value);
-    if (name === 'password') setPassword(value);
+  const onSubmit = (inputs: Inputs) => {
+    logIn(inputs, {
+      onSuccess: () => {
+        navigate({ to: '/' });
+      },
+      onError: (error) => {
+        console.log(error, 'invalid credentials');
+      },
+    });
   };
 
   return (
     <>
-      <form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.heading}>Sign in to Chirper</div>
-        <Input
-          placeholder='Username or email'
-          autoFocus
-          required
-          name='login'
-          value={login}
-          onChange={handleChange}
-        />
-        <PasswordInput
-          required
-          name='password'
-          value={password}
-          onChange={handleChange}
-        />
-        <Button type='submit' className={styles.submit}>
-          Log In
+      <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+        <h3 className={styles.heading}>Sign in to Chirper</h3>
+
+        <div>
+          <Input
+            autoFocus
+            placeholder='Username or email'
+            className={errors.login && styles.invalidInput}
+            placeholderClassName={errors.login && styles.placeholder}
+            aria-invalid={errors.login ? 'true' : 'false'}
+            {...register('login', {
+              required: 'Please enter username or email',
+            })}
+          />
+
+          {errors.login && (
+            <p role='alert' className={styles.errorMessage}>
+              {errors.login.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <PasswordInput
+            className={errors.password && styles.invalidInput}
+            placeholderClassName={errors.password && styles.placeholder}
+            aria-invalid={errors.password ? 'true' : 'false'}
+            {...register('password', { required: 'Please enter password' })}
+          />
+
+          {errors.password && (
+            <p role='alert' className={styles.errorMessage}>
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+
+        <Button
+          type='submit'
+          disabled={!isValid || isLoggingIn}
+          className={styles.submitButton}
+        >
+          {isLoggingIn ? 'Logging In...' : 'Log In'}
         </Button>
       </form>
-      <p>
-        Don&apos;t have an account? <Link to='/'>Sign Up</Link>
+
+      <p className={styles.signUpLink}>
+        Don&apos;t have an account?
+        <Link to={location.pathname} search={{ signup: true }}>
+          Sign Up
+        </Link>
       </p>
     </>
   );
