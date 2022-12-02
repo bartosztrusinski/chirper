@@ -7,22 +7,28 @@ import { MultiStepContext } from '.';
 
 interface FormWrapperProps extends ComponentPropsWithoutRef<'form'> {
   isInvalid?: boolean;
+  isSubmitting?: boolean;
 }
 
 const FormWrapper = ({
   children,
   isInvalid = false,
+  isSubmitting = false,
   ...restProps
 }: FormWrapperProps) => {
-  const context = useContext(MultiStepContext);
-  const { back, currentStepIndex, isFirstStep, isLastStep, steps } = context;
+  const { previousStep, currentStepIndex, isFirstStep, isLastStep, steps } =
+    useContext(MultiStepContext);
 
   return (
     <form {...restProps} className={styles.form}>
       <div className={styles.stepContainer}>
         <div className={styles.stepIndexPanel}>
           {!isFirstStep && (
-            <button type='button' onClick={back} className={styles.backButton}>
+            <button
+              type='button'
+              onClick={previousStep}
+              className={styles.backButton}
+            >
               <FaArrowLeft />
             </button>
           )}
@@ -32,15 +38,22 @@ const FormWrapper = ({
       </div>
       <Button
         type='submit'
-        disabled={isInvalid}
+        disabled={isInvalid || isSubmitting}
         className={styles.submitButton}
       >
-        {isLastStep ? 'Create Account' : 'Next'}
+        {isSubmitting
+          ? 'Signing Up...'
+          : isLastStep
+          ? 'Create Account'
+          : 'Next'}
       </Button>
       {isFirstStep && (
-        <div className={styles.logInLink}>
-          Have an account already? <Link to='?login=true'>Log In</Link>
-        </div>
+        <p className={styles.logInLink}>
+          Have an account already?
+          <Link to={location.pathname} search={{ login: true }}>
+            Log In
+          </Link>
+        </p>
       )}
     </form>
   );
