@@ -1,18 +1,40 @@
 @use '../../assets/styles/util' as u;
 
-.heading {
-  font-size: var(--fs-700);
-  font-weight: var(--fw-bold);
-  text-align: center;
-}
-
 .form {
   display: grid;
   align-content: space-between;
   grid-template-columns: 1fr;
-  gap: u.rem(24);
+  gap: u.rem(20);
+  padding-top: u.rem(16);
+
+  .heading {
+    font-size: var(--fs-700);
+    font-weight: var(--fw-bold);
+    text-align: center;
+    margin-bottom: u.rem(12);
+  }
+
+  .errorMessage {
+    color: var(--color-error);
+    font-size: var(--fs-200);
+    padding: u.rem(4);
+  }
+
+  .invalidInput:focus-within {
+    border-color: var(--color-error);
+
+    .placeholder {
+      color: var(--color-error);
+    }
+  }
+
+  .submitButton {
+    margin-top: u.rem(24);
+  }
 }
 
-.submit {
-  margin-top: u.rem(24);
+.signUpLink {
+  color: var(--text-muted-color);
+  font-size: var(--fs-300);
+  padding-bottom: u.rem(16);
 }
