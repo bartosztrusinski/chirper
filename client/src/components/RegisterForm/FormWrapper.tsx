@@ -4,6 +4,7 @@ import { FaArrowLeft } from '@react-icons/all-files/fa/FaArrowLeft';
 import Button from '../Button';
 import { Link } from '@tanstack/react-location';
 import { MultiStepContext } from '.';
+import { MultiStep } from '../../hooks/useMultiStep';
 
 interface FormWrapperProps extends ComponentPropsWithoutRef<'form'> {
   isInvalid?: boolean;
@@ -17,7 +18,7 @@ const FormWrapper = ({
   ...restProps
 }: FormWrapperProps) => {
   const { previousStep, currentStepIndex, isFirstStep, isLastStep, steps } =
-    useContext(MultiStepContext);
+    useContext(MultiStepContext) as MultiStep;
 
   return (
     <form {...restProps} className={styles.form}>
