@@ -1,28 +1,36 @@
 import Input from '../Input';
-import { ComponentPropsWithoutRef, useState } from 'react';
+import { ComponentPropsWithoutRef, forwardRef, useState } from 'react';
 import { BiShow as ShowIcon } from '@react-icons/all-files/bi/BiShow';
 import { BiHide as HideIcon } from '@react-icons/all-files/bi/BiHide';
 
-interface Props extends ComponentPropsWithoutRef<'input'> {
+interface PasswordInputProps extends ComponentPropsWithoutRef<'input'> {
   placeholder?: string;
+  placeholderClassName?: string;
 }
 
-const PasswordInput = ({ placeholder = 'Password', ...restProps }: Props) => {
-  const [isPasswordRevealed, setIsPasswordRevealed] = useState(false);
+const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
+  function PasswordInput(
+    { placeholder = 'Password', placeholderClassName, ...restProps },
+    ref,
+  ) {
+    const [isPasswordRevealed, setIsPasswordRevealed] = useState(false);
 
-  const togglePasswordReveal = () => {
-    setIsPasswordRevealed((prev) => !prev);
-  };
+    const togglePasswordReveal = () => {
+      setIsPasswordRevealed((prev) => !prev);
+    };
 
-  return (
-    <Input
-      placeholder={placeholder}
-      type={isPasswordRevealed ? 'text' : 'password'}
-      button={isPasswordRevealed ? <HideIcon /> : <ShowIcon />}
-      onButtonClick={togglePasswordReveal}
-      {...restProps}
-    />
-  );
-};
+    return (
+      <Input
+        ref={ref}
+        type={isPasswordRevealed ? 'text' : 'password'}
+        placeholder={placeholder}
+        placeholderClassName={placeholderClassName}
+        button={isPasswordRevealed ? <HideIcon /> : <ShowIcon />}
+        onButtonClick={togglePasswordReveal}
+        {...restProps}
+      />
+    );
+  },
+);
 
 export default PasswordInput;
