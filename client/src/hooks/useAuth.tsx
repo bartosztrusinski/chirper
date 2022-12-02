@@ -15,46 +15,48 @@ interface SignUpData {
   email: string;
   password: string;
 }
+
 interface UseAuth {
   logIn: UseMutateFunction<Token, unknown, LogInData, unknown>;
   signUp: UseMutateFunction<Token, unknown, SignUpData, unknown>;
   logOut: () => void;
+  isLoggingIn: boolean;
+  isSigningUp: boolean;
 }
 
 const useAuth = (): UseAuth => {
   const { clearUser, setUser } = useUser();
-
   const SERVER_ERROR = 'There was an error contacting the server';
 
-  const { mutate: logIn } = useMutation(
+  const { mutate: logIn, status: logInStatus } = useMutation(
     ({ login, password }: LogInData) => AuthService.logIn(login, password),
     {
       onSuccess: (token: Token) => {
         setUser(token);
       },
-      onError: (errorResponse) => {
+
+      onError: (error) => {
         const title =
-          axios.isAxiosError(errorResponse) &&
-          errorResponse?.response?.data?.message
-            ? errorResponse?.response?.data?.message
+          axios.isAxiosError(error) && error?.response?.data?.message
+            ? error?.response?.data?.message
             : SERVER_ERROR;
         console.log(title);
       },
     },
   );
 
-  const { mutate: signUp } = useMutation(
+  const { mutate: signUp, status: signUpStatus } = useMutation(
     ({ username, name, email, password }: SignUpData) =>
       AuthService.signUp(username, name, email, password),
     {
       onSuccess: (token: Token) => {
         setUser(token);
       },
-      onError: (errorResponse) => {
+
+      onError: (error) => {
         const title =
-          axios.isAxiosError(errorResponse) &&
-          errorResponse?.response?.data?.message
-            ? errorResponse?.response?.data?.message
+          axios.isAxiosError(error) && error?.response?.data?.message
+            ? error?.response?.data?.message
             : SERVER_ERROR;
         console.log(title);
       },
@@ -67,8 +69,10 @@ const useAuth = (): UseAuth => {
 
   return {
     logIn,
-    logOut,
     signUp,
+    logOut,
+    isLoggingIn: logInStatus === 'loading' || logInStatus === 'success',
+    isSigningUp: signUpStatus === 'loading' || signUpStatus === 'success',
   };
 };
 
