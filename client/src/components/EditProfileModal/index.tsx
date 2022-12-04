@@ -9,8 +9,10 @@ import Textarea from '../Textarea';
 import styles from './styles.module.scss';
 import { name, bio, location, website } from './schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
+import useManageUser from '../../hooks/useManageUser';
+import { useNavigate } from '@tanstack/react-location';
 
-type EditProfileModal = ReactModal.Props;
+type EditProfileModalProps = ReactModal.Props;
 
 type Inputs = z.infer<typeof inputsSchema>;
 
@@ -21,26 +23,43 @@ const inputsSchema = z.object({
   website,
 });
 
-const EditProfileModal = (props: EditProfileModal) => {
+const filterObject = <T,>(
+  object: Record<string, T>,
+  predicate: (val: T, key: string) => boolean,
+): Record<string, T> =>
+  Object.fromEntries(
+    Object.entries(object).filter(([key, val]) => predicate(val, key)),
+  );
+
+const EditProfileModal = (props: EditProfileModalProps) => {
   const { user: currentUser } = useUser() as { user: StoredUser };
+  const { updateProfile } = useManageUser();
+  const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isValid },
   } = useForm<Inputs>({
     mode: 'onChange',
     resolver: zodResolver(inputsSchema),
-    defaultValues: {
-      name: currentUser.profile.name,
-      bio: currentUser.profile.bio,
-      location: currentUser.profile.location,
-      website: currentUser.profile.website,
-    },
+    defaultValues: { ...currentUser.profile },
   });
 
   const onSubmit = (inputs: Inputs) => {
-    console.log(inputs);
+    const filteredInputs = filterObject(
+      inputs,
+      (input) => input.length > 0,
+    ) as Inputs;
+
+    updateProfile(filteredInputs, {
+      onSuccess: (updatedProfile) => {
+        reset({ ...updatedProfile });
+        navigate({ to: '.' });
+      },
+      onError: () => console.log('error updating profile'),
+    });
   };
 
   return (
