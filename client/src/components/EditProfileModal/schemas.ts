@@ -39,13 +39,19 @@ const createInputSchema = (name: string) => {
 };
 
 const name = createInputSchema('name')
-  .min(1, 'Name cannot be empty')
+  .min(1, 'Please enter your name')
   .max(user.name.max, `Profile name cannot exceed ${user.name.max} characters`)
-  .regex(/^[^<>]*$/, 'Profile name cannot include invalid characters');
+  .regex(
+    /^[^<>]*$/,
+    'Please provide valid name. It cannot include invalid characters',
+  );
 
 const bio = createInputSchema('bio')
   .max(user.bio.max, `Description cannot exceed ${user.bio.max} characters`)
-  .regex(/^[^<>]*$/, 'Description cannot include invalid characters')
+  .regex(
+    /^[^<>]*$/,
+    'Please provide valid bio. It cannot include invalid characters',
+  )
   .or(z.literal(''));
 
 const location = createInputSchema('location')
@@ -53,7 +59,10 @@ const location = createInputSchema('location')
     user.location.max,
     `Location cannot exceed ${user.location.max} characters`,
   )
-  .regex(/^[^<>]*$/, 'Location cannot include invalid characters')
+  .regex(
+    /^[^<>]*$/,
+    'Please provide valid location. It cannot include invalid characters',
+  )
   .or(z.literal(''));
 
 const website = createInputSchema('website')
@@ -62,8 +71,8 @@ const website = createInputSchema('website')
     `Website URL cannot exceed ${user.website.max} characters`,
   )
   .regex(
-    /^(https?:\/\/)?(www.)?([a-z0-9]+\.)+[a-zA-Z]{2,}\/?(\/[a-zA-Z0-9#-_]+\/?)*$/,
-    'Website URL must be valid',
+    /^(https?:\/\/)(www.)?([a-z0-9]+\.)+[a-zA-Z]{2,}\/?(\/[a-zA-Z0-9#-_]+\/?)*$/,
+    'Please provide valid URL. Make sure to include http:// or https://',
   )
   .or(z.literal(''));
 
