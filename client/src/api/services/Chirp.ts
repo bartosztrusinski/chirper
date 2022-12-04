@@ -118,8 +118,6 @@ const getLikedChirpIds = async (
   username: string,
   chirpIds?: string[],
 ): Promise<string[]> => {
-  if (!chirpIds?.length) return [];
-
   const params = {
     chirpIds,
   };
@@ -132,6 +130,18 @@ const getLikedChirpIds = async (
   return data.data.map((chirp) => chirp._id);
 };
 
+const createChirp = async (content: string) => {
+  await privateClient.post('/chirps', { content });
+};
+
+const createReply = async (content: string, parentChirpId: string) => {
+  await privateClient.post('/chirps', { content, parentId: parentChirpId });
+};
+
+const deleteChirp = async (chirpId: string) => {
+  await privateClient.delete(`/chirps/${chirpId}`);
+};
+
 export default {
   getMany,
   getOne,
@@ -142,4 +152,7 @@ export default {
   likeChirp,
   unlikeChirp,
   getLikedChirpIds,
+  createChirp,
+  createReply,
+  deleteChirp,
 };
