@@ -26,6 +26,14 @@
     gap: u.rem(12);
     cursor: text;
 
+    &:focus-within {
+      outline: u.rem(2) solid var(--color-primary);
+
+      &.invalidInput {
+        outline-color: var(--color-error);
+      }
+    }
+
     .avatar {
       border-radius: 50%;
     }
@@ -36,7 +44,7 @@
       gap: u.rem(20);
       align-items: end;
 
-      .chirpContent {
+      .contentInput {
         font-size: var(--fs-400);
         resize: none;
         overflow: hidden;

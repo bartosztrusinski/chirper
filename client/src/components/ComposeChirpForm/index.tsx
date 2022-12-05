@@ -36,9 +36,13 @@ const ComposeChirpForm = () => {
     console.log(inputs);
   };
 
+  const cardClasses = [styles.card, errors.content && styles.invalidInput]
+    .filter(Boolean)
+    .join(' ');
+
   return (
     <div className={styles.container}>
-      <div className={styles.card} onClick={() => contentRef.current?.focus()}>
+      <div className={cardClasses} onClick={() => contentRef.current?.focus()}>
         <Link to={`/users/${currentUser.username}`}>
           <img
             src={currentUser.profile.picture ?? defaultAvatar}
@@ -54,7 +58,7 @@ const ComposeChirpForm = () => {
               contentRef.current = e;
             }}
             placeholder="What's happening"
-            className={styles.chirpContent}
+            className={styles.contentInput}
             aria-invalid={errors.content ? 'true' : 'false'}
             {...rest}
           />
