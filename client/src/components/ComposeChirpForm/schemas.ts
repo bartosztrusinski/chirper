@@ -36,7 +36,7 @@ const createInputSchema = (name: string) => {
 
 const content = createInputSchema('content').max(
   chirp.content.max,
-  `Chirp content cannot exceed ${chirp.content.max} characters`,
+  `Please keep your Chirp under ${chirp.content.max} characters`,
 );
 
 export { content };
