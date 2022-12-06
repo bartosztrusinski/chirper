@@ -12,13 +12,17 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useManageChirp from '../../hooks/useManageChirp';
 
+interface CreateChirpFormProps {
+  replyToId?: string;
+}
+
 type Inputs = z.infer<typeof inputsSchema>;
 
 const inputsSchema = z.object({
   content,
 });
 
-const CreateChirpForm = () => {
+const CreateChirpForm = ({ replyToId }: CreateChirpFormProps) => {
   const { user: currentUser } = useUser() as { user: StoredUser };
   const { createChirp, isCreatingChirp } = useManageChirp();
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
@@ -35,16 +39,19 @@ const CreateChirpForm = () => {
 
   const { ref, ...rest } = register('content');
 
-  const onSubmit = ({ content }: Inputs) => {
-    createChirp(content, {
-      onSuccess: () => {
-        console.log('Your chirp was created!');
-        reset();
+  const onSubmit = (inputs: Inputs) => {
+    createChirp(
+      { ...inputs, parentChirpId: replyToId },
+      {
+        onSuccess: () => {
+          console.log('Your chirp was created!');
+          reset();
+        },
+        onError: () => {
+          console.log('Something went wrong!');
+        },
       },
-      onError: () => {
-        console.log('Something went wrong!');
-      },
-    });
+    );
   };
 
   const cardClasses = [styles.card, errors.content && styles.invalidInput]
@@ -69,7 +76,7 @@ const CreateChirpForm = () => {
               ref(e);
               contentRef.current = e;
             }}
-            placeholder="What's happening"
+            placeholder={replyToId ? 'Chirp your reply' : "What's happening?"}
             className={styles.contentInput}
             aria-invalid={errors.content ? 'true' : 'false'}
             {...rest}
@@ -80,7 +87,7 @@ const CreateChirpForm = () => {
             className={styles.submitButton}
             disabled={!isDirty || !isValid || isCreatingChirp}
           >
-            {isCreatingChirp ? 'Chirping...' : 'Chirp'}
+            {isCreatingChirp ? 'Loading...' : replyToId ? 'Reply' : 'Chirp'}
           </Button>
         </form>
       </div>
