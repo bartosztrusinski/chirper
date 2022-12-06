@@ -18,7 +18,7 @@ const inputsSchema = z.object({
   content,
 });
 
-const ComposeChirpForm = () => {
+const CreateChirpForm = () => {
   const { user: currentUser } = useUser() as { user: StoredUser };
   const { createChirp, isCreatingChirp } = useManageChirp();
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
@@ -94,4 +94,4 @@ const ComposeChirpForm = () => {
   );
 };
 
-export default ComposeChirpForm;
+export default CreateChirpForm;
