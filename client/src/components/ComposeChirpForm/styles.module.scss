@@ -53,6 +53,10 @@
         padding-block: u.rem(12);
         border: none;
         outline: none;
+
+        &:disabled {
+          color: var(--text-muted-color);
+        }
       }
 
       .submitButton {

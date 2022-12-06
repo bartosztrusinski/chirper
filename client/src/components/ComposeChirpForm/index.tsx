@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { content } from './schemas';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import useManageChirp from '../../hooks/useManageChirp';
 
 type Inputs = z.infer<typeof inputsSchema>;
 
@@ -19,10 +20,12 @@ const inputsSchema = z.object({
 
 const ComposeChirpForm = () => {
   const { user: currentUser } = useUser() as { user: StoredUser };
+  const { createChirp, isCreatingChirp } = useManageChirp();
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isValid, isDirty },
   } = useForm<Inputs>({
     mode: 'onChange',
@@ -32,8 +35,16 @@ const ComposeChirpForm = () => {
 
   const { ref, ...rest } = register('content');
 
-  const onSubmit = (inputs: Inputs) => {
-    console.log(inputs);
+  const onSubmit = ({ content }: Inputs) => {
+    createChirp(content, {
+      onSuccess: () => {
+        console.log('Your chirp was created!');
+        reset();
+      },
+      onError: () => {
+        console.log('Something went wrong!');
+      },
+    });
   };
 
   const cardClasses = [styles.card, errors.content && styles.invalidInput]
@@ -53,6 +64,7 @@ const ComposeChirpForm = () => {
 
         <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
           <TextareaAutosize
+            disabled={isCreatingChirp}
             ref={(e) => {
               ref(e);
               contentRef.current = e;
@@ -66,9 +78,9 @@ const ComposeChirpForm = () => {
           <Button
             type='submit'
             className={styles.submitButton}
-            disabled={!isDirty || !isValid}
+            disabled={!isDirty || !isValid || isCreatingChirp}
           >
-            Reply
+            {isCreatingChirp ? 'Chirping...' : 'Chirp'}
           </Button>
         </form>
       </div>
