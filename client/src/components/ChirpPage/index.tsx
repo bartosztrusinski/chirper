@@ -3,20 +3,19 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, useMatch } from '@tanstack/react-location';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import ChirpService from '../../api/services/Chirp';
-import Button from '../Button';
 import utils from '../../utils/utils';
-import useAutosizeTextArea from '../../hooks/useAutosizeTextarea';
 import { FaArrowLeft } from '@react-icons/all-files/fa/FaArrowLeft';
 import { FaRegCommentAlt } from '@react-icons/all-files/fa/FaRegCommentAlt';
 import { FaRegHeart } from '@react-icons/all-files/fa/FaRegHeart';
 import { FiShare } from '@react-icons/all-files/fi/FiShare';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import ChirpReplies from '../ChirpReplies';
 import useLikedChirpIds from '../../hooks/useLikedChirpIds';
 import useUser from '../../hooks/useUser';
 import useLikeChirp from '../../hooks/useLikeChirp';
 import ComposeChirpModal from '../ComposeChirpModal';
 import LikesModal from '../LikesModal';
+import CreateChirpForm from '../CreateChirpForm';
 
 const ChirpPage = () => {
   const {
@@ -25,19 +24,6 @@ const ChirpPage = () => {
   const queryKeys = [id];
   const { user } = useUser();
   const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys);
-
-  const [value, setValue] = useState<string>('');
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
-
-  const [isReplyModalOpen, setIsReplyModalOpen] = useState<boolean>(false);
-  const [isLikesModalOpen, setIsLikesModalOpen] = useState<boolean>(false);
-
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const val = e.target?.value;
-    setValue(val);
-  };
-
-  useAutosizeTextArea(textAreaRef.current, value);
 
   const {
     data: chirp,
@@ -50,6 +36,9 @@ const ChirpPage = () => {
     isSuccess,
     isLoading: isLikedLoading,
   } = useLikedChirpIds(queryKeys, user!.username, [id]);
+
+  const [isReplyModalOpen, setIsReplyModalOpen] = useState<boolean>(false);
+  const [isLikesModalOpen, setIsLikesModalOpen] = useState<boolean>(false);
 
   const isLiked = isSuccess && likedChirpIds.includes(id);
 
@@ -151,33 +140,7 @@ const ChirpPage = () => {
               <FiShare className={styles.icon} />
             </button>
           </div>
-          <div
-            className={styles.reply}
-            onClick={() => textAreaRef.current?.focus()}
-          >
-            <div>
-              <Link to={`/users/${chirp.author.username}`}>
-                <img
-                  src={chirp.author.profile.picture ?? defaultAvatar}
-                  alt={`${chirp.author.username}'s  avatar`}
-                  className={styles.avatar}
-                />
-              </Link>
-            </div>
-            <form className={styles.form}>
-              <textarea
-                ref={textAreaRef}
-                value={value}
-                onChange={handleChange}
-                placeholder='Chirp your reply'
-                className={styles.textarea}
-                rows={1}
-              ></textarea>
-              <Button className={styles.submit} disabled={!value} type='button'>
-                Reply
-              </Button>
-            </form>
-          </div>
+          <CreateChirpForm replyToId={chirp._id} />
         </article>
 
         <ChirpReplies chirp={chirp} />
