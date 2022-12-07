@@ -8,14 +8,14 @@ import { FaArrowLeft } from '@react-icons/all-files/fa/FaArrowLeft';
 import { FaRegCommentAlt } from '@react-icons/all-files/fa/FaRegCommentAlt';
 import { FaRegHeart } from '@react-icons/all-files/fa/FaRegHeart';
 import { FiShare } from '@react-icons/all-files/fi/FiShare';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import ChirpReplies from '../ChirpReplies';
 import useLikedChirpIds from '../../hooks/useLikedChirpIds';
 import useUser from '../../hooks/useUser';
 import useLikeChirp from '../../hooks/useLikeChirp';
-import ComposeChirpModal from '../ComposeChirpModal';
 import LikesModal from '../LikesModal';
 import CreateChirpForm from '../CreateChirpForm';
+import { CreateChirpContext } from '../AuthenticatedApp';
 
 const ChirpPage = () => {
   const {
@@ -37,8 +37,11 @@ const ChirpPage = () => {
     isLoading: isLikedLoading,
   } = useLikedChirpIds(queryKeys, user!.username, [id]);
 
-  const [isReplyModalOpen, setIsReplyModalOpen] = useState<boolean>(false);
   const [isLikesModalOpen, setIsLikesModalOpen] = useState<boolean>(false);
+
+  const { openCreateChirpModal } = useContext(
+    CreateChirpContext,
+  ) as CreateChirpContext;
 
   const isLiked = isSuccess && likedChirpIds.includes(id);
 
@@ -118,7 +121,7 @@ const ChirpPage = () => {
             <button
               type='button'
               className={styles.button}
-              onClick={() => setIsReplyModalOpen(true)}
+              onClick={() => openCreateChirpModal(chirp)}
             >
               <FaRegCommentAlt className={styles.icon} />
             </button>
@@ -140,20 +143,13 @@ const ChirpPage = () => {
               <FiShare className={styles.icon} />
             </button>
           </div>
-          <CreateChirpForm replyToId={chirp._id} />
+          <div className={styles.replyFormContainer}>
+            <CreateChirpForm replyToId={chirp._id} />
+          </div>
         </article>
 
         <ChirpReplies chirp={chirp} />
       </section>
-
-      <ComposeChirpModal
-        replyToChirp={chirp}
-        isOpen={isReplyModalOpen}
-        onRequestClose={() => {
-          console.log(isReplyModalOpen);
-          setIsReplyModalOpen(false);
-        }}
-      />
 
       <LikesModal
         isOpen={isLikesModalOpen}
