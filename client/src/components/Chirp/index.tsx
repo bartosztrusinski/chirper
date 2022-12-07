@@ -2,26 +2,30 @@ import styles from './styles.module.scss';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import utils from '../../utils/utils';
 import Chirp from '../../interfaces/Chirp';
-import { forwardRef, MouseEvent } from 'react';
+import { forwardRef, MouseEvent, useContext } from 'react';
 import { Link, useNavigate } from '@tanstack/react-location';
 import { FaRegCommentAlt } from '@react-icons/all-files/fa/FaRegCommentAlt';
 import { FaRegHeart } from '@react-icons/all-files/fa/FaRegHeart';
 import { FiShare } from '@react-icons/all-files/fi/FiShare';
+import { CreateChirpContext } from '../AuthenticatedApp';
 
 interface ChirpProps {
   chirp: Chirp;
   showMetrics?: boolean;
   isLiked?: boolean;
   onLike: () => void;
-  onReply: () => void;
 }
 
 type Ref = HTMLElement | null;
 
 const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
-  { chirp, showMetrics = true, isLiked = false, onLike, onReply },
+  { chirp, showMetrics = true, isLiked = false, onLike },
   ref,
 ) {
+  const { openCreateChirpModal } = useContext(
+    CreateChirpContext,
+  ) as CreateChirpContext;
+
   const { _id, content, createdAt, author, metrics, replies } = chirp;
   const { username, profile } = author;
   const avatar = profile.picture ?? defaultAvatar;
@@ -76,7 +80,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
             <div
               onClick={(e) => {
                 e.stopPropagation();
-                onReply();
+                openCreateChirpModal(chirp);
               }}
               className={styles.replies}
             >
