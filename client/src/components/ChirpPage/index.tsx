@@ -1,5 +1,5 @@
 import styles from './styles.module.scss';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useMatch } from '@tanstack/react-location';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import ChirpService from '../../api/services/Chirp';
@@ -8,6 +8,7 @@ import { FaArrowLeft } from '@react-icons/all-files/fa/FaArrowLeft';
 import { FaRegCommentAlt } from '@react-icons/all-files/fa/FaRegCommentAlt';
 import { FaRegHeart } from '@react-icons/all-files/fa/FaRegHeart';
 import { FiShare } from '@react-icons/all-files/fi/FiShare';
+import { BsTrash } from '@react-icons/all-files/bs/BsTrash';
 import { useContext, useState } from 'react';
 import ChirpReplies from '../ChirpReplies';
 import useLikedChirpIds from '../../hooks/useLikedChirpIds';
@@ -16,6 +17,8 @@ import useLikeChirp from '../../hooks/useLikeChirp';
 import LikesModal from '../LikesModal';
 import CreateChirpForm from '../CreateChirpForm';
 import { CreateChirpContext } from '../AuthenticatedApp';
+import useManageChirp from '../../hooks/useManageChirp';
+import Button from '../Button';
 
 const ChirpPage = () => {
   const {
@@ -25,11 +28,15 @@ const ChirpPage = () => {
   const { user } = useUser();
   const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys);
 
+  const queryClient = useQueryClient();
+
   const {
     data: chirp,
     isLoading,
     isError,
-  } = useQuery(['chirps', ...queryKeys], () => ChirpService.getOne(id));
+  } = useQuery(['chirps', ...queryKeys], () => ChirpService.getOne(id), {
+    retry: false,
+  });
 
   const {
     data: likedChirpIds,
@@ -43,6 +50,8 @@ const ChirpPage = () => {
     CreateChirpContext,
   ) as CreateChirpContext;
 
+  const { deleteChirp } = useManageChirp();
+
   const isLiked = isSuccess && likedChirpIds.includes(id);
 
   if (isLoading) {
@@ -50,7 +59,20 @@ const ChirpPage = () => {
   }
 
   if (isError) {
-    return <div>Oops something went wrong...</div>;
+    return (
+      <div>
+        <p> Oops something went wrong...</p>
+        <Button
+          onClick={() =>
+            queryClient.refetchQueries(['chirps', ...queryKeys], {
+              exact: true,
+            })
+          }
+        >
+          Retry
+        </Button>
+      </div>
+    );
   }
 
   return (
@@ -142,6 +164,20 @@ const ChirpPage = () => {
             <button type='button' className={styles.button}>
               <FiShare className={styles.icon} />
             </button>
+
+            {user?._id === chirp.author._id && (
+              <button
+                type='button'
+                className={`${styles.button} ${styles.delete}`}
+                onClick={() =>
+                  deleteChirp(chirp._id, {
+                    onSuccess: () => history.back(),
+                  })
+                }
+              >
+                <BsTrash className={styles.icon} />
+              </button>
+            )}
           </div>
           <div className={styles.replyFormContainer}>
             <CreateChirpForm replyToId={chirp._id} />
