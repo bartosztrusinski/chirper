@@ -95,7 +95,7 @@ const ChirpPage = () => {
                   <span className={styles.count}>
                     {utils.formatCount(chirp.replies.length)}
                   </span>
-                  Replies
+                  {chirp.replies.length > 1 ? 'Replies' : 'Reply'}
                 </div>
               )}
               {chirp.metrics.likeCount > 0 && (
