@@ -4,11 +4,16 @@ import Button from '../Button';
 import styles from './styles.module.scss';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import useAuth from '../../hooks/useAuth';
+import { useContext } from 'react';
+import { CreateChirpContext } from '../AuthenticatedApp';
 
 const UserPanel = () => {
   const navigate = useNavigate();
   const { user } = useUser();
   const { logOut } = useAuth();
+  const { openCreateChirpModal } = useContext(
+    CreateChirpContext,
+  ) as CreateChirpContext;
 
   return user ? (
     <div className={styles.userPanel}>
@@ -45,6 +50,16 @@ const UserPanel = () => {
       </div>
 
       <div className={styles.buttonContainer}>
+        <Button
+          variant='light'
+          type='button'
+          onClick={(e) => {
+            e.preventDefault();
+            openCreateChirpModal();
+          }}
+        >
+          Create Chirp
+        </Button>
         <Button
           variant='light'
           onClick={() =>
