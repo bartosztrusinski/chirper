@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-location';
-import { useRef } from 'react';
+import { useContext, useRef } from 'react';
 import useUser from '../../hooks/useUser';
 import styles from './styles.module.scss';
 import defaultAvatar from '../../assets/images/default_avatar.png';
@@ -11,9 +11,11 @@ import { content } from './schemas';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useManageChirp from '../../hooks/useManageChirp';
+import { CreateChirpContext } from '../AuthenticatedApp';
 
 interface CreateChirpFormProps {
   replyToId?: string;
+  autoFocus?: boolean;
 }
 
 type Inputs = z.infer<typeof inputsSchema>;
@@ -22,10 +24,13 @@ const inputsSchema = z.object({
   content,
 });
 
-const CreateChirpForm = ({ replyToId }: CreateChirpFormProps) => {
+const CreateChirpForm = ({ replyToId, autoFocus }: CreateChirpFormProps) => {
   const { user: currentUser } = useUser() as { user: StoredUser };
   const { createChirp, isCreatingChirp } = useManageChirp();
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
+  const { closeCreateChirpModal } = useContext(
+    CreateChirpContext,
+  ) as CreateChirpContext;
   const {
     register,
     handleSubmit,
@@ -46,6 +51,7 @@ const CreateChirpForm = ({ replyToId }: CreateChirpFormProps) => {
         onSuccess: () => {
           console.log('Your chirp was created!');
           reset();
+          closeCreateChirpModal();
         },
         onError: () => {
           console.log('Something went wrong!');
@@ -59,7 +65,7 @@ const CreateChirpForm = ({ replyToId }: CreateChirpFormProps) => {
     .join(' ');
 
   return (
-    <div className={styles.container}>
+    <>
       <div className={cardClasses} onClick={() => contentRef.current?.focus()}>
         <Link to={`/users/${currentUser.username}`}>
           <img
@@ -71,11 +77,12 @@ const CreateChirpForm = ({ replyToId }: CreateChirpFormProps) => {
 
         <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
           <TextareaAutosize
-            disabled={isCreatingChirp}
             ref={(e) => {
               ref(e);
               contentRef.current = e;
             }}
+            autoFocus={autoFocus}
+            disabled={isCreatingChirp}
             placeholder={replyToId ? 'Chirp your reply' : "What's happening?"}
             className={styles.contentInput}
             aria-invalid={errors.content ? 'true' : 'false'}
@@ -97,7 +104,7 @@ const CreateChirpForm = ({ replyToId }: CreateChirpFormProps) => {
           {errors.content.message}
         </p>
       )}
-    </div>
+    </>
   );
 };
 
