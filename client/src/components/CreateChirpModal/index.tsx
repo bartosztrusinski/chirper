@@ -1,46 +1,31 @@
 import styles from './styles.module.scss';
 import Modal from '../Modal';
 import Chirp from '../Chirp';
-import IChirp from '../../interfaces/Chirp';
 import CreateChirpForm from '../CreateChirpForm';
+import { useContext } from 'react';
+import { CreateChirpContext } from '../AuthenticatedApp';
 
-interface CreateChirpModalProps extends ReactModal.Props {
-  replyToChirp?: IChirp;
-}
+type CreateChirpModalProps = ReactModal.Props;
 
-const CreateChirpModal = ({
-  replyToChirp,
-  onRequestClose,
-  ...restProps
-}: CreateChirpModalProps) => {
+const CreateChirpModal = (props: CreateChirpModalProps) => {
+  const { replyTo } = useContext(CreateChirpContext) as CreateChirpContext;
+
   return (
     <Modal
-      onRequestClose={onRequestClose}
       title={
-        replyToChirp
-          ? `Replying to ${replyToChirp.author.profile.name}`
-          : 'Create Chirp'
+        replyTo ? `Replying to ${replyTo.author.profile.name}` : 'Create Chirp'
       }
-      {...restProps}
+      {...props}
     >
-      {replyToChirp && (
+      {replyTo && (
         <>
           <div className={styles.replyToChirp}>
-            <Chirp
-              chirp={replyToChirp}
-              showMetrics={false}
-              onLike={() => null}
-              onReply={() => null}
-            />
+            <Chirp chirp={replyTo} showMetrics={false} onLike={() => null} />
           </div>
           <div className={styles.line}></div>
         </>
       )}
-      <CreateChirpForm
-        replyToId={replyToChirp?._id}
-        autoFocus
-        onCreate={onRequestClose}
-      />
+      <CreateChirpForm autoFocus replyToId={replyTo?._id} />
     </Modal>
   );
 };
