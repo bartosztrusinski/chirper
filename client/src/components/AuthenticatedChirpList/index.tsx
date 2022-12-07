@@ -1,10 +1,9 @@
 import Chirp from '../Chirp';
 import IChirp from '../../interfaces/Chirp';
-import ComposeChirpModal from '../ComposeChirpModal';
 import useUser from '../../hooks/useUser';
 import useLikeChirp from '../../hooks/useLikeChirp';
 import useLikedChirpIds from '../../hooks/useLikedChirpIds';
-import { forwardRef, useState } from 'react';
+import { forwardRef } from 'react';
 import { StoredUser } from '../../interfaces/User';
 
 interface AuthenticatedChirpListProps {
@@ -21,8 +20,6 @@ const AuthenticatedChirpList = forwardRef<
 >(function AuthenticatedChirpList({ chirps, queryKeys, page }, ref) {
   const { user } = useUser() as { user: StoredUser };
   const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys, page);
-  const [isReplyModalOpen, setIsReplyModalOpen] = useState<boolean>(false);
-  const [chirpToReplyTo, setChirpToReplyTo] = useState<IChirp>();
 
   const {
     data: likedChirpIds,
@@ -46,11 +43,6 @@ const AuthenticatedChirpList = forwardRef<
     }
   };
 
-  const handleReply = (chirp: IChirp) => {
-    setChirpToReplyTo(chirp);
-    setIsReplyModalOpen(true);
-  };
-
   if (isLoading && chirps.length) {
     return <div>Loading...</div>;
   }
@@ -71,16 +63,9 @@ const AuthenticatedChirpList = forwardRef<
             chirp={chirp}
             isLiked={isChirpLiked(chirp)}
             onLike={() => handleLike(chirp)}
-            onReply={() => handleReply(chirp)}
           />
         );
       })}
-
-      <ComposeChirpModal
-        replyToChirp={chirpToReplyTo as IChirp}
-        isOpen={isReplyModalOpen}
-        onRequestClose={() => setIsReplyModalOpen(false)}
-      />
     </>
   );
 });
