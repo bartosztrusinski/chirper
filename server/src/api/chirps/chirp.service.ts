@@ -49,7 +49,7 @@ const createReply = async (
   author: Types.ObjectId,
   parentId: Types.ObjectId
 ) => {
-  const parentChirp = await findOne(parentId);
+  const parentChirp = await findOne(parentId, 'post');
 
   const parent = parentChirp._id;
   const post = parentChirp instanceof ReplyChirp ? parentChirp.post : parent;
@@ -86,7 +86,7 @@ const createOne = async (
 };
 
 const deleteOne = async (id: Types.ObjectId) => {
-  const chirp = await findOne(id);
+  const chirp = await findOne(id, 'author parent replies');
   await chirp.remove();
 };
 
@@ -136,7 +136,7 @@ const decrementMetrics = async (
 };
 
 const deleteMany = async (filter: FilterQuery<Chirp>) => {
-  const chirps = await findMany(filter);
+  const chirps = await findMany(filter, 'author parent replies');
   await Promise.all(chirps.map((chirp) => chirp.remove()));
 };
 
@@ -147,9 +147,11 @@ const pushReply = async (id: Types.ObjectId, replyId: Types.ObjectId) => {
 };
 
 const pullReply = async (id: Types.ObjectId, replyId: Types.ObjectId) => {
-  const chirp = await findOne(id, 'replies');
-  chirp.replies = chirp.replies.filter((id) => !id.equals(replyId));
-  await chirp.save();
+  const chirp = await ChirpModel.findById(id, 'replies');
+  if (chirp) {
+    chirp.replies = chirp.replies.filter((id) => !id.equals(replyId));
+    await chirp.save();
+  }
 };
 
 export {
