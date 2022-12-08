@@ -142,15 +142,15 @@ const deleteChirp = async (chirpId: string) => {
   await privateClient.delete(`/chirps/${chirpId}`);
 };
 
-interface SearchParams {
+type SearchParams = {
   query: string;
-  sortOrder?: string;
+  sortOrder?: 'relevant' | 'recent' | 'popular';
   from?: string;
   includeReplies?: boolean;
   followedOnly?: boolean;
   startTime?: string;
   endTime?: string;
-}
+};
 
 const searchChirps = async (searchParams: SearchParams, nextPage?: string) => {
   const params = {

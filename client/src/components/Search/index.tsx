@@ -8,7 +8,7 @@ import UnauthenticatedChirpList from '../UnauthenticatedChirpList';
 
 type SearchParams = {
   query: string;
-  sortOrder?: string;
+  sortOrder?: 'relevant' | 'recent' | 'popular';
   from?: string;
   includeReplies?: boolean;
   followedOnly?: boolean;
