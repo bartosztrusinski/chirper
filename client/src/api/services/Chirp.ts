@@ -134,12 +134,38 @@ const createChirp = async (content: string) => {
   await privateClient.post('/chirps', { content });
 };
 
-const createReply = async (content: string, parentChirpId: string) => {
+const createReplyChirp = async (content: string, parentChirpId: string) => {
   await privateClient.post('/chirps', { content, parentId: parentChirpId });
 };
 
 const deleteChirp = async (chirpId: string) => {
   await privateClient.delete(`/chirps/${chirpId}`);
+};
+
+interface SearchParams {
+  query: string;
+  sortOrder?: string;
+  from?: string;
+  includeReplies?: boolean;
+  followedOnly?: boolean;
+  startTime?: string;
+  endTime?: string;
+}
+
+const searchChirps = async (searchParams: SearchParams, nextPage?: string) => {
+  const params = {
+    expandAuthor: true,
+    userFields: 'username, profile',
+    chirpFields: 'content, createdAt, metrics, replies',
+    ...searchParams,
+    page: nextPage,
+  };
+
+  const { data } = await privateClient.get<ChirpsResponse>('/chirps/search', {
+    params,
+  });
+
+  return data;
 };
 
 export default {
@@ -153,6 +179,7 @@ export default {
   unlikeChirp,
   getLikedChirpIds,
   createChirp,
-  createReply,
+  createReplyChirp,
   deleteChirp,
+  searchChirps,
 };
