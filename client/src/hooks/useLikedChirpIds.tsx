@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import ChirpService from '../api/services/Chirp';
 
 const useLikedChirpIds = (
-  queryKeys: string[],
+  queryKeys: unknown[],
   username: string,
   chirpIds: string[],
 ) =>

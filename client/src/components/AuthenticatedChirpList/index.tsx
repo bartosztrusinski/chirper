@@ -8,7 +8,7 @@ import { StoredUser } from '../../interfaces/User';
 
 interface AuthenticatedChirpListProps {
   chirps: IChirp[];
-  queryKeys: string[];
+  queryKeys: unknown[];
   page: number;
 }
 

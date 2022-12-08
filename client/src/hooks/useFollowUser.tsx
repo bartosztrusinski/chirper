@@ -8,7 +8,7 @@ import UserService from '../api/services/User';
 import { StoredUser, User } from '../interfaces/User';
 import useUser from './useUser';
 
-const useFollowUser = (queryKeys: string[], page?: number) => {
+const useFollowUser = (queryKeys: unknown[], page?: number) => {
   const queryClient = useQueryClient();
   const { user: currentUser, updateUser } = useUser();
   const SERVER_ERROR = 'There was an error contacting the server';

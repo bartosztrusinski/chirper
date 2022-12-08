@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-query';
 import useUser from './useUser';
 
-const useLikeChirp = (queryKeys: string[], page?: number) => {
+const useLikeChirp = (queryKeys: unknown[], page?: number) => {
   const queryClient = useQueryClient();
   const { user: currentUser } = useUser();
   const SERVER_ERROR = 'There was an error contacting the server';

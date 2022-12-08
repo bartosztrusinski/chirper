@@ -8,7 +8,7 @@ import { forwardRef, useState } from 'react';
 
 interface UserListProps {
   users: IUser[];
-  queryKeys: string[];
+  queryKeys: unknown[];
   page: number;
 }
 
@@ -33,9 +33,9 @@ const UserList = forwardRef<LastUserRef, UserListProps>(function UserList(
     users.map((user) => user._id),
   );
 
-  if (isLoading && users.length) {
-    return <div>Loading...</div>;
-  }
+  // if (isLoading && users.length) {
+  //   return <div>Loading...</div>;
+  // }
 
   if (isError) {
     return <div>Oops something went wrong</div>;
@@ -64,6 +64,7 @@ const UserList = forwardRef<LastUserRef, UserListProps>(function UserList(
             key={user._id}
             user={user}
             isFollowed={isUserFollowed(user.username)}
+            isFollowEnabled={!isLoading}
             onFollow={handleFollow}
           />
         );
