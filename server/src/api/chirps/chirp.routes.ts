@@ -18,6 +18,12 @@ router
     chirpControllers.createOne
   );
 
+router.get(
+  '/chirps/search',
+  [authenticateAllowGuest, validateRequest(chirpSchemas.searchMany)],
+  chirpControllers.searchMany
+);
+
 router
   .route('/chirps/:chirpId')
   .get([validateRequest(chirpSchemas.findOne)], chirpControllers.findOne)
@@ -25,12 +31,6 @@ router
     [authenticate, validateRequest(chirpSchemas.deleteOne), authorize],
     chirpControllers.deleteOne
   );
-
-router.get(
-  '/chirps/search',
-  [authenticateAllowGuest, validateRequest(chirpSchemas.searchMany)],
-  chirpControllers.searchMany
-);
 
 router.get(
   '/chirps/:chirpId/replies',
