@@ -116,7 +116,7 @@ const searchMany = async (
     calculateSkip(page, limit)
   );
 
-  const nextPage = foundChirps.length ? page + 1 : undefined;
+  const nextPage = foundChirps.length === limit ? page + 1 : undefined;
 
   res.status(200).json(createSuccessResponse(foundChirps, { nextPage }));
 };

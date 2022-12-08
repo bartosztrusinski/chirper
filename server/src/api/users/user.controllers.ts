@@ -86,7 +86,7 @@ const searchMany = async (
     calculateSkip(page, limit)
   );
 
-  const nextPage = foundUsers.length ? page + 1 : undefined;
+  const nextPage = foundUsers.length === limit ? page + 1 : undefined;
 
   res.status(200).json(createSuccessResponse(foundUsers, { nextPage }));
 };
