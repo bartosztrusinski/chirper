@@ -31,12 +31,10 @@ const Search = () => {
   } = useInfiniteQuery(
     ['chirps', ...queryKeys],
     ({ pageParam }) =>
-      ChirpService.searchChirps(
-        { ...search, query: search.query ?? '' },
-        pageParam,
-      ),
+      ChirpService.searchChirps({ ...(search as SearchParams) }, pageParam),
     {
       getNextPageParam: (lastPage) => lastPage.meta?.nextPage,
+      enabled: Boolean(search.query),
     },
   );
 
