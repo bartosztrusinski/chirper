@@ -1,26 +1,33 @@
 import styles from './styles.module.scss';
-import useToggle from '../../hooks/useToggle';
+import { ComponentPropsWithoutRef, forwardRef, useState } from 'react';
 
-interface Props {
-  name: string;
+interface ToggleProps extends ComponentPropsWithoutRef<'input'> {
+  title: string;
 }
 
-const Toggle = ({ name }: Props) => {
-  const [isEnabled, toggleIsEnabled] = useToggle();
+const Toggle = forwardRef<HTMLInputElement, ToggleProps>(function Toggle(
+  { title, defaultChecked, ...restProps },
+  ref,
+) {
+  const [isEnabled, setIsEnabled] = useState<boolean>(defaultChecked ?? false);
 
   return (
     <label className={`${styles.toggle} ${isEnabled ? styles.enabled : ''}`}>
       <span className='visually-hidden'>
-        {isEnabled ? `Disable ${name}` : `Enable ${name}`}
+        {isEnabled ? `Disable ${title}` : `Enable ${title}`}
       </span>
       <input
+        ref={ref}
         type='checkbox'
         className={styles.input}
-        checked={isEnabled}
-        onChange={() => toggleIsEnabled()}
+        {...restProps}
+        onChange={(e) => {
+          restProps.onChange?.(e);
+          setIsEnabled(e.target.checked);
+        }}
       />
     </label>
   );
-};
+});
 
 export default Toggle;
