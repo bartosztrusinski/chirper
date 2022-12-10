@@ -44,6 +44,15 @@ const routes: Route[] = [
         path: 'search',
         children: [
           { path: '/', element: <Search /> },
+          {
+            path: 'advanced',
+            element: (
+              <>
+                <Search />
+                <SearchFilterModal isOpen={true} />
+              </>
+            ),
+          },
           { element: <Navigate to='.' /> },
         ],
       },
