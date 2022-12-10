@@ -11,75 +11,99 @@ import UserLikedChirps from './components/UserChirps/liked';
 import useUser from './hooks/useUser';
 import AuthenticatedApp from './components/AuthenticatedApp';
 import UnauthenticatedApp from './components/UnauthenticatedApp';
-import { ReactLocation, Router, Route } from '@tanstack/react-location';
+import {
+  ReactLocation,
+  Router,
+  Route,
+  Outlet,
+  Navigate,
+} from '@tanstack/react-location';
 import { ReactLocationDevtools } from '@tanstack/react-location-devtools';
+import SearchFilterModal from './components/SearchFilterModal';
 
 const location = new ReactLocation();
 const routes: Route[] = [
+  { path: '/', element: <Landing /> },
   {
-    path: '/',
-    element: <Landing />,
-  },
-  {
-    path: 'home',
     element: (
-      <Layout title='Home'>
-        <Home />
+      <Layout>
+        <Outlet />
       </Layout>
     ),
-  },
-  {
-    path: 'search',
-    element: (
-      <Layout title='Search'>
-        <Search />
-      </Layout>
-    ),
-  },
-  {
-    path: 'explore',
-    element: (
-      <Layout title='Explore'>
-        <Explore />
-      </Layout>
-    ),
-  },
-  {
-    path: 'chirps/:id',
-    element: (
-      <Layout title='Chirp'>
-        <ChirpPage />
-      </Layout>
-    ),
-  },
-  {
-    path: 'users/:username',
-    element: (
-      <Layout title='User'>
-        <UserProfile />
-      </Layout>
-    ),
+
     children: [
       {
-        path: '/',
-        element: <UserChirps />,
+        path: 'home',
+        children: [
+          { path: '/', element: <Home /> },
+          { element: <Navigate to='.' /> },
+        ],
       },
+
       {
-        path: 'with-replies',
-        element: <UserChirps withReplies />,
+        path: 'search',
+        children: [
+          { path: '/', element: <Search /> },
+          { element: <Navigate to='.' /> },
+        ],
       },
+
       {
-        path: 'likes',
-        element: <UserLikedChirps />,
+        path: 'explore',
+        children: [
+          { path: '/', element: <Explore /> },
+          { element: <Navigate to='.' /> },
+        ],
       },
+
+      {
+        path: 'chirps',
+        children: [
+          { path: '/', element: <h1>404 Not Found 💀</h1> },
+          {
+            path: ':id',
+            children: [
+              { path: '/', element: <ChirpPage /> },
+              { element: <Navigate to={`.`} /> },
+            ],
+          },
+        ],
+      },
+
+      {
+        path: 'users',
+        children: [
+          { path: '/', element: <h1>404 Not Found 💀</h1> },
+          {
+            path: ':username',
+            element: <UserProfile />,
+            children: [
+              { path: '/', element: <UserChirps /> },
+              {
+                path: 'with-replies',
+                children: [
+                  { path: '/', element: <UserChirps withReplies /> },
+                  { element: <Navigate to={`.`} /> },
+                ],
+              },
+              {
+                path: 'likes',
+                children: [
+                  { path: '/', element: <UserLikedChirps /> },
+                  { element: <Navigate to={`.`} /> },
+                ],
+              },
+              { path: 'edit-profile', element: <UserChirps /> },
+              { path: 'followed', element: <UserChirps /> },
+              { path: 'following', element: <UserChirps /> },
+              { element: <Navigate to={`.`} /> },
+            ],
+          },
+        ],
+      },
+
+      { element: <h1>404 Not Found 💀</h1> },
     ],
-  },
-  {
-    element: (
-      <Layout title='Not Found'>
-        <h1>404 Not Found 💀</h1>
-      </Layout>
-    ),
   },
 ];
 
