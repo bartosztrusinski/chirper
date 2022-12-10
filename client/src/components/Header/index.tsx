@@ -4,16 +4,19 @@ import SearchForm from '../SearchForm';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import { Link } from '@tanstack/react-location';
 import DarkModeToggle from '../Toggle/DarkModeToggle';
+import { useEffect, useState } from 'react';
 
-interface Props {
-  title: string;
-}
-
-const Header = ({ title }: Props) => {
+const Header = () => {
   const smallBreakpoint = 536;
   const mediumBreakpoint = 690;
   const isSmallUp = useMediaQuery(`(min-width: ${smallBreakpoint}px)`);
   const isMediumUp = useMediaQuery(`(min-width: ${mediumBreakpoint}px)`);
+
+  const [title, setTitle] = useState<string>('');
+
+  useEffect(() => {
+    setTitle(document.title);
+  }, []);
 
   return (
     <header className={styles.header}>

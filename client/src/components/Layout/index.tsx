@@ -9,12 +9,11 @@ import AuthenticatedNav from '../Nav/AuthenticatedNav';
 import UnauthenticatedNav from '../Nav/UnauthenticatedNav';
 import useUser from '../../hooks/useUser';
 
-interface Props {
-  children?: ReactNode;
-  title: string;
+interface LayountProps {
+  children: ReactNode;
 }
 
-const Layout = ({ children, title }: Props) => {
+const Layout = ({ children }: LayountProps) => {
   const { user } = useUser();
 
   const smallBreakpoint = 536;
@@ -26,7 +25,7 @@ const Layout = ({ children, title }: Props) => {
 
   return (
     <div className={styles.container}>
-      <Header title={title} />
+      <Header />
       <div className={styles.grid}>
         {isSmallUp && (
           <Sidebar>
