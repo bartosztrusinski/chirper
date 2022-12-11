@@ -8,6 +8,8 @@ import { FaRegCommentAlt } from '@react-icons/all-files/fa/FaRegCommentAlt';
 import { FaRegHeart } from '@react-icons/all-files/fa/FaRegHeart';
 import { FiShare } from '@react-icons/all-files/fi/FiShare';
 import { CreateChirpContext } from '../AuthenticatedApp';
+import { PromptContext } from '../UnauthenticatedApp';
+import useUser from '../../hooks/useUser';
 
 interface ChirpProps {
   chirp: Chirp;
@@ -22,10 +24,9 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
   { chirp, showMetrics = true, isLiked = false, onLike },
   ref,
 ) {
-  const { openCreateChirpModal } = useContext(
-    CreateChirpContext,
-  ) as CreateChirpContext;
-
+  const createChirpContext = useContext(CreateChirpContext);
+  const promptContext = useContext(PromptContext);
+  const { user } = useUser();
   const { _id, content, createdAt, author, metrics, replies } = chirp;
   const { username, profile } = author;
   const avatar = profile.picture ?? defaultAvatar;
@@ -80,7 +81,9 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
             <div
               onClick={(e) => {
                 e.stopPropagation();
-                openCreateChirpModal(chirp);
+                user
+                  ? createChirpContext?.openCreateChirpModal(chirp)
+                  : promptContext?.openReplyPrompt(chirp.author.username);
               }}
               className={styles.replies}
             >
