@@ -19,6 +19,7 @@ import CreateChirpForm from '../CreateChirpForm';
 import { CreateChirpContext } from '../AuthenticatedApp';
 import useManageChirp from '../../hooks/useManageChirp';
 import Button from '../Button';
+import { PromptContext } from '../UnauthenticatedApp';
 
 const ChirpPage = () => {
   const {
@@ -42,13 +43,12 @@ const ChirpPage = () => {
     data: likedChirpIds,
     isSuccess,
     isLoading: isLikedLoading,
-  } = useLikedChirpIds(queryKeys, user!.username, [id]);
+  } = useLikedChirpIds(queryKeys, [id]);
 
   const [isLikesModalOpen, setIsLikesModalOpen] = useState<boolean>(false);
 
-  const { openCreateChirpModal } = useContext(
-    CreateChirpContext,
-  ) as CreateChirpContext;
+  const createChirpContext = useContext(CreateChirpContext);
+  const promptContext = useContext(PromptContext);
 
   const { deleteChirp } = useManageChirp();
 
@@ -143,7 +143,11 @@ const ChirpPage = () => {
             <button
               type='button'
               className={styles.button}
-              onClick={() => openCreateChirpModal(chirp)}
+              onClick={() =>
+                user
+                  ? createChirpContext?.openCreateChirpModal(chirp)
+                  : promptContext?.openReplyPrompt(chirp.author.username)
+              }
             >
               <FaRegCommentAlt className={styles.icon} />
             </button>
@@ -154,9 +158,7 @@ const ChirpPage = () => {
               className={`${styles.button} ${styles.like} ${
                 isLiked ? styles.liked : ''
               }`}
-              onClick={() => {
-                isLiked ? unlikeChirp(chirp) : likeChirp(chirp);
-              }}
+              onClick={() => (isLiked ? unlikeChirp(chirp) : likeChirp(chirp))}
             >
               <FaRegHeart className={styles.icon} />
             </button>
@@ -179,9 +181,11 @@ const ChirpPage = () => {
               </button>
             )}
           </div>
-          <div className={styles.replyFormContainer}>
-            <CreateChirpForm replyToId={chirp._id} />
-          </div>
+          {user && (
+            <div className={styles.replyFormContainer}>
+              <CreateChirpForm replyToId={chirp._id} />
+            </div>
+          )}
         </article>
 
         <ChirpReplies chirp={chirp} />
