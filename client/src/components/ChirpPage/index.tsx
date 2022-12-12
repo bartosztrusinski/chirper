@@ -153,12 +153,19 @@ const ChirpPage = () => {
             </button>
 
             <button
-              disabled={isLikedLoading}
+              disabled={Boolean(user) && isLikedLoading}
               type='button'
               className={`${styles.button} ${styles.like} ${
                 isLiked ? styles.liked : ''
               }`}
-              onClick={() => (isLiked ? unlikeChirp(chirp) : likeChirp(chirp))}
+              onClick={() => {
+                if (!user) {
+                  promptContext?.openLikePrompt(chirp.author.username);
+                  return;
+                }
+
+                isLiked ? unlikeChirp(chirp) : likeChirp(chirp);
+              }}
             >
               <FaRegHeart className={styles.icon} />
             </button>
@@ -172,9 +179,7 @@ const ChirpPage = () => {
                 type='button'
                 className={`${styles.button} ${styles.delete}`}
                 onClick={() =>
-                  deleteChirp(chirp._id, {
-                    onSuccess: () => history.back(),
-                  })
+                  deleteChirp(chirp._id, { onSuccess: () => history.back() })
                 }
               >
                 <BsTrash className={styles.icon} />
