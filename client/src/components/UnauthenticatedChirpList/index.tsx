@@ -1,8 +1,7 @@
 import Chirp from '../Chirp';
 import IChirp from '../../interfaces/Chirp';
-import Modal from '../Modal';
-import LikePrompt from '../Prompt/LikePrompt';
-import { forwardRef, useState } from 'react';
+import { forwardRef, useContext } from 'react';
+import { PromptContext } from '../UnauthenticatedApp';
 
 interface UnauthenticatedChirpListProps {
   chirps: IChirp[];
@@ -14,13 +13,7 @@ const UnauthenticatedChirpList = forwardRef<
   LastChirpRef,
   UnauthenticatedChirpListProps
 >(function UnauthenticatedChirpList({ chirps }, ref) {
-  const [isLikeModalOpen, setIsLikeModalOpen] = useState<boolean>(false);
-  const [selectedAuthor, setSelectedAuthor] = useState<string>('');
-
-  const handleLike = (author: string) => {
-    setSelectedAuthor(author);
-    setIsLikeModalOpen(true);
-  };
+  const { openLikePrompt } = useContext(PromptContext) as PromptContext;
 
   return (
     <>
@@ -32,18 +25,10 @@ const UnauthenticatedChirpList = forwardRef<
             ref={isLastChirp ? ref : null}
             key={chirp._id}
             chirp={chirp}
-            onLike={() => handleLike(chirp.author.username)}
+            onLike={() => openLikePrompt(chirp.author.username)}
           />
         );
       })}
-
-      <Modal
-        isOpen={isLikeModalOpen}
-        onRequestClose={() => setIsLikeModalOpen(false)}
-        title=' '
-      >
-        <LikePrompt username={selectedAuthor} />
-      </Modal>
     </>
   );
 });
