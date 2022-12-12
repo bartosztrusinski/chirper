@@ -9,6 +9,7 @@ import {
   MakeGenerics,
 } from '@tanstack/react-location';
 import ReplyPrompt from '../Prompt/ReplyPrompt';
+import LikePrompt from '../Prompt/LikePrompt';
 
 type LocationGenerics = MakeGenerics<{
   Search: {
@@ -19,7 +20,8 @@ type LocationGenerics = MakeGenerics<{
 
 interface PromptContext {
   openReplyPrompt: (username: string) => void;
-  closeReplyPrompt: () => void;
+  openLikePrompt: (username: string) => void;
+  closePrompt: () => void;
 }
 
 const PromptContext = createContext<PromptContext | null>(null);
@@ -30,6 +32,7 @@ const UnauthenticatedApp = () => {
   const [isLogInOpen, setIsLogInOpen] = useState<boolean>(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState<boolean>(false);
   const [isReplyPromptOpen, setIsReplyPromptOpen] = useState<boolean>(false);
+  const [isLikePromptOpen, setIsLikePromptOpen] = useState<boolean>(false);
   const [promptUsername, setPromptUsername] = useState<string>('');
 
   const openReplyPrompt = (username: string) => {
@@ -37,9 +40,14 @@ const UnauthenticatedApp = () => {
     setIsReplyPromptOpen(true);
   };
 
-  const closeReplyPrompt = () => {
-    setPromptUsername('');
+  const openLikePrompt = (username: string) => {
+    setPromptUsername(username);
+    setIsLikePromptOpen(true);
+  };
+
+  const closePrompt = () => {
     setIsReplyPromptOpen(false);
+    setIsLikePromptOpen(false);
   };
 
   useEffect(() => {
@@ -51,42 +59,55 @@ const UnauthenticatedApp = () => {
 
   return (
     <>
-      <PromptContext.Provider value={{ openReplyPrompt, closeReplyPrompt }}>
+      <PromptContext.Provider
+        value={{ openReplyPrompt, openLikePrompt, closePrompt }}
+      >
         <Outlet />
+
+        <Modal
+          isOpen={isLogInOpen}
+          onRequestClose={() =>
+            navigate({
+              search: (old) => ({
+                ...old,
+                login: undefined,
+                signup: undefined,
+              }),
+            })
+          }
+        >
+          <LoginForm />
+        </Modal>
+
+        <RegisterForm
+          isOpen={isSignUpOpen}
+          onRequestClose={() =>
+            navigate({
+              search: (old) => ({
+                ...old,
+                login: undefined,
+                signup: undefined,
+              }),
+            })
+          }
+        />
+
+        <Modal
+          isOpen={isReplyPromptOpen}
+          onRequestClose={() => setIsReplyPromptOpen(false)}
+          title=' '
+        >
+          <ReplyPrompt username={promptUsername} />
+        </Modal>
+
+        <Modal
+          isOpen={isLikePromptOpen}
+          onRequestClose={() => setIsLikePromptOpen(false)}
+          title=' '
+        >
+          <LikePrompt username={promptUsername} />
+        </Modal>
       </PromptContext.Provider>
-      <Modal
-        isOpen={isLogInOpen}
-        onRequestClose={() =>
-          navigate({
-            search: (old) => ({
-              ...old,
-              login: undefined,
-              signup: undefined,
-            }),
-          })
-        }
-      >
-        <LoginForm />
-      </Modal>
-      <RegisterForm
-        isOpen={isSignUpOpen}
-        onRequestClose={() =>
-          navigate({
-            search: (old) => ({
-              ...old,
-              login: undefined,
-              signup: undefined,
-            }),
-          })
-        }
-      />
-      <Modal
-        isOpen={isReplyPromptOpen}
-        onRequestClose={() => setIsReplyPromptOpen(false)}
-        title=' '
-      >
-        <ReplyPrompt username={promptUsername} />
-      </Modal>
     </>
   );
 };
