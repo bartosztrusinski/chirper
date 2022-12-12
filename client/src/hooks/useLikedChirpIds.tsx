@@ -1,17 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import ChirpService from '../api/services/Chirp';
+import useUser from './useUser';
 
-const useLikedChirpIds = (
-  queryKeys: unknown[],
-  username: string,
-  chirpIds: string[],
-) =>
-  useQuery(
+const useLikedChirpIds = (queryKeys: unknown[], chirpIds: string[]) => {
+  const { user } = useUser();
+
+  return useQuery(
     ['likedChirpIds', ...queryKeys],
-    () => ChirpService.getLikedChirpIds(username, chirpIds),
-    {
-      enabled: !!chirpIds.length,
-    },
+    () => ChirpService.getLikedChirpIds(user!.username, chirpIds),
+    { enabled: Boolean(chirpIds.length && user) },
   );
+};
 
 export default useLikedChirpIds;
