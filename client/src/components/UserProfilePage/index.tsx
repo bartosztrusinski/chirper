@@ -16,12 +16,13 @@ import { HiOutlineLocationMarker } from '@react-icons/all-files/hi/HiOutlineLoca
 import { BiLinkAlt } from '@react-icons/all-files/bi/BiLinkAlt';
 import useUser from '../../hooks/useUser';
 import EditProfileModal from '../EditProfileModal';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ConfirmModal from '../ConfirmModal';
 import useFollowedUsernames from '../../hooks/useFollowedUsernames';
 import useFollowUser from '../../hooks/useFollowUser';
 import FollowedModal from '../FollowedModal';
 import FollowingModal from '../FollowingModal';
+import { PromptContext } from '../UnauthenticatedApp';
 
 const UserProfile = () => {
   const [
@@ -60,6 +61,7 @@ const UserProfile = () => {
     if (isEditRoute || isFollowedRoute || isFollowingRoute) return;
 
     setRoute(path);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [path]);
 
   const {
@@ -67,30 +69,28 @@ const UserProfile = () => {
     isLoading,
     isError,
     isSuccess,
-    error,
-  } = useQuery(
-    ['users', ...queryKeys],
-    async () => await UserService.getOne(username),
-  );
+  } = useQuery(['users', ...queryKeys], () => UserService.getOne(username));
 
-  const { data: followedUsernames, isSuccess: isFollowedSuccess } =
-    useFollowedUsernames(
-      queryKeys,
-      currentUser!.username,
-      isSuccess ? [user._id] : [],
-    );
+  const {
+    data: followedUsernames,
+    isSuccess: isFollowedSuccess,
+    isLoading: isFollowedLoading,
+  } = useFollowedUsernames(queryKeys, isSuccess ? [user._id] : []);
+
+  const promptContext = useContext(PromptContext);
+
+  const isFollowed =
+    isSuccess && isFollowedSuccess && followedUsernames.includes(user.username);
+  const isCurrentUser =
+    isSuccess && currentUser && currentUser._id === user._id;
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   if (isError) {
-    return <div>{(error as Error).message}</div>;
+    return <div>Oops something went wrong...</div>;
   }
-
-  const isFollowed =
-    isFollowedSuccess && followedUsernames.includes(user.username);
-  const isCurrentUser = currentUser && currentUser._id === user._id;
 
   return (
     <>
@@ -105,30 +105,40 @@ const UserProfile = () => {
             <div className={styles.name}>{user.profile.name}</div>
             <div className={styles.username}>@{user.username}</div>
           </div>
-          {isCurrentUser ? (
-            <Button
-              className={styles.button}
-              type='button'
-              onClick={() => navigate({ to: 'edit-profile' })}
-            >
-              Edit Profile
-            </Button>
-          ) : isFollowed ? (
-            <Button
-              className={styles.button}
-              onClick={() => setIsConfirmModalOpen(true)}
-            >
-              Unfollow
-            </Button>
-          ) : (
-            <Button
-              className={styles.button}
-              type='button'
-              onClick={() => followUser(user.username)}
-            >
-              Follow
-            </Button>
-          )}
+          <Button
+            type='button'
+            className={styles.button}
+            disabled={
+              !isCurrentUser && Boolean(currentUser) && isFollowedLoading
+            }
+            onClick={() => {
+              if (!currentUser) {
+                promptContext?.openFollowPrompt(user.username);
+                return;
+              }
+
+              if (isCurrentUser) {
+                navigate({ to: 'edit-profile' });
+                return;
+              }
+
+              if (isFollowed) {
+                setIsConfirmModalOpen(true);
+              } else {
+                followUser(user.username);
+              }
+            }}
+          >
+            {!currentUser
+              ? 'Follow'
+              : isCurrentUser
+              ? 'Edit Profile'
+              : isFollowedLoading
+              ? 'Loading...'
+              : isFollowed
+              ? 'Unfollow'
+              : 'Follow'}
+          </Button>
         </div>
 
         {user.profile.bio && <p className={styles.bio}>{user.profile.bio}</p>}
@@ -147,7 +157,9 @@ const UserProfile = () => {
           {user.profile.website && (
             <div className={styles.item}>
               <BiLinkAlt className={styles.icon} />
-              <div className={styles.text}>{user.profile.website}</div>
+              <a href={user.profile.website} className={styles.text}>
+                {user.profile.website.split('//')[1]}
+              </a>
             </div>
           )}
         </div>
@@ -214,10 +226,12 @@ const UserProfile = () => {
         <Outlet />
       </section>
 
-      <EditProfileModal
-        open={isEditModalOpen}
-        onClose={() => navigate({ to: route })}
-      />
+      {currentUser && (
+        <EditProfileModal
+          isOpen={isEditModalOpen}
+          onRequestClose={() => navigate({ to: route })}
+        />
+      )}
 
       <FollowedModal
         isOpen={isFollowedModalOpen}
