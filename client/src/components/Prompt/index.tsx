@@ -1,8 +1,10 @@
 import styles from './styles.module.scss';
 import Button from '../Button';
-import { CSSProperties } from 'react';
+import { CSSProperties, useContext } from 'react';
 import { IconType } from '@react-icons/all-files';
 import { RiTwitterLine as ChirperIcon } from '@react-icons/all-files/ri/RiTwitterLine';
+import { useNavigate } from '@tanstack/react-location';
+import { PromptContext } from '../UnauthenticatedApp';
 
 interface Props {
   title: string;
@@ -17,6 +19,9 @@ const Prompt = ({
   iconColor,
   Icon = ChirperIcon,
 }: Props) => {
+  const navigate = useNavigate();
+  const promptContext = useContext(PromptContext);
+
   return (
     <>
       <Icon className={styles.icon} style={{ color: iconColor }} />
@@ -25,8 +30,24 @@ const Prompt = ({
         <div className={styles.description}>{description}</div>
       </div>
       <div className={styles.buttons}>
-        <Button variant='primary'>Log In</Button>
-        <Button variant='light'>Sign Up</Button>
+        <Button
+          autoFocus
+          onClick={() => {
+            promptContext?.closePrompt();
+            navigate({ search: (old) => ({ ...old, login: true }) });
+          }}
+        >
+          Log In
+        </Button>
+        <Button
+          variant='light'
+          onClick={() => {
+            promptContext?.closePrompt();
+            navigate({ search: (old) => ({ ...old, signup: true }) });
+          }}
+        >
+          Sign Up
+        </Button>
       </div>
     </>
   );
