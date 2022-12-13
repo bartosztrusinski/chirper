@@ -10,6 +10,7 @@ import {
 } from '@tanstack/react-location';
 import ReplyPrompt from '../Prompt/ReplyPrompt';
 import LikePrompt from '../Prompt/LikePrompt';
+import FollowPrompt from '../Prompt/FollowPrompt';
 
 type LocationGenerics = MakeGenerics<{
   Search: {
@@ -21,6 +22,7 @@ type LocationGenerics = MakeGenerics<{
 interface PromptContext {
   openReplyPrompt: (username: string) => void;
   openLikePrompt: (username: string) => void;
+  openFollowPrompt: (username: string) => void;
   closePrompt: () => void;
 }
 
@@ -33,6 +35,7 @@ const UnauthenticatedApp = () => {
   const [isSignUpOpen, setIsSignUpOpen] = useState<boolean>(false);
   const [isReplyPromptOpen, setIsReplyPromptOpen] = useState<boolean>(false);
   const [isLikePromptOpen, setIsLikePromptOpen] = useState<boolean>(false);
+  const [isFollowPromptOpen, setIsFollowPromptOpen] = useState<boolean>(false);
   const [promptUsername, setPromptUsername] = useState<string>('');
 
   const openReplyPrompt = (username: string) => {
@@ -45,9 +48,15 @@ const UnauthenticatedApp = () => {
     setIsLikePromptOpen(true);
   };
 
+  const openFollowPrompt = (username: string) => {
+    setPromptUsername(username);
+    setIsFollowPromptOpen(true);
+  };
+
   const closePrompt = () => {
     setIsReplyPromptOpen(false);
     setIsLikePromptOpen(false);
+    setIsFollowPromptOpen(false);
   };
 
   useEffect(() => {
@@ -60,7 +69,12 @@ const UnauthenticatedApp = () => {
   return (
     <>
       <PromptContext.Provider
-        value={{ openReplyPrompt, openLikePrompt, closePrompt }}
+        value={{
+          openReplyPrompt,
+          openLikePrompt,
+          openFollowPrompt,
+          closePrompt,
+        }}
       >
         <Outlet />
 
@@ -106,6 +120,14 @@ const UnauthenticatedApp = () => {
           title=' '
         >
           <LikePrompt username={promptUsername} />
+        </Modal>
+
+        <Modal
+          isOpen={isFollowPromptOpen}
+          onRequestClose={() => setIsFollowPromptOpen(false)}
+          title=' '
+        >
+          <FollowPrompt username={promptUsername} />
         </Modal>
       </PromptContext.Provider>
     </>
