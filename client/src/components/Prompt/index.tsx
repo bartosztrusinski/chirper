@@ -3,7 +3,6 @@ import Button from '../Button';
 import { CSSProperties, useContext } from 'react';
 import { IconType } from '@react-icons/all-files';
 import { RiTwitterLine as ChirperIcon } from '@react-icons/all-files/ri/RiTwitterLine';
-import { useNavigate } from '@tanstack/react-location';
 import { PromptContext } from '../UnauthenticatedApp';
 
 interface Props {
@@ -19,7 +18,6 @@ const Prompt = ({
   iconColor,
   Icon = ChirperIcon,
 }: Props) => {
-  const navigate = useNavigate();
   const promptContext = useContext(PromptContext);
 
   return (
@@ -33,8 +31,8 @@ const Prompt = ({
         <Button
           autoFocus
           onClick={() => {
+            promptContext?.openLogIn();
             promptContext?.closePrompt();
-            navigate({ search: (old) => ({ ...old, login: true }) });
           }}
         >
           Log In
@@ -42,8 +40,8 @@ const Prompt = ({
         <Button
           variant='light'
           onClick={() => {
+            promptContext?.openSignUp();
             promptContext?.closePrompt();
-            navigate({ search: (old) => ({ ...old, signup: true }) });
           }}
         >
           Sign Up
