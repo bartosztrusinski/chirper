@@ -6,14 +6,15 @@ import defaultAvatar from '../../assets/images/default_avatar.png';
 import useAuth from '../../hooks/useAuth';
 import { useContext } from 'react';
 import { CreateChirpContext } from '../AuthenticatedApp';
+import { PromptContext } from '../UnauthenticatedApp';
 
 const UserPanel = () => {
   const navigate = useNavigate();
   const { user } = useUser();
   const { logOut } = useAuth();
-  const { openCreateChirpModal } = useContext(
-    CreateChirpContext,
-  ) as CreateChirpContext;
+
+  const createChirpContext = useContext(CreateChirpContext);
+  const promptContext = useContext(PromptContext);
 
   return user ? (
     <div className={styles.userPanel}>
@@ -55,7 +56,7 @@ const UserPanel = () => {
           type='button'
           onClick={(e) => {
             e.preventDefault();
-            openCreateChirpModal();
+            createChirpContext?.openCreateChirpModal();
           }}
         >
           Create Chirp
@@ -82,18 +83,10 @@ const UserPanel = () => {
     </div>
   ) : (
     <div className={styles.buttonContainer}>
-      <Button
-        variant='light'
-        onClick={() =>
-          navigate({ search: (old) => ({ ...old, signup: true }) })
-        }
-      >
+      <Button variant='light' onClick={() => promptContext?.openSignUp()}>
         Sign up
       </Button>
-      <Button
-        variant='light'
-        onClick={() => navigate({ search: (old) => ({ ...old, login: true }) })}
-      >
+      <Button variant='light' onClick={() => promptContext?.openLogIn()}>
         Log in
       </Button>
     </div>
