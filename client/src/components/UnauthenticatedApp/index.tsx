@@ -23,16 +23,23 @@ interface PromptContext {
   openReplyPrompt: (username: string) => void;
   openLikePrompt: (username: string) => void;
   openFollowPrompt: (username: string) => void;
+  openLogIn: () => void;
+  openSignUp: () => void;
   closePrompt: () => void;
 }
 
 const PromptContext = createContext<PromptContext | null>(null);
 
 const UnauthenticatedApp = () => {
-  const search = useSearch<LocationGenerics>();
+  const { login: loginParam, signup: signupParam } =
+    useSearch<LocationGenerics>();
   const navigate = useNavigate<LocationGenerics>();
-  const [isLogInOpen, setIsLogInOpen] = useState<boolean>(false);
-  const [isSignUpOpen, setIsSignUpOpen] = useState<boolean>(false);
+
+  const [isLogInOpen, setIsLogInOpen] = useState<boolean>(loginParam === true);
+  const [isSignUpOpen, setIsSignUpOpen] = useState<boolean>(
+    signupParam === true,
+  );
+
   const [isReplyPromptOpen, setIsReplyPromptOpen] = useState<boolean>(false);
   const [isLikePromptOpen, setIsLikePromptOpen] = useState<boolean>(false);
   const [isFollowPromptOpen, setIsFollowPromptOpen] = useState<boolean>(false);
@@ -59,12 +66,39 @@ const UnauthenticatedApp = () => {
     setIsFollowPromptOpen(false);
   };
 
-  useEffect(() => {
-    if (search.login && search.signup) return;
+  const openLogIn = () =>
+    navigate({
+      search: (old) => ({
+        ...old,
+        login: true,
+        signup: undefined,
+      }),
+    });
 
-    setIsLogInOpen(search.login === true);
-    setIsSignUpOpen(search.signup === true);
-  }, [search.login, search.signup]);
+  const openSignUp = () =>
+    navigate({
+      search: (old) => ({
+        ...old,
+        login: undefined,
+        signup: true,
+      }),
+    });
+
+  const closeAuth = () =>
+    navigate({
+      search: (old) => ({
+        ...old,
+        login: undefined,
+        signup: undefined,
+      }),
+    });
+
+  useEffect(() => {
+    if (loginParam && signupParam) return;
+
+    setIsLogInOpen(loginParam === true);
+    setIsSignUpOpen(signupParam === true);
+  }, [loginParam, signupParam]);
 
   return (
     <>
@@ -73,38 +107,18 @@ const UnauthenticatedApp = () => {
           openReplyPrompt,
           openLikePrompt,
           openFollowPrompt,
+          openLogIn,
+          openSignUp,
           closePrompt,
         }}
       >
         <Outlet />
 
-        <Modal
-          isOpen={isLogInOpen}
-          onRequestClose={() =>
-            navigate({
-              search: (old) => ({
-                ...old,
-                login: undefined,
-                signup: undefined,
-              }),
-            })
-          }
-        >
+        <Modal isOpen={isLogInOpen} onRequestClose={closeAuth}>
           <LoginForm />
         </Modal>
 
-        <RegisterForm
-          isOpen={isSignUpOpen}
-          onRequestClose={() =>
-            navigate({
-              search: (old) => ({
-                ...old,
-                login: undefined,
-                signup: undefined,
-              }),
-            })
-          }
-        />
+        <RegisterForm isOpen={isSignUpOpen} onRequestClose={closeAuth} />
 
         <Modal
           isOpen={isReplyPromptOpen}
