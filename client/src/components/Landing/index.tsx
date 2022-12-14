@@ -1,12 +1,14 @@
 import { RiTwitterLine } from '@react-icons/all-files/ri/RiTwitterLine';
-import { Navigate, useNavigate } from '@tanstack/react-location';
+import { Navigate } from '@tanstack/react-location';
+import { useContext } from 'react';
 import useUser from '../../hooks/useUser';
 import Button from '../Button';
+import { PromptContext } from '../UnauthenticatedApp';
 import styles from './styles.module.scss';
 
 const Landing = () => {
-  const navigate = useNavigate();
   const { user } = useUser();
+  const promptContext = useContext(PromptContext);
 
   return user ? (
     <Navigate to='/home' />
@@ -24,20 +26,10 @@ const Landing = () => {
         <section className={styles.card}>
           <h2>Join Chirper today</h2>
           <div className={styles.group}>
-            <Button
-              variant='light'
-              onClick={() =>
-                navigate({ search: (old) => ({ ...old, signup: true }) })
-              }
-            >
+            <Button variant='light' onClick={promptContext?.openSignUp}>
               Sign up
             </Button>
-            <Button
-              variant='light'
-              onClick={() =>
-                navigate({ search: (old) => ({ ...old, login: true }) })
-              }
-            >
+            <Button variant='light' onClick={promptContext?.openLogIn}>
               Log in
             </Button>
           </div>

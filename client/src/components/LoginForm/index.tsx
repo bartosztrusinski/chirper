@@ -2,9 +2,11 @@ import styles from './styles.module.scss';
 import Input from '../Input';
 import PasswordInput from '../PasswordInput';
 import Button from '../Button';
-import { Link, useNavigate } from '@tanstack/react-location';
+import { useNavigate } from '@tanstack/react-location';
 import useAuth from '../../hooks/useAuth';
 import { useForm } from 'react-hook-form';
+import { useContext } from 'react';
+import { PromptContext } from '../UnauthenticatedApp';
 
 interface Inputs {
   login: string;
@@ -13,6 +15,7 @@ interface Inputs {
 
 const LoginForm = () => {
   const { logIn, isLoggingIn } = useAuth();
+  const { SignUpLink } = useContext(PromptContext) as PromptContext;
   const navigate = useNavigate();
   const {
     register,
@@ -86,10 +89,7 @@ const LoginForm = () => {
       </form>
 
       <p className={styles.signUpLink}>
-        Don&apos;t have an account?
-        <Link to={location.pathname} search={{ signup: true }}>
-          Sign Up
-        </Link>
+        Don&apos;t have an account? <SignUpLink>Sign Up</SignUpLink>
       </p>
     </>
   );

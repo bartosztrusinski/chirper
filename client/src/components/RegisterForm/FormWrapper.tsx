@@ -2,9 +2,9 @@ import { ComponentPropsWithoutRef, useContext } from 'react';
 import styles from './styles.module.scss';
 import { FaArrowLeft } from '@react-icons/all-files/fa/FaArrowLeft';
 import Button from '../Button';
-import { Link } from '@tanstack/react-location';
 import { MultiStepContext } from '.';
 import { MultiStep } from '../../hooks/useMultiStep';
+import { PromptContext } from '../UnauthenticatedApp';
 
 interface FormWrapperProps extends ComponentPropsWithoutRef<'form'> {
   isInvalid?: boolean;
@@ -17,46 +17,46 @@ const FormWrapper = ({
   isSubmitting = false,
   ...restProps
 }: FormWrapperProps) => {
+  const { LogInLink: LoginLink } = useContext(PromptContext) as PromptContext;
   const { previousStep, currentStepIndex, isFirstStep, isLastStep, steps } =
     useContext(MultiStepContext) as MultiStep;
 
   return (
-    <form {...restProps} className={styles.form}>
-      <div className={styles.stepContainer}>
-        <div className={styles.stepIndexPanel}>
-          {!isFirstStep && (
-            <button
-              type='button'
-              onClick={previousStep}
-              className={styles.backButton}
-            >
-              <FaArrowLeft />
-            </button>
-          )}
-          Step {currentStepIndex + 1} of {steps.length}
-        </div>
-        {children}
+    <>
+      <div className={styles.stepIndexPanel}>
+        {!isFirstStep && (
+          <button
+            type='button'
+            onClick={previousStep}
+            className={styles.backButton}
+          >
+            <FaArrowLeft />
+          </button>
+        )}
+        Step {currentStepIndex + 1} of {steps.length}
       </div>
-      <Button
-        type='submit'
-        disabled={isInvalid || isSubmitting}
-        className={styles.submitButton}
-      >
-        {isSubmitting
-          ? 'Signing Up...'
-          : isLastStep
-          ? 'Create Account'
-          : 'Next'}
-      </Button>
+
+      <form {...restProps} className={styles.form}>
+        <div className={styles.stepContainer}>{children}</div>
+        <Button
+          type='submit'
+          disabled={isInvalid || isSubmitting}
+          className={styles.submitButton}
+        >
+          {isSubmitting
+            ? 'Signing Up...'
+            : isLastStep
+            ? 'Create Account'
+            : 'Next'}
+        </Button>
+      </form>
+
       {isFirstStep && (
         <p className={styles.logInLink}>
-          Have an account already?
-          <Link to={location.pathname} search={{ login: true }}>
-            Log In
-          </Link>
+          Have an account already? <LoginLink>Log In</LoginLink>
         </p>
       )}
-    </form>
+    </>
   );
 };
 
