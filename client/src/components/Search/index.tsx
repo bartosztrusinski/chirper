@@ -17,9 +17,20 @@ type SearchParams = {
 };
 
 const Search = () => {
-  const search = useSearch<MakeGenerics<{ Search: SearchParams }>>();
   const { user } = useUser();
-  const queryKeys = ['search', search];
+  const search = useSearch<MakeGenerics<{ Search: SearchParams }>>();
+
+  const searchParams = {
+    query: search.query,
+    sortOrder: search.sortOrder,
+    from: search.from,
+    includeReplies: search.includeReplies,
+    followedOnly: search.followedOnly,
+    startTime: search.startTime,
+    endTime: search.endTime,
+  };
+
+  const queryKeys = ['search', searchParams];
 
   const {
     data,
@@ -31,10 +42,10 @@ const Search = () => {
   } = useInfiniteQuery(
     ['chirps', ...queryKeys],
     ({ pageParam }) =>
-      ChirpService.searchChirps({ ...(search as SearchParams) }, pageParam),
+      ChirpService.searchChirps(searchParams as SearchParams, pageParam),
     {
       getNextPageParam: (lastPage) => lastPage.meta?.nextPage,
-      enabled: Boolean(search.query),
+      enabled: Boolean(searchParams.query),
     },
   );
 
@@ -61,7 +72,7 @@ const Search = () => {
     [fetchNextPage, hasNextPage, isFetchingNextPage],
   );
 
-  if (!search.query) {
+  if (!data) {
     return <div>Search for something</div>;
   }
 
