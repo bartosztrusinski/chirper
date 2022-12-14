@@ -1,16 +1,19 @@
 import LoginForm from '../LoginForm';
 import Modal from '../Modal';
 import RegisterForm from '../RegisterForm';
+import ReplyPrompt from '../Prompt/ReplyPrompt';
+import LikePrompt from '../Prompt/LikePrompt';
+import FollowPrompt from '../Prompt/FollowPrompt';
 import { createContext, useEffect, useState } from 'react';
 import {
   Outlet,
   useSearch,
   useNavigate,
   MakeGenerics,
+  Link,
+  useLocation,
+  LinkProps,
 } from '@tanstack/react-location';
-import ReplyPrompt from '../Prompt/ReplyPrompt';
-import LikePrompt from '../Prompt/LikePrompt';
-import FollowPrompt from '../Prompt/FollowPrompt';
 
 type LocationGenerics = MakeGenerics<{
   Search: {
@@ -23,17 +26,20 @@ interface PromptContext {
   openReplyPrompt: (username: string) => void;
   openLikePrompt: (username: string) => void;
   openFollowPrompt: (username: string) => void;
+  closePrompt: () => void;
   openLogIn: () => void;
   openSignUp: () => void;
-  closePrompt: () => void;
+  LogInLink: (props: LinkProps) => JSX.Element;
+  SignUpLink: (props: LinkProps) => JSX.Element;
 }
 
 const PromptContext = createContext<PromptContext | null>(null);
 
 const UnauthenticatedApp = () => {
+  const location = useLocation();
+  const navigate = useNavigate<LocationGenerics>();
   const { login: loginParam, signup: signupParam } =
     useSearch<LocationGenerics>();
-  const navigate = useNavigate<LocationGenerics>();
 
   const [isLogInOpen, setIsLogInOpen] = useState<boolean>(loginParam === true);
   const [isSignUpOpen, setIsSignUpOpen] = useState<boolean>(
@@ -84,6 +90,22 @@ const UnauthenticatedApp = () => {
       }),
     });
 
+  const LogInLink = (props: LinkProps) => (
+    <Link
+      {...props}
+      to={location.current.pathname}
+      search={{ login: true, signup: undefined }}
+    />
+  );
+
+  const SignUpLink = (props: LinkProps) => (
+    <Link
+      {...props}
+      to={location.current.pathname}
+      search={{ login: undefined, signup: true }}
+    />
+  );
+
   const closeAuth = () =>
     navigate({
       search: (old) => ({
@@ -95,7 +117,6 @@ const UnauthenticatedApp = () => {
 
   useEffect(() => {
     if (loginParam && signupParam) return;
-
     setIsLogInOpen(loginParam === true);
     setIsSignUpOpen(signupParam === true);
   }, [loginParam, signupParam]);
@@ -108,7 +129,9 @@ const UnauthenticatedApp = () => {
           openLikePrompt,
           openFollowPrompt,
           openLogIn,
+          LogInLink,
           openSignUp,
+          SignUpLink,
           closePrompt,
         }}
       >
