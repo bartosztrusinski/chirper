@@ -1,6 +1,4 @@
 import styles from './styles.module.scss';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Link, useLocation, useMatch } from '@tanstack/react-location';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import ChirpService from '../../api/services/Chirp';
 import utils from '../../utils/utils';
@@ -9,7 +7,7 @@ import { FaRegCommentAlt } from '@react-icons/all-files/fa/FaRegCommentAlt';
 import { FaRegHeart } from '@react-icons/all-files/fa/FaRegHeart';
 import { FiShare } from '@react-icons/all-files/fi/FiShare';
 import { BsTrash } from '@react-icons/all-files/bs/BsTrash';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ChirpReplies from '../ChirpReplies';
 import useLikedChirpIds from '../../hooks/useLikedChirpIds';
 import useUser from '../../hooks/useUser';
@@ -20,17 +18,44 @@ import { CreateChirpContext } from '../AuthenticatedApp';
 import useManageChirp from '../../hooks/useManageChirp';
 import Button from '../Button';
 import { PromptContext } from '../UnauthenticatedApp';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  Link,
+  MakeGenerics,
+  useLocation,
+  useMatch,
+  useNavigate,
+  useSearch,
+} from '@tanstack/react-location';
+
+type LocationGenerics = MakeGenerics<{
+  Params: { id: string };
+  Search: { dialog?: 'likes' };
+}>;
 
 const ChirpPage = () => {
+  const queryClient = useQueryClient();
+  const location = useLocation<LocationGenerics>();
+  const navigate = useNavigate<LocationGenerics>();
+  const { dialog } = useSearch<LocationGenerics>();
   const {
     params: { id },
-  } = useMatch();
-  const queryKeys = [id];
+  } = useMatch<LocationGenerics>();
   const { user } = useUser();
-  const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys);
-  const location = useLocation();
+  const { deleteChirp } = useManageChirp();
+  const createChirpContext = useContext(CreateChirpContext);
+  const promptContext = useContext(PromptContext);
 
-  const queryClient = useQueryClient();
+  const queryKeys = [id];
+  const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys);
+
+  const [isLikesModalOpen, setIsLikesModalOpen] = useState<boolean>(
+    dialog === 'likes',
+  );
+
+  useEffect(() => {
+    setIsLikesModalOpen(dialog === 'likes');
+  }, [dialog]);
 
   const {
     data: chirp,
@@ -45,13 +70,6 @@ const ChirpPage = () => {
     isSuccess,
     isLoading: isLikedLoading,
   } = useLikedChirpIds(queryKeys, [id]);
-
-  const [isLikesModalOpen, setIsLikesModalOpen] = useState<boolean>(false);
-
-  const createChirpContext = useContext(CreateChirpContext);
-  const promptContext = useContext(PromptContext);
-
-  const { deleteChirp } = useManageChirp();
 
   const isLiked = isSuccess && likedChirpIds.includes(id);
 
@@ -128,7 +146,9 @@ const ChirpPage = () => {
                 <button
                   type='button'
                   className={styles.showLikesButton}
-                  onClick={() => setIsLikesModalOpen(true)}
+                  onClick={() =>
+                    navigate({ search: (old) => ({ ...old, dialog: 'likes' }) })
+                  }
                 >
                   <span className={styles.count}>
                     {utils.formatCount(chirp.metrics.likeCount)}
@@ -203,7 +223,9 @@ const ChirpPage = () => {
 
       <LikesModal
         isOpen={isLikesModalOpen}
-        onRequestClose={() => setIsLikesModalOpen(false)}
+        onRequestClose={() =>
+          navigate({ search: (old) => ({ ...old, dialog: undefined }) })
+        }
         chirpId={chirp._id}
       />
     </>
