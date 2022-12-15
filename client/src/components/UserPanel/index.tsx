@@ -1,4 +1,4 @@
-import { Link, useNavigate } from '@tanstack/react-location';
+import { Link, MakeGenerics, useNavigate } from '@tanstack/react-location';
 import useUser from '../../hooks/useUser';
 import Button from '../Button';
 import styles from './styles.module.scss';
@@ -8,8 +8,12 @@ import { useContext } from 'react';
 import { CreateChirpContext } from '../AuthenticatedApp';
 import { PromptContext } from '../UnauthenticatedApp';
 
+type LocationGenerics = MakeGenerics<{
+  Search: { dialog?: 'followed' | 'following' | 'edit-profile' };
+}>;
+
 const UserPanel = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate<LocationGenerics>();
   const { user } = useUser();
   const { logOut } = useAuth();
 
@@ -34,7 +38,12 @@ const UserPanel = () => {
         <button
           type='button'
           className={styles.button}
-          onClick={() => navigate({ to: `/users/${user.username}/followed` })}
+          onClick={() =>
+            navigate({
+              to: `/users/${user.username}`,
+              search: { dialog: 'followed' },
+            })
+          }
         >
           <div className={styles.count}>{user.metrics.followedCount}</div>
           Followed
@@ -43,7 +52,12 @@ const UserPanel = () => {
         <button
           type='button'
           className={styles.button}
-          onClick={() => navigate({ to: `/users/${user.username}/following` })}
+          onClick={() =>
+            navigate({
+              to: `/users/${user.username}`,
+              search: { dialog: 'following' },
+            })
+          }
         >
           <div className={styles.count}>{user.metrics.followingCount}</div>
           Following
@@ -64,7 +78,10 @@ const UserPanel = () => {
         <Button
           variant='light'
           onClick={() =>
-            navigate({ to: `/users/${user.username}/edit-profile` })
+            navigate({
+              to: `/users/${user.username}`,
+              search: { dialog: 'edit-profile' },
+            })
           }
         >
           Edit Profile
