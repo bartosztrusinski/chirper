@@ -1,7 +1,16 @@
-import { Outlet, useNavigate, useSearch } from '@tanstack/react-location';
+import {
+  MakeGenerics,
+  Outlet,
+  useNavigate,
+  useSearch,
+} from '@tanstack/react-location';
 import { createContext, useEffect, useState } from 'react';
 import Chirp from '../../interfaces/Chirp';
 import CreateChirpModal from '../CreateChirpModal';
+
+type LocationGenerics = MakeGenerics<{
+  Search: { dialog?: 'create-chirp' };
+}>;
 
 interface CreateChirpContext {
   replyTo: Chirp | null;
@@ -12,25 +21,26 @@ interface CreateChirpContext {
 const CreateChirpContext = createContext<CreateChirpContext | null>(null);
 
 const AuthenticatedApp = () => {
-  const search = useSearch();
-  const navigate = useNavigate();
+  const navigate = useNavigate<LocationGenerics>();
+  const { dialog } = useSearch<LocationGenerics>();
 
-  const [isCreateChirpModalOpen, setIsCreateChirpModalOpen] =
-    useState<boolean>(false);
+  const [isCreateChirpModalOpen, setIsCreateChirpModalOpen] = useState<boolean>(
+    dialog === 'create-chirp',
+  );
   const [replyTo, setReplyTo] = useState<Chirp | null>(null);
 
   useEffect(() => {
-    setIsCreateChirpModalOpen(search['create-chirp'] === true);
-  }, [search]);
+    setIsCreateChirpModalOpen(dialog === 'create-chirp');
+  }, [dialog]);
 
   const openCreateChirpModal = (replyTo?: Chirp) => {
     if (replyTo) setReplyTo(replyTo);
-    navigate({ search: (old) => ({ ...old, 'create-chirp': true }) });
+    navigate({ search: (old) => ({ ...old, dialog: 'create-chirp' }) });
   };
 
   const closeCreateChirpModal = () => {
     setReplyTo(null);
-    navigate({ search: (old) => ({ ...old, 'create-chirp': undefined }) });
+    navigate({ search: (old) => ({ ...old, dialog: undefined }) });
   };
 
   return (
