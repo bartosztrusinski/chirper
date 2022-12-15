@@ -11,7 +11,6 @@ import useDebounce from '../../hooks/useDebounce';
 import {
   MakeGenerics,
   useLocation,
-  useMatchRoute,
   useNavigate,
   useSearch,
 } from '@tanstack/react-location';
@@ -26,20 +25,23 @@ type SearchParams = {
   endTime?: string;
 };
 
-const SearchForm = () => {
-  const navigate = useNavigate();
-  const search = useSearch<MakeGenerics<{ Search: SearchParams }>>();
-  const matchRoute = useMatchRoute();
-  const location = useLocation();
+type LocationGenerics = MakeGenerics<{
+  Search: SearchParams & { dialog?: 'advanced-search' };
+}>;
 
-  const isSearchRoute = matchRoute({ to: '/search', fuzzy: true });
+const SearchForm = () => {
+  const navigate = useNavigate<LocationGenerics>();
+  const search = useSearch<LocationGenerics>();
+  const location = useLocation<LocationGenerics>();
 
   const [query, setQuery] = useState<string>(search.query ?? '');
   const debouncedQuery = useDebounce(query, 200);
 
+  const isSearchPage = location.current.pathname === '/search';
+
   // sync query params with user input
   useEffect(() => {
-    if (location.current.pathname === '/search') {
+    if (isSearchPage) {
       navigate({
         search: (old) => ({ ...old, query: debouncedQuery || undefined }),
       });
@@ -49,11 +51,11 @@ const SearchForm = () => {
 
   // if user navigates to search page, sync query params with user input
   useEffect(() => {
-    if (location.current.pathname === '/search' && query && !search.query) {
+    if (isSearchPage && query.length && !search.query) {
       navigate({ search: (old) => ({ ...old, query }) });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.current.pathname, search.query]);
+  }, [isSearchPage]);
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
@@ -61,7 +63,7 @@ const SearchForm = () => {
   };
 
   const handleClick: MouseEventHandler<HTMLButtonElement> = () => {
-    navigate({ to: '/search/advanced', search: true });
+    navigate({ search: (old) => ({ ...old, dialog: 'advanced-search' }) });
   };
 
   return (
@@ -74,7 +76,7 @@ const SearchForm = () => {
         onChange={(e) => setQuery(e.target.value)}
       />
 
-      {isSearchRoute && (
+      {isSearchPage && (
         <button type='button' className={styles.button} onClick={handleClick}>
           <FaFilter />
         </button>

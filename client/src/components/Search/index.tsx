@@ -1,9 +1,10 @@
-import { MakeGenerics, useSearch } from '@tanstack/react-location';
+import { MakeGenerics, useNavigate, useSearch } from '@tanstack/react-location';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ChirpService from '../../api/services/Chirp';
 import useUser from '../../hooks/useUser';
 import AuthenticatedChirpList from '../AuthenticatedChirpList';
+import SearchFilterModal from '../SearchFilterModal';
 import UnauthenticatedChirpList from '../UnauthenticatedChirpList';
 
 type SearchParams = {
@@ -16,9 +17,14 @@ type SearchParams = {
   endTime?: string;
 };
 
+type LocationGenerics = MakeGenerics<{
+  Search: SearchParams & { dialog?: 'advanced-search' };
+}>;
+
 const Search = () => {
   const { user } = useUser();
-  const search = useSearch<MakeGenerics<{ Search: SearchParams }>>();
+  const search = useSearch<LocationGenerics>();
+  const navigate = useNavigate<LocationGenerics>();
 
   const searchParams = {
     query: search.query,
@@ -29,6 +35,14 @@ const Search = () => {
     startTime: search.startTime,
     endTime: search.endTime,
   };
+
+  const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState<boolean>(
+    search.dialog === 'advanced-search',
+  );
+
+  useEffect(() => {
+    setIsAdvancedSearchOpen(search.dialog === 'advanced-search');
+  }, [search.dialog]);
 
   const queryKeys = ['search', searchParams];
 
@@ -105,6 +119,13 @@ const Search = () => {
           />
         );
       })}
+
+      <SearchFilterModal
+        isOpen={isAdvancedSearchOpen}
+        onRequestClose={() =>
+          navigate({ search: (old) => ({ ...old, dialog: undefined }) })
+        }
+      />
     </>
   );
 };

@@ -20,6 +20,10 @@ type SearchParams = {
 
 type Inputs = SearchParams;
 
+type LocationGenerics = MakeGenerics<{
+  Search: SearchParams & { dialog?: 'advanced-search' };
+}>;
+
 const filterObject = <T,>(
   object: Record<string, T>,
   predicate: (val: T, key: string) => boolean,
@@ -29,8 +33,8 @@ const filterObject = <T,>(
   );
 
 const SearchFilterModal = (props: SearchFilterModalProps) => {
-  const navigate = useNavigate();
-  const search = useSearch<MakeGenerics<{ Search: SearchParams }>>();
+  const navigate = useNavigate<LocationGenerics>();
+  const search = useSearch<LocationGenerics>();
 
   const getDefaultValues = () => ({
     sortOrder: search.sortOrder ?? 'relevant',
@@ -65,7 +69,6 @@ const SearchFilterModal = (props: SearchFilterModalProps) => {
       {...props}
       title='Advanced Search'
       onAfterOpen={() => reset(getDefaultValues())}
-      onRequestClose={() => navigate({ to: '/search', search: true })}
     >
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
         <div>

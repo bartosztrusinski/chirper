@@ -19,7 +19,6 @@ import {
   Navigate,
 } from '@tanstack/react-location';
 import { ReactLocationDevtools } from '@tanstack/react-location-devtools';
-import SearchFilterModal from './components/SearchFilterModal';
 
 const location = new ReactLocation();
 const routes: Route[] = [
@@ -44,15 +43,6 @@ const routes: Route[] = [
         path: 'search',
         children: [
           { path: '/', element: <Search /> },
-          {
-            path: 'advanced',
-            element: (
-              <>
-                <Search />
-                <SearchFilterModal isOpen={true} />
-              </>
-            ),
-          },
           { element: <Navigate to='.' /> },
         ],
       },
@@ -102,9 +92,6 @@ const routes: Route[] = [
                   { element: <Navigate to={`.`} /> },
                 ],
               },
-              { path: 'edit-profile', element: <UserChirps /> },
-              { path: 'followed', element: <UserChirps /> },
-              { path: 'following', element: <UserChirps /> },
               { element: <Navigate to={`.`} /> },
             ],
           },
