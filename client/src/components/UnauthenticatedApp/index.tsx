@@ -16,10 +16,7 @@ import {
 } from '@tanstack/react-location';
 
 type LocationGenerics = MakeGenerics<{
-  Search: {
-    login?: boolean;
-    signup?: boolean;
-  };
+  Search: { dialog?: 'log-in' | 'sign-up' };
 }>;
 
 interface PromptContext {
@@ -36,14 +33,13 @@ interface PromptContext {
 const PromptContext = createContext<PromptContext | null>(null);
 
 const UnauthenticatedApp = () => {
-  const location = useLocation();
+  const location = useLocation<LocationGenerics>();
   const navigate = useNavigate<LocationGenerics>();
-  const { login: loginParam, signup: signupParam } =
-    useSearch<LocationGenerics>();
+  const { dialog } = useSearch<LocationGenerics>();
 
-  const [isLogInOpen, setIsLogInOpen] = useState<boolean>(loginParam === true);
+  const [isLogInOpen, setIsLogInOpen] = useState<boolean>(dialog === 'log-in');
   const [isSignUpOpen, setIsSignUpOpen] = useState<boolean>(
-    signupParam === true,
+    dialog === 'sign-up',
   );
 
   const [isReplyPromptOpen, setIsReplyPromptOpen] = useState<boolean>(false);
@@ -73,28 +69,19 @@ const UnauthenticatedApp = () => {
   };
 
   const openLogIn = () =>
-    navigate({
-      search: (old) => ({
-        ...old,
-        login: true,
-        signup: undefined,
-      }),
-    });
+    navigate({ search: (old) => ({ ...old, dialog: 'log-in' }) });
 
   const openSignUp = () =>
-    navigate({
-      search: (old) => ({
-        ...old,
-        login: undefined,
-        signup: true,
-      }),
-    });
+    navigate({ search: (old) => ({ ...old, dialog: 'sign-up' }) });
+
+  const closeDialog = () =>
+    navigate({ search: (old) => ({ ...old, dialog: undefined }) });
 
   const LogInLink = (props: LinkProps) => (
     <Link
       {...props}
       to={location.current.pathname}
-      search={{ login: true, signup: undefined }}
+      search={{ dialog: 'log-in' }}
     />
   );
 
@@ -102,24 +89,14 @@ const UnauthenticatedApp = () => {
     <Link
       {...props}
       to={location.current.pathname}
-      search={{ login: undefined, signup: true }}
+      search={{ dialog: 'sign-up' }}
     />
   );
 
-  const closeAuth = () =>
-    navigate({
-      search: (old) => ({
-        ...old,
-        login: undefined,
-        signup: undefined,
-      }),
-    });
-
   useEffect(() => {
-    if (loginParam && signupParam) return;
-    setIsLogInOpen(loginParam === true);
-    setIsSignUpOpen(signupParam === true);
-  }, [loginParam, signupParam]);
+    setIsLogInOpen(dialog === 'log-in');
+    setIsSignUpOpen(dialog === 'sign-up');
+  }, [dialog]);
 
   return (
     <>
@@ -137,11 +114,11 @@ const UnauthenticatedApp = () => {
       >
         <Outlet />
 
-        <Modal isOpen={isLogInOpen} onRequestClose={closeAuth}>
+        <Modal isOpen={isLogInOpen} onRequestClose={closeDialog}>
           <LoginForm />
         </Modal>
 
-        <RegisterForm isOpen={isSignUpOpen} onRequestClose={closeAuth} />
+        <RegisterForm isOpen={isSignUpOpen} onRequestClose={closeDialog} />
 
         <Modal
           isOpen={isReplyPromptOpen}
