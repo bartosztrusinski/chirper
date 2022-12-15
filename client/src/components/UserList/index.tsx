@@ -1,7 +1,6 @@
 import User from '../User';
-import { StoredUser, User as IUser } from '../../interfaces/User';
+import { User as IUser } from '../../interfaces/User';
 import useFollowedUsernames from '../../hooks/useFollowedUsernames';
-import useUser from '../../hooks/useUser';
 import useFollowUser from '../../hooks/useFollowUser';
 import ConfirmModal from '../ConfirmModal';
 import { forwardRef, useState } from 'react';
@@ -18,7 +17,6 @@ const UserList = forwardRef<LastUserRef, UserListProps>(function UserList(
   { users, queryKeys, page },
   ref,
 ) {
-  const { user: currentUser } = useUser() as { user: StoredUser };
   const { followUser, unfollowUser } = useFollowUser(queryKeys, page);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
   const [selectedUsername, setSelectedUsername] = useState<string>('');
@@ -29,7 +27,6 @@ const UserList = forwardRef<LastUserRef, UserListProps>(function UserList(
     isSuccess,
   } = useFollowedUsernames(
     [...queryKeys, `${page}`],
-    currentUser.username,
     users.map((user) => user._id),
   );
 

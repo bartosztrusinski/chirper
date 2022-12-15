@@ -1,10 +1,8 @@
 import Chirp from '../Chirp';
 import IChirp from '../../interfaces/Chirp';
-import useUser from '../../hooks/useUser';
 import useLikeChirp from '../../hooks/useLikeChirp';
 import useLikedChirpIds from '../../hooks/useLikedChirpIds';
 import { forwardRef } from 'react';
-import { StoredUser } from '../../interfaces/User';
 
 interface AuthenticatedChirpListProps {
   chirps: IChirp[];
@@ -18,7 +16,6 @@ const AuthenticatedChirpList = forwardRef<
   LastChirpRef,
   AuthenticatedChirpListProps
 >(function AuthenticatedChirpList({ chirps, queryKeys, page }, ref) {
-  const { user } = useUser() as { user: StoredUser };
   const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys, page);
 
   const {
@@ -28,7 +25,6 @@ const AuthenticatedChirpList = forwardRef<
     isSuccess,
   } = useLikedChirpIds(
     [...queryKeys, `${page}`],
-    user.username,
     chirps.map((chirp) => chirp._id),
   );
 
