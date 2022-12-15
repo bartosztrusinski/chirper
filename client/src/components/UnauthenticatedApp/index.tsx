@@ -81,7 +81,7 @@ const UnauthenticatedApp = () => {
     <Link
       {...props}
       to={location.current.pathname}
-      search={{ dialog: 'log-in' }}
+      search={(old) => ({ ...old, dialog: 'log-in' })}
     />
   );
 
@@ -89,7 +89,7 @@ const UnauthenticatedApp = () => {
     <Link
       {...props}
       to={location.current.pathname}
-      search={{ dialog: 'sign-up' }}
+      search={(old) => ({ ...old, dialog: 'sign-up' })}
     />
   );
 
