@@ -1,11 +1,4 @@
 import styles from './styles.module.scss';
-import {
-  Link,
-  Outlet,
-  useMatches,
-  useMatchRoute,
-  useNavigate,
-} from '@tanstack/react-location';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import Button from '../Button';
 import { useQuery } from '@tanstack/react-query';
@@ -23,46 +16,43 @@ import useFollowUser from '../../hooks/useFollowUser';
 import FollowedModal from '../FollowedModal';
 import FollowingModal from '../FollowingModal';
 import { PromptContext } from '../UnauthenticatedApp';
+import {
+  Link,
+  MakeGenerics,
+  Outlet,
+  useMatch,
+  useNavigate,
+  useSearch,
+} from '@tanstack/react-location';
+
+type LocationGenerics = MakeGenerics<{
+  Params: { username: string };
+  Search: { dialog?: 'followed' | 'following' | 'edit-profile' };
+}>;
 
 const UserProfile = () => {
-  const [
-    {
-      params: { username },
-    },
-    nested,
-  ] = useMatches();
-  const queryKeys = [username];
+  const navigate = useNavigate<LocationGenerics>();
+  const { dialog } = useSearch<LocationGenerics>();
+  const {
+    params: { username },
+  } = useMatch<LocationGenerics>();
   const { user: currentUser } = useUser();
+  const promptContext = useContext(PromptContext);
+
+  const queryKeys = [username];
   const { followUser, unfollowUser } = useFollowUser(queryKeys);
-  const navigate = useNavigate();
-  const matchRoute = useMatchRoute();
 
-  const [route, setRoute] = useState<string>('');
-  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(
+    dialog === 'edit-profile',
+  );
+  const [isFollowedModalOpen, setIsFollowedModalOpen] = useState<boolean>(
+    dialog === 'followed',
+  );
+  const [isFollowingModalOpen, setIsFollowingModalOpen] = useState<boolean>(
+    dialog === 'following',
+  );
+
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
-  const [isFollowedModalOpen, setIsFollowedModalOpen] =
-    useState<boolean>(false);
-  const [isFollowingModalOpen, setIsFollowingModalOpen] =
-    useState<boolean>(false);
-
-  const path = nested ? nested.pathname.replace(/\/+$/, '') : '';
-
-  const isEditRoute = matchRoute({ to: 'edit-profile' });
-  const isFollowedRoute = matchRoute({ to: 'followed' });
-  const isFollowingRoute = matchRoute({ to: 'following' });
-
-  useEffect(() => {
-    setIsEditModalOpen(!!isEditRoute);
-    setIsFollowedModalOpen(!!isFollowedRoute);
-    setIsFollowingModalOpen(!!isFollowingRoute);
-  }, [isEditRoute, isFollowedRoute, isFollowingRoute]);
-
-  useEffect(() => {
-    if (isEditRoute || isFollowedRoute || isFollowingRoute) return;
-
-    setRoute(path);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [path]);
 
   const {
     data: user,
@@ -77,12 +67,20 @@ const UserProfile = () => {
     isLoading: isFollowedLoading,
   } = useFollowedUsernames(queryKeys, isSuccess ? [user._id] : []);
 
-  const promptContext = useContext(PromptContext);
-
   const isFollowed =
     isSuccess && isFollowedSuccess && followedUsernames.includes(user.username);
+
   const isCurrentUser =
     isSuccess && currentUser && currentUser._id === user._id;
+
+  const closeDialog = () =>
+    navigate({ search: (old) => ({ ...old, dialog: undefined }) });
+
+  useEffect(() => {
+    setIsFollowedModalOpen(dialog === 'followed');
+    setIsFollowingModalOpen(dialog === 'following');
+    setIsEditModalOpen(dialog === 'edit-profile');
+  }, [dialog]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -114,15 +112,9 @@ const UserProfile = () => {
             onClick={() => {
               if (!currentUser) {
                 promptContext?.openFollowPrompt(user.username);
-                return;
-              }
-
-              if (isCurrentUser) {
-                navigate({ to: 'edit-profile' });
-                return;
-              }
-
-              if (isFollowed) {
+              } else if (isCurrentUser) {
+                navigate({ search: { dialog: 'edit-profile' } });
+              } else if (isFollowed) {
                 setIsConfirmModalOpen(true);
               } else {
                 followUser(user.username);
@@ -168,7 +160,7 @@ const UserProfile = () => {
           <button
             type='button'
             className={styles.button}
-            onClick={() => navigate({ to: 'followed' })}
+            onClick={() => navigate({ search: { dialog: 'followed' } })}
           >
             <div className={styles.count}>
               {utils.formatCount(user.metrics.followedCount)}
@@ -179,7 +171,7 @@ const UserProfile = () => {
           <button
             type='button'
             className={styles.button}
-            onClick={() => navigate({ to: 'following' })}
+            onClick={() => navigate({ search: { dialog: 'following' } })}
           >
             <div className={styles.count}>
               {utils.formatCount(user.metrics.followingCount)}
@@ -226,21 +218,21 @@ const UserProfile = () => {
         <Outlet />
       </section>
 
-      {currentUser && (
+      {currentUser && isCurrentUser && (
         <EditProfileModal
           isOpen={isEditModalOpen}
-          onRequestClose={() => navigate({ to: route })}
+          onRequestClose={closeDialog}
         />
       )}
 
       <FollowedModal
         isOpen={isFollowedModalOpen}
-        onRequestClose={() => navigate({ to: route })}
+        onRequestClose={closeDialog}
         username={user.username}
       />
       <FollowingModal
         isOpen={isFollowingModalOpen}
-        onRequestClose={() => navigate({ to: route })}
+        onRequestClose={closeDialog}
         username={user.username}
       />
 
