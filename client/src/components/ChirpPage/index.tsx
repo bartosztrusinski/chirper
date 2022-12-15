@@ -1,6 +1,6 @@
 import styles from './styles.module.scss';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Link, useMatch } from '@tanstack/react-location';
+import { Link, useLocation, useMatch } from '@tanstack/react-location';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import ChirpService from '../../api/services/Chirp';
 import utils from '../../utils/utils';
@@ -28,6 +28,7 @@ const ChirpPage = () => {
   const queryKeys = [id];
   const { user } = useUser();
   const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys);
+  const location = useLocation();
 
   const queryClient = useQueryClient();
 
@@ -80,7 +81,10 @@ const ChirpPage = () => {
       <section className={styles.section}>
         <h2 className='visually-hidden'>Conversation</h2>
 
-        <div className={styles.navigation} onClick={() => history.back()}>
+        <div
+          className={styles.navigation}
+          onClick={() => location.history.back()}
+        >
           <FaArrowLeft />
           Back
         </div>
@@ -186,12 +190,13 @@ const ChirpPage = () => {
               </button>
             )}
           </div>
-          {user && (
-            <div className={styles.replyFormContainer}>
-              <CreateChirpForm replyToId={chirp._id} />
-            </div>
-          )}
         </article>
+
+        {user && (
+          <div className={styles.replyFormContainer}>
+            <CreateChirpForm replyToId={chirp._id} />
+          </div>
+        )}
 
         <ChirpReplies chirp={chirp} />
       </section>

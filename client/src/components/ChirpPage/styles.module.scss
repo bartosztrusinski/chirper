@@ -2,16 +2,15 @@
 
 .section {
   display: grid;
-  gap: u.rem(12);
 }
 
 .navigation {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  gap: u.rem(12);
   justify-self: start;
+  display: grid;
+  grid-auto-flow: column;
+  gap: u.rem(12);
   align-items: center;
-  padding: u.rem(16) u.rem(16) u.rem(0);
+  padding: u.rem(16);
   font-weight: var(--fw-semi-bold);
   cursor: pointer;
 }
@@ -19,7 +18,7 @@
 .chirp {
   display: grid;
   gap: u.rem(10);
-  padding: u.rem(16);
+  padding: u.rem(16) u.rem(16) 0;
   border-bottom: u.rem(1) solid var(--border-color);
 }
 
@@ -50,11 +49,11 @@
 }
 
 .content {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   font-size: var(--fs-600);
   padding-bottom: u.rem(16);
   border-bottom: u.rem(1) solid var(--border-color);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
 }
 
 .meta {
@@ -120,7 +119,7 @@
   place-items: center;
   gap: u.rem(12);
   padding: u.rem(5);
-  border-block: u.rem(1) solid var(--border-color);
+  border-top: u.rem(1) solid var(--border-color);
 
   .button {
     background-color: transparent;
@@ -171,5 +170,6 @@
 }
 
 .replyFormContainer {
-  margin: u.rem(8);
+  padding: u.rem(16);
+  border-bottom: u.rem(1) solid var(--border-color);
 }
