@@ -1,20 +1,36 @@
+import useAuth from '../../hooks/useAuth';
+import useUser from '../../hooks/useUser';
+import Button from '../Button';
 import Modal from '../Modal';
-import Nav from '../Nav';
+import AuthenticatedNav from '../Nav/AuthenticatedNav';
+import UnauthenticatedNav from '../Nav/UnauthenticatedNav';
+import DarkModeToggle from '../Toggle/DarkModeToggle';
 import UserPanel from '../UserPanel';
 import styles from './styles.module.scss';
 
-interface Props {
-  open: boolean;
-  onClose: () => void;
-}
+type MenuModalProps = ReactModal.Props;
 
-const MenuModal = ({ open, onClose }: Props) => {
+const MenuModal = (props: MenuModalProps) => {
+  const { user } = useUser();
+  const { logOut } = useAuth();
+
   return (
-    <Modal open={open} onClose={onClose} className={styles.modal}>
-      <div className={styles.container}>
-        <UserPanel />
-        <Nav />
+    <Modal {...props}>
+      <UserPanel />
+      <div className={styles.themePanel}>
+        Theme
+        <DarkModeToggle />
       </div>
+      {user ? (
+        <>
+          <AuthenticatedNav />
+          <Button className={styles.logOutButton} onClick={() => logOut()}>
+            Log Out
+          </Button>
+        </>
+      ) : (
+        <UnauthenticatedNav />
+      )}
     </Modal>
   );
 };

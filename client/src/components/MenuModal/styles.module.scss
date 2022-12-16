@@ -1,14 +1,14 @@
 @use '../../assets/styles/util' as u;
 
-.modal {
-  width: min(90%, u.rem(400));
-  max-height: 85vh;
+.themePanel {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: u.rem(8);
+  font-size: var(--fs-400);
 }
 
-.container {
-  display: grid;
-  grid-template-columns: minmax(u.rem(200), u.rem(250));
-  justify-content: center;
-  gap: u.rem(16);
-  padding-inline: u.rem(16);
+.logOutButton {
+  margin-top: u.rem(16);
 }
