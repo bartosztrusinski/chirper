@@ -5,8 +5,8 @@ import styles from './styles.module.scss';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import useAuth from '../../hooks/useAuth';
 import { useContext } from 'react';
-import { CreateChirpContext } from '../AuthenticatedApp';
 import { PromptContext } from '../UnauthenticatedApp';
+import useMediaQuery from '../../hooks/useMediaQuery';
 
 type LocationGenerics = MakeGenerics<{
   Search: { dialog?: 'followed' | 'following' | 'edit-profile' };
@@ -17,7 +17,9 @@ const UserPanel = () => {
   const { user } = useUser();
   const { logOut } = useAuth();
 
-  const createChirpContext = useContext(CreateChirpContext);
+  const smallBreakpoint = 536;
+  const isSmallUp = useMediaQuery(`(min-width: ${smallBreakpoint}px)`);
+
   const promptContext = useContext(PromptContext);
 
   return user ? (
@@ -64,39 +66,24 @@ const UserPanel = () => {
         </button>
       </div>
 
-      <div className={styles.buttonContainer}>
-        <Button
-          variant='light'
-          type='button'
-          onClick={(e) => {
-            e.preventDefault();
-            createChirpContext?.openCreateChirpModal();
-          }}
-        >
-          Create Chirp
-        </Button>
-        <Button
-          variant='light'
-          onClick={() =>
-            navigate({
-              to: `/users/${user.username}`,
-              search: { dialog: 'edit-profile' },
-            })
-          }
-        >
-          Edit Profile
-        </Button>
-        <Button
-          variant='light'
-          type='button'
-          onClick={(e) => {
-            e.preventDefault();
-            logOut();
-          }}
-        >
-          Log Out
-        </Button>
-      </div>
+      {isSmallUp && (
+        <div className={styles.buttonContainer}>
+          <Button
+            variant='light'
+            onClick={() =>
+              navigate({
+                to: `/users/${user.username}`,
+                search: { dialog: 'edit-profile' },
+              })
+            }
+          >
+            Edit Profile
+          </Button>
+          <Button variant='light' type='button' onClick={logOut}>
+            Log Out
+          </Button>
+        </div>
+      )}
     </div>
   ) : (
     <div className={styles.buttonContainer}>
