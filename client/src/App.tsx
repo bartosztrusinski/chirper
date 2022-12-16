@@ -11,6 +11,8 @@ import UserLikedChirps from './components/UserChirps/liked';
 import useUser from './hooks/useUser';
 import AuthenticatedApp from './components/AuthenticatedApp';
 import UnauthenticatedApp from './components/UnauthenticatedApp';
+import { createContext } from 'react';
+import useDarkMode from './hooks/useDarkMode';
 import {
   ReactLocation,
   Router,
@@ -103,12 +105,22 @@ const routes: Route[] = [
   },
 ];
 
+interface ThemeContext {
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+}
+
+const ThemeContext = createContext<ThemeContext | null>(null);
+
 const App = () => {
   const { user } = useUser();
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   return (
     <Router location={location} routes={routes}>
-      {user ? <AuthenticatedApp /> : <UnauthenticatedApp />}
+      <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+        {user ? <AuthenticatedApp /> : <UnauthenticatedApp />}
+      </ThemeContext.Provider>
       <ReactLocationDevtools
         initialIsOpen={false}
         toggleButtonProps={{ style: { bottom: '60px', opacity: '0.7' } }}
@@ -118,3 +130,4 @@ const App = () => {
 };
 
 export default App;
+export { ThemeContext };
