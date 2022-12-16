@@ -16,16 +16,26 @@
     @include card;
 
     display: grid;
-    grid-template-columns: 1fr;
-    gap: u.rem(8);
-    text-align: center;
+    grid-auto-flow: column;
+    justify-items: start;
+    align-items: center;
+    gap: u.rem(12);
     overflow-wrap: anywhere;
     cursor: pointer;
 
+    @include u.breakpoint-up('small') {
+      grid-auto-flow: row;
+      justify-items: center;
+      text-align: center;
+    }
+
     .avatar {
-      justify-self: center;
-      width: u.rem(80);
+      width: u.rem(56);
       border-radius: 50%;
+
+      @include u.breakpoint-up('small') {
+        width: u.rem(80);
+      }
     }
 
     .name {
@@ -54,15 +64,18 @@
     .button {
       background-color: inherit;
       color: inherit;
-      padding: u.rem(8);
       border-radius: u.rem(8);
       border: none;
       outline: u.rem(2) solid transparent;
       cursor: pointer;
       transition: background-color 140ms ease-in-out;
 
+      @include u.breakpoint-up('small') {
+        padding: u.rem(8);
+      }
+
       &:hover {
-        background-color: var(--color-dark-30);
+        background-color: var(--card-background-color-hover);
       }
 
       &:focus-visible {
