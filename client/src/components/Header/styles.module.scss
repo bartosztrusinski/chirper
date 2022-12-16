@@ -38,38 +38,38 @@
   @include u.breakpoint-up('large') {
     grid-template-columns: 1fr u.rem(450) 1fr;
   }
-}
 
-.logo {
-  display: grid;
-  align-items: center;
-  grid-template-columns: repeat(2, auto);
-  gap: u.rem(4);
-  justify-self: start;
-  color: var(--logo-text-color);
+  & > :last-child {
+    justify-self: end;
+  }
 
-  .heading {
-    order: 2;
+  .logo {
     display: grid;
+    align-items: center;
     grid-template-columns: repeat(2, auto);
-    font-family: var(--ff-logo);
+    gap: u.rem(4);
+    justify-self: start;
+    color: var(--logo-text-color);
+
+    .heading {
+      order: 2;
+      display: grid;
+      grid-template-columns: repeat(2, auto);
+      font-family: var(--ff-logo);
+    }
+
+    .icon {
+      font-size: clamp(u.rem(40), u.rem(40) + 0.5vw, u.rem(48));
+      order: 1;
+    }
   }
 
-  .icon {
-    font-size: clamp(u.rem(40), u.rem(40) + 0.5vw, u.rem(48));
-    order: 1;
+  .subheading {
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
-}
-
-.subheading {
-  text-align: center;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.rightSide {
-  justify-self: end;
 
   .menu {
     background-color: inherit;
@@ -77,7 +77,8 @@
     cursor: pointer;
 
     .icon {
-      font-size: var(--fs-400);
+      font-size: var(--fs-600);
+      margin: u.rem(6);
     }
 
     .image {

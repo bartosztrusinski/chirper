@@ -39,8 +39,8 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    setIsMenuOpen(dialog === 'menu' && !isSmallUp);
-  }, [dialog, isSmallUp]);
+    setIsMenuOpen(dialog === 'menu');
+  }, [dialog]);
 
   return (
     <header className={styles.header}>
@@ -52,15 +52,15 @@ const Header = () => {
         </h1>
         <ChirperIcon className={styles.icon} />
       </Link>
+
       {isSmallUp ? (
-        <SearchForm />
-      ) : (
-        <h2 className={styles.subheading}>{title}</h2>
-      )}
-      <div className={styles.rightSide}>
-        {isSmallUp ? (
+        <>
+          <SearchForm />
           <DarkModeToggle />
-        ) : (
+        </>
+      ) : (
+        <>
+          <h2 className={styles.subheading}>{title}</h2>
           <button
             className={styles.menu}
             onClick={() =>
@@ -77,14 +77,15 @@ const Header = () => {
               <FiMenu className={styles.icon} />
             )}
           </button>
-        )}
-      </div>
-      <MenuModal
-        isOpen={isMenuOpen}
-        onRequestClose={() =>
-          navigate({ search: (old) => ({ ...old, dialog: undefined }) })
-        }
-      />
+
+          <MenuModal
+            isOpen={isMenuOpen}
+            onRequestClose={() =>
+              navigate({ search: (old) => ({ ...old, dialog: undefined }) })
+            }
+          />
+        </>
+      )}
     </header>
   );
 };
