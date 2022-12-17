@@ -26,13 +26,15 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
 ) {
   const createChirpContext = useContext(CreateChirpContext);
   const promptContext = useContext(PromptContext);
+  const navigate = useNavigate();
   const { user } = useUser();
+
   const { _id, content, createdAt, author, metrics, replies } = chirp;
   const { username, profile } = author;
   const avatar = profile.picture ?? defaultAvatar;
-  const navigate = useNavigate();
-  const noPropagate = (e: MouseEvent) => e.stopPropagation();
   const relativeCreatedTime = utils.formatRelativeTime(createdAt);
+
+  const stopPropagation = (e: MouseEvent) => e.stopPropagation();
 
   return (
     <article
@@ -40,15 +42,13 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
       onClick={() => navigate({ to: `/chirps/${_id}` })}
       className={styles.chirp}
     >
-      <div>
-        <Link to={`/users/${username}`} onClick={noPropagate}>
-          <img
-            src={avatar}
-            alt={`${username}'s avatar`}
-            className={styles.avatar}
-          />
-        </Link>
-      </div>
+      <Link to={`/users/${username}`} onClick={stopPropagation}>
+        <img
+          src={avatar}
+          alt={`${username}'s avatar`}
+          className={styles.avatar}
+        />
+      </Link>
 
       <div className={styles.mainContainer}>
         <div className={styles.upperPanel}>
@@ -56,14 +56,14 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
             <Link
               to={`/users/${username}`}
               className={styles.name}
-              onClick={noPropagate}
+              onClick={stopPropagation}
             >
               {profile.name}
             </Link>
             <Link
               to={`/users/${username}`}
               className={styles.username}
-              onClick={noPropagate}
+              onClick={stopPropagation}
             >
               @{username}
             </Link>
@@ -104,7 +104,15 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
               </div>
               <div>{utils.formatCount(metrics.likeCount)}</div>
             </div>
-            <div className={styles.share}>
+            <div
+              className={styles.share}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(
+                  `${window.location.origin}/chirps/${_id}`,
+                );
+              }}
+            >
               <div className={styles.iconBackground}>
                 <FiShare className={styles.icon} />
               </div>

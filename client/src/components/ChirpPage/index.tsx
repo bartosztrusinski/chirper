@@ -194,7 +194,13 @@ const ChirpPage = () => {
               <FaRegHeart className={styles.icon} />
             </button>
 
-            <button type='button' className={styles.button}>
+            <button
+              type='button'
+              className={styles.button}
+              onClick={() =>
+                navigator.clipboard.writeText(window.location.href)
+              }
+            >
               <FiShare className={styles.icon} />
             </button>
 
