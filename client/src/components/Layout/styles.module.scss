@@ -46,7 +46,7 @@
 }
 
 .main {
-  padding-bottom: u.rem(300);
+  padding: u.rem(2) 0 u.rem(300);
 
   @include u.breakpoint-up('small') {
     border-left: u.rem(1) solid var(--border-color);
@@ -97,7 +97,7 @@
 .bottomPanel {
   position: sticky;
   bottom: 0;
-  z-index: 2;
+  z-index: 3;
   display: grid;
   justify-content: center;
   grid-template-columns: minmax(auto, u.rem(360));
@@ -106,4 +106,37 @@
   box-shadow: var(--shadow-inverse);
   padding: u.rem(7) u.rem(10);
   border-top: u.rem(1) solid var(--border-color);
+}
+
+.authPanel {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  display: grid;
+  grid-auto-flow: column;
+  gap: u.rem(15);
+  padding: u.rem(10) u.rem(20);
+  background-color: var(--color-primary);
+
+  @include u.breakpoint-up('medium') {
+    padding-inline: u.rem(60);
+    justify-content: center;
+    grid-template-columns:
+      minmax(auto, u.rem(400))
+      minmax(auto, u.rem(110))
+      minmax(auto, u.rem(110));
+  }
+
+  @include u.breakpoint-up('xlarge') {
+    margin-left: u.rem(-50);
+  }
+
+  .mainText {
+    font-size: var(--fs-500);
+    font-weight: var(--fw-bold);
+  }
+
+  .subText {
+    font-size: var(--fs-200);
+  }
 }

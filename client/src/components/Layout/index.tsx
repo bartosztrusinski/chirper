@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useContext } from 'react';
 import styles from './styles.module.scss';
 import Header from '../Header';
 import useMediaQuery from '../../hooks/useMediaQuery';
@@ -13,20 +13,26 @@ import { useNavigate } from '@tanstack/react-location';
 import { BiLogOut as LogOutIcon } from '@react-icons/all-files/bi/BiLogOut';
 import { IoMdAdd as CreateChirpIcon } from '@react-icons/all-files/io/IoMdAdd';
 import useAuth from '../../hooks/useAuth';
+import { PromptContext } from '../UnauthenticatedApp';
+import { CreateChirpContext } from '../AuthenticatedApp';
 
 interface LayountProps {
   children: ReactNode;
 }
 
 const Layout = ({ children }: LayountProps) => {
+  const promptContext = useContext(PromptContext);
+  const createChirpContext = useContext(CreateChirpContext);
   const navigate = useNavigate();
   const { user } = useUser();
   const { logOut } = useAuth();
 
   const smallBreakpoint = 536;
+  const mediumBreakpoint = 690;
   const largeBreakpoint = 940;
   const xLargeBreakpoint = 1150;
   const isSmallUp = useMediaQuery(`(min-width: ${smallBreakpoint}px)`);
+  const isMediumUp = useMediaQuery(`(min-width: ${mediumBreakpoint}px)`);
   const isLargeUp = useMediaQuery(`(min-width: ${largeBreakpoint}px)`);
   const isXLargeUp = useMediaQuery(`(min-width: ${xLargeBreakpoint}px)`);
 
@@ -42,11 +48,7 @@ const Layout = ({ children }: LayountProps) => {
 
                 <Button
                   className={styles.button}
-                  onClick={() =>
-                    navigate({
-                      search: (old) => ({ ...old, dialog: 'create-chirp' }),
-                    })
-                  }
+                  onClick={() => createChirpContext?.openCreateChirpModal()}
                 >
                   {isXLargeUp ? (
                     'Chirp'
@@ -77,10 +79,31 @@ const Layout = ({ children }: LayountProps) => {
           </Sidebar>
         )}
       </div>
-      {!isSmallUp && (
+      {!isSmallUp ? (
         <div className={styles.bottomPanel}>
           <SearchForm />
         </div>
+      ) : (
+        !user && (
+          <div className={styles.authPanel}>
+            {isMediumUp && (
+              <div>
+                <div className={styles.mainText}>
+                  Don&apos;t miss what&apos;s happening
+                </div>
+                <div className={styles.subText}>
+                  People on Chirper are the first to know
+                </div>
+              </div>
+            )}
+            <Button variant='light' onClick={promptContext?.openLogIn}>
+              Log in
+            </Button>
+            <Button variant='light' onClick={promptContext?.openSignUp}>
+              Sign up
+            </Button>
+          </div>
+        )
       )}
     </div>
   );
