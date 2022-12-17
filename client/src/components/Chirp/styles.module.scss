@@ -2,15 +2,30 @@
 
 .chirp {
   display: grid;
-  grid-template-columns: u.rem(48) 1fr;
-  grid-template-rows: 1fr;
+  grid-template-columns: auto 1fr;
+  align-items: start;
   gap: u.rem(12);
   padding: u.rem(16);
   border-bottom: u.rem(1) solid var(--border-color);
+  outline: u.rem(2) solid transparent;
+  color: var(--text-color);
   cursor: pointer;
+
+  &:focus-visible {
+    outline-color: var(--color-primary);
+  }
+
+  &:focus-within {
+    background-color: var(--background-hover-color);
+  }
+
+  &:active {
+    color: inherit;
+  }
 }
 
 .avatar {
+  width: u.rem(48);
   border-radius: 50%;
 }
 
@@ -44,57 +59,71 @@
 
 .content {
   padding-bottom: u.rem(8);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .metrics {
   display: grid;
   grid-template-columns: 2fr 2fr 1fr;
   justify-items: start;
-}
 
-.replies,
-.likes,
-.share {
-  display: grid;
-  grid-template-columns: auto auto;
-  align-items: center;
-  gap: u.rem(12);
-  font-size: var(--fs-200);
-  color: var(--text-muted-color);
-  transition: color 210ms ease;
+  .replies,
+  .likes,
+  .share {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    font-size: var(--fs-200);
+    background-color: inherit;
+    color: var(--text-muted-color);
+    transition: color 210ms ease;
 
-  .iconBackground {
-    padding: u.rem(10);
-    border-radius: 50%;
-    transition: background-color 210ms ease;
-
-    .icon {
-      font-size: var(--fs-300);
+    @include u.breakpoint-up('small') {
+      gap: u.rem(8);
     }
-  }
-}
-
-.replies,
-.share {
-  &:hover {
-    color: var(--color-primary);
 
     .iconBackground {
-      background-color: hsl(var(--color-primary-hsl) / 10%);
+      background-color: inherit;
+      color: inherit;
+      padding: u.rem(10);
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      transition: background-color 210ms ease;
+
+      &:focus-visible {
+        outline: u.rem(2) solid var(--color-primary);
+      }
+
+      .icon {
+        font-size: var(--fs-300);
+      }
     }
   }
-}
 
-.likes {
-  &:hover {
-    color: var(--color-like);
+  .replies,
+  .share {
+    &:hover {
+      color: var(--color-primary);
 
-    .iconBackground {
-      background-color: hsl(var(--color-like-hsl) / 10%);
+      .iconBackground {
+        background-color: hsl(var(--color-primary-hsl) / 10%);
+      }
     }
   }
 
-  &.liked {
-    color: var(--color-like);
+  .likes {
+    &:hover {
+      color: var(--color-like);
+
+      .iconBackground {
+        background-color: hsl(var(--color-like-hsl) / 10%);
+      }
+    }
+
+    &.liked {
+      color: var(--color-like);
+    }
   }
 }
