@@ -1,12 +1,18 @@
 import styles from './styles.module.scss';
-import { ReactNode } from 'react';
+import { ComponentPropsWithoutRef, ReactNode } from 'react';
 
-interface Props {
+interface SidebarProps extends ComponentPropsWithoutRef<'aside'> {
   children: ReactNode;
 }
 
-const Sidebar = ({ children }: Props) => {
-  return <aside className={styles.sidebar}>{children}</aside>;
+const Sidebar = ({ children, className, ...restProps }: SidebarProps) => {
+  const classes = [styles.sidebar, className].filter(Boolean).join(' ');
+
+  return (
+    <aside {...restProps} className={classes}>
+      {children}
+    </aside>
+  );
 };
 
 export default Sidebar;
