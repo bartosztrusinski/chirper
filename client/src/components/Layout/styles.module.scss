@@ -17,9 +17,11 @@
 .grid {
   display: grid;
   grid-template-columns: 1fr;
+  max-height: calc(100vh - u.rem(116));
 
   @include u.breakpoint-up('small') {
     grid-template-columns: u.rem(90) auto;
+    max-height: calc(100vh - u.rem(73));
   }
 
   @include u.breakpoint-up('medium') {
@@ -46,7 +48,8 @@
 }
 
 .main {
-  padding: u.rem(2) 0 u.rem(300);
+  padding: u.rem(2) 0 u.rem(150);
+  overflow: auto;
 
   @include u.breakpoint-up('small') {
     border-left: u.rem(1) solid var(--border-color);
@@ -59,14 +62,12 @@
 
 .sidebar {
   position: sticky;
-  top: u.rem(81);
-  height: calc(100vh - u.rem(81));
   z-index: 2;
   overflow: auto;
-  padding: 0 u.rem(20) u.rem(16);
+  padding: u.rem(12) u.rem(20);
 
   @include u.breakpoint-up('xlarge') {
-    padding-top: u.rem(12);
+    padding-top: u.rem(20);
   }
 
   &.nav {
@@ -109,7 +110,8 @@
 }
 
 .authPanel {
-  position: sticky;
+  position: absolute;
+  inset-inline: 0;
   bottom: 0;
   z-index: 3;
   display: grid;
