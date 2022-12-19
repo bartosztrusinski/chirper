@@ -59,7 +59,16 @@
     }
 
     .icon {
-      font-size: clamp(u.rem(40), u.rem(40) + 0.5vw, u.rem(48));
+      font-size: u.rem(40);
+
+      @include u.breakpoint-up('small') {
+        font-size: u.rem(44);
+      }
+
+      @include u.breakpoint-up('medium') {
+        font-size: u.rem(48);
+      }
+
       order: 1;
     }
   }
