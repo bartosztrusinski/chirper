@@ -45,13 +45,17 @@ const Header = () => {
   return (
     <header className={styles.header}>
       <Link to='/' className={styles.logo}>
-        <h1
-          className={`${styles.heading} ${isMediumUp ? '' : 'visually-hidden'}`}
+        <div
+          className={`${styles.name} ${isMediumUp ? '' : 'visually-hidden'}`}
         >
           Chirper
-        </h1>
+        </div>
         <ChirperIcon className={styles.icon} />
       </Link>
+
+      <h1 className={`${styles.heading} ${isSmallUp ? 'visually-hidden' : ''}`}>
+        {title}
+      </h1>
 
       {isSmallUp ? (
         <>
@@ -60,7 +64,6 @@ const Header = () => {
         </>
       ) : (
         <>
-          <h2 className={styles.subheading}>{title}</h2>
           <button
             className={styles.menu}
             onClick={() =>

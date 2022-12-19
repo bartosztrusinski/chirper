@@ -51,11 +51,20 @@
     justify-self: start;
     color: var(--logo-text-color);
 
-    .heading {
+    .name {
       order: 2;
       display: grid;
       grid-template-columns: repeat(2, auto);
       font-family: var(--ff-logo);
+      font-size: u.rem(24);
+
+      @include u.breakpoint-up('large') {
+        font-size: u.rem(28);
+      }
+
+      @include u.breakpoint-up('xlarge') {
+        font-size: u.rem(32);
+      }
     }
 
     .icon {
@@ -73,7 +82,7 @@
     }
   }
 
-  .subheading {
+  .heading {
     text-align: center;
     text-overflow: ellipsis;
     overflow: hidden;
