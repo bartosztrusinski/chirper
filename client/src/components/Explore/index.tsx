@@ -2,9 +2,9 @@ import ChirpService from '../../api/services/Chirp';
 import useUser from '../../hooks/useUser';
 import AuthenticatedChirpList from '../AuthenticatedChirpList';
 import UnauthenticatedChirpList from '../UnauthenticatedChirpList';
-import Button from '../Button';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useCallback, useRef } from 'react';
+import Loader from '../Loader';
 
 const Explore = () => {
   const queryKeys = ['explore'];
@@ -48,17 +48,13 @@ const Explore = () => {
     [fetchNextPage, hasNextPage, isFetchingNextPage],
   );
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  if (isLoading || isFetchingNextPage) {
+    return <Loader />;
   }
 
   if (isError) {
     return <div>Oops something went wrong...</div>;
   }
-
-  // if (data.pages[0].data.length === 0) {
-  //   return <div>No chirps yet</div>;
-  // }
 
   return (
     <>
@@ -81,19 +77,6 @@ const Explore = () => {
           />
         );
       })}
-
-      {!hasNextPage && (
-        <Button
-          style={{
-            marginInline: 'auto',
-            display: 'block',
-            marginBlock: '1rem',
-          }}
-          onClick={() => scrollTo(0, 0)}
-        >
-          Back To Top
-        </Button>
-      )}
     </>
   );
 };
