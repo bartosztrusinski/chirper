@@ -1,7 +1,7 @@
 @use '../../assets/styles/util' as u;
 
 .modal {
-  width: min(100%, u.rem(320));
+  max-width: u.rem(360);
 
   .heading {
     font-size: var(--fs-500);

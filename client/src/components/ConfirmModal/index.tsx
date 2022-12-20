@@ -2,26 +2,27 @@ import Button from '../Button';
 import Modal from '../Modal';
 import styles from './styles.module.scss';
 
-interface Props {
+interface ConfirmModalProps extends ReactModal.Props {
   heading: string;
   description: string;
   confirmText: string;
-
-  open: boolean;
   onConfirm: () => void;
-  onClose: () => void;
 }
 
 const ConfirmModal = ({
-  open,
-  onClose,
-  onConfirm,
   heading,
   description,
   confirmText,
-}: Props) => {
+  onConfirm,
+  onRequestClose,
+  ...restProps
+}: ConfirmModalProps) => {
   return (
-    <Modal open={open} onClose={onClose} className={styles.modal}>
+    <Modal
+      {...restProps}
+      onRequestClose={onRequestClose}
+      className={styles.modal}
+    >
       <div className={styles.heading}>{heading}</div>
       <div className={styles.description}>{description}</div>
       <div className={styles.buttons}>
@@ -35,7 +36,7 @@ const ConfirmModal = ({
         <Button
           variant='dark'
           className={styles.cancelButton}
-          onClick={onClose}
+          onClick={onRequestClose}
         >
           Cancel
         </Button>
