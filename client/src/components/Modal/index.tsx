@@ -8,6 +8,7 @@ import { RiTwitterLine as ChirperIcon } from '@react-icons/all-files/ri/RiTwitte
 interface ModalProps extends ReactModal.Props {
   title?: string;
   hasCloseButton?: boolean;
+  contentClassName?: string;
 }
 
 const Modal = ({
@@ -18,11 +19,15 @@ const Modal = ({
   onAfterClose,
   onRequestClose,
   className,
+  contentClassName,
   ...restProps
 }: ModalProps) => {
   // const { lockScroll, clearLocks, unlockScroll } = useLockScroll();
   // const contentRef = useRef<HTMLDivElement | null>(null);
-  const classes = [styles.modal, className].filter(Boolean).join(' ');
+  const modalClasses = [className, styles.modal].filter(Boolean).join(' ');
+  const contentClasses = [contentClassName, styles.content]
+    .filter(Boolean)
+    .join(' ');
 
   // useEffect(() => {
   //   return () => clearLocks();
@@ -53,8 +58,9 @@ const Modal = ({
       //   onRequestClose?.(e);
       // }}
       {...restProps}
-      className={classes}
+      className={modalClasses}
       overlayClassName={styles.overlay}
+      aria={{ labelledby: `${title ?? 'Chirper'} Modal` }}
     >
       <div className={styles.panel}>
         {title ? (
@@ -72,7 +78,7 @@ const Modal = ({
           </button>
         )}
       </div>
-      <div className={styles.content}>{children}</div>
+      <div className={contentClasses}>{children}</div>
     </ReactModal>
   );
 };
