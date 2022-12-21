@@ -1,25 +1,43 @@
 @use '../../assets/styles/util' as u;
 
-.section {
-  display: grid;
+@mixin card {
+  background-color: var(--card-background-color);
+  border: u.rem(1) solid var(--border-color);
+  border-radius: u.rem(8);
+  box-shadow: var(--shadow-small);
+  padding: u.rem(12);
 }
 
 .navigation {
-  justify-self: start;
   display: grid;
   grid-auto-flow: column;
+  justify-content: start;
   gap: u.rem(12);
   align-items: center;
-  padding: u.rem(16);
+  padding: u.rem(16) u.rem(16) 0;
   font-weight: var(--fw-semi-bold);
   cursor: pointer;
 }
 
+.container {
+  padding: u.rem(12);
+  border-bottom: u.rem(1) solid var(--border-color);
+
+  @include u.breakpoint-up('small') {
+    padding: u.rem(16);
+  }
+}
+
 .chirp {
+  @include card;
+
   display: grid;
   gap: u.rem(10);
-  padding: u.rem(16) u.rem(16) 0;
-  border-bottom: u.rem(1) solid var(--border-color);
+  padding: u.rem(12) u.rem(12) u.rem(4);
+
+  @include u.breakpoint-up('small') {
+    padding: u.rem(16) u.rem(16) u.rem(8);
+  }
 }
 
 .avatar {
@@ -35,6 +53,7 @@
     display: grid;
     grid-template-rows: repeat(2, auto);
     justify-items: start;
+    overflow-wrap: anywhere;
 
     .username {
       color: var(--text-muted-color);
@@ -167,9 +186,4 @@
       }
     }
   }
-}
-
-.replyFormContainer {
-  padding: u.rem(16);
-  border-bottom: u.rem(1) solid var(--border-color);
 }

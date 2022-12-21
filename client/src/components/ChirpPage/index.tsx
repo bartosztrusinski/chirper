@@ -96,7 +96,7 @@ const ChirpPage = () => {
   }
 
   return (
-    <section className={styles.section}>
+    <>
       <h2 className='visually-hidden'>Conversation</h2>
 
       <div
@@ -107,137 +107,143 @@ const ChirpPage = () => {
         Back
       </div>
 
-      <article className={styles.chirp}>
-        <div className={styles.author}>
-          <Link to={`/users/${chirp.author.username}`}>
-            <img
-              src={chirp.author.profile.picture ?? defaultAvatar}
-              alt={`${chirp.author.username}'s  avatar`}
-              className={styles.avatar}
-            />
-          </Link>
-          <div className={styles.usernames}>
-            <Link
-              to={`/users/${chirp.author.username}`}
-              className={styles.name}
-            >
-              {chirp.author.profile.name}
-            </Link>
-            <Link
-              to={`/users/${chirp.author.username}`}
-              className={styles.username}
-            >
-              @{chirp.author.username}
-            </Link>
-          </div>
-        </div>
-        <p className={styles.content}>{chirp.content}</p>
-        <div className={styles.meta}>
-          <div className={styles.metrics}>
-            {chirp.replies.length > 0 && (
-              <div>
-                <span className={styles.count}>
-                  {utils.formatCount(chirp.replies.length)}
-                </span>
-                {chirp.replies.length > 1 ? 'Replies' : 'Reply'}
+      <section>
+        <div className={styles.container}>
+          <article className={styles.chirp}>
+            <div className={styles.author}>
+              <Link to={`/users/${chirp.author.username}`}>
+                <img
+                  src={chirp.author.profile.picture ?? defaultAvatar}
+                  alt={`${chirp.author.username}'s  avatar`}
+                  className={styles.avatar}
+                />
+              </Link>
+              <div className={styles.usernames}>
+                <Link
+                  to={`/users/${chirp.author.username}`}
+                  className={styles.name}
+                >
+                  {chirp.author.profile.name}
+                </Link>
+                <Link
+                  to={`/users/${chirp.author.username}`}
+                  className={styles.username}
+                >
+                  @{chirp.author.username}
+                </Link>
               </div>
-            )}
-            {chirp.metrics.likeCount > 0 && (
-              <>
+            </div>
+            <p className={styles.content}>{chirp.content}</p>
+            <div className={styles.meta}>
+              <div className={styles.metrics}>
+                {chirp.replies.length > 0 && (
+                  <div>
+                    <span className={styles.count}>
+                      {utils.formatCount(chirp.replies.length)}
+                    </span>
+                    {chirp.replies.length > 1 ? 'Replies' : 'Reply'}
+                  </div>
+                )}
+                {chirp.metrics.likeCount > 0 && (
+                  <>
+                    <button
+                      type='button'
+                      className={styles.showLikesButton}
+                      onClick={() =>
+                        navigate({
+                          search: (old) => ({ ...old, dialog: 'likes' }),
+                        })
+                      }
+                    >
+                      <span className={styles.count}>
+                        {utils.formatCount(chirp.metrics.likeCount)}
+                      </span>
+                      {chirp.metrics.likeCount > 1 ? 'Likes' : 'Like'}
+                    </button>
+
+                    <LikesModal
+                      isOpen={isLikesModalOpen}
+                      onRequestClose={() =>
+                        navigate({
+                          search: (old) => ({ ...old, dialog: undefined }),
+                        })
+                      }
+                      chirpId={chirp._id}
+                    />
+                  </>
+                )}
+              </div>
+              <div className={styles.date}>
+                <span>{utils.formatTime(chirp.createdAt).formattedTime}</span>
+                <span>·</span>
+                <span>{utils.formatTime(chirp.createdAt).formattedDate}</span>
+              </div>
+            </div>
+            <div className={styles.buttonPanel}>
+              <button
+                type='button'
+                className={styles.button}
+                onClick={() =>
+                  user
+                    ? createChirpContext?.openCreateChirpModal(chirp)
+                    : promptContext?.openReplyPrompt(chirp.author.username)
+                }
+              >
+                <FaRegCommentAlt className={styles.icon} />
+              </button>
+
+              <button
+                disabled={Boolean(user) && isLikedLoading}
+                type='button'
+                className={`${styles.button} ${styles.like} ${
+                  isLiked ? styles.liked : ''
+                }`}
+                onClick={() => {
+                  if (!user) {
+                    promptContext?.openLikePrompt(chirp.author.username);
+                    return;
+                  }
+
+                  isLiked ? unlikeChirp(chirp) : likeChirp(chirp);
+                }}
+              >
+                <FaRegHeart className={styles.icon} />
+              </button>
+
+              <button
+                type='button'
+                className={styles.button}
+                onClick={() =>
+                  navigator.clipboard.writeText(window.location.href)
+                }
+              >
+                <FiShare className={styles.icon} />
+              </button>
+
+              {user?._id === chirp.author._id && (
                 <button
                   type='button'
-                  className={styles.showLikesButton}
+                  className={`${styles.button} ${styles.delete}`}
                   onClick={() =>
-                    navigate({
-                      search: (old) => ({ ...old, dialog: 'likes' }),
-                    })
+                    deleteChirp(chirp._id, { onSuccess: () => history.back() })
                   }
                 >
-                  <span className={styles.count}>
-                    {utils.formatCount(chirp.metrics.likeCount)}
-                  </span>
-                  {chirp.metrics.likeCount > 1 ? 'Likes' : 'Like'}
+                  <BsTrash className={styles.icon} />
                 </button>
+              )}
+            </div>
+          </article>
+        </div>
 
-                <LikesModal
-                  isOpen={isLikesModalOpen}
-                  onRequestClose={() =>
-                    navigate({
-                      search: (old) => ({ ...old, dialog: undefined }),
-                    })
-                  }
-                  chirpId={chirp._id}
-                />
-              </>
-            )}
+        {user && (
+          <div className={styles.container}>
+            <CreateChirpForm replyToId={chirp._id} />
           </div>
-          <div className={styles.date}>
-            <span>{utils.formatTime(chirp.createdAt).formattedTime}</span>
-            <span>·</span>
-            <span>{utils.formatTime(chirp.createdAt).formattedDate}</span>
-          </div>
-        </div>
-        <div className={styles.buttonPanel}>
-          <button
-            type='button'
-            className={styles.button}
-            onClick={() =>
-              user
-                ? createChirpContext?.openCreateChirpModal(chirp)
-                : promptContext?.openReplyPrompt(chirp.author.username)
-            }
-          >
-            <FaRegCommentAlt className={styles.icon} />
-          </button>
+        )}
 
-          <button
-            disabled={Boolean(user) && isLikedLoading}
-            type='button'
-            className={`${styles.button} ${styles.like} ${
-              isLiked ? styles.liked : ''
-            }`}
-            onClick={() => {
-              if (!user) {
-                promptContext?.openLikePrompt(chirp.author.username);
-                return;
-              }
-
-              isLiked ? unlikeChirp(chirp) : likeChirp(chirp);
-            }}
-          >
-            <FaRegHeart className={styles.icon} />
-          </button>
-
-          <button
-            type='button'
-            className={styles.button}
-            onClick={() => navigator.clipboard.writeText(window.location.href)}
-          >
-            <FiShare className={styles.icon} />
-          </button>
-
-          {user?._id === chirp.author._id && (
-            <button
-              type='button'
-              className={`${styles.button} ${styles.delete}`}
-              onClick={() =>
-                deleteChirp(chirp._id, { onSuccess: () => history.back() })
-              }
-            >
-              <BsTrash className={styles.icon} />
-            </button>
-          )}
-        </div>
-      </article>
-
-      {user && (
-        <div className={styles.replyFormContainer}>
-          <CreateChirpForm replyToId={chirp._id} />
-        </div>
-      )}
-
-      <ChirpReplies chirp={chirp} />
-    </section>
+        <ChirpReplies chirp={chirp} />
+      </section>
+    </>
   );
 };
 
