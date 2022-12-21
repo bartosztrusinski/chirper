@@ -4,6 +4,7 @@ import useFollowedUsernames from '../../hooks/useFollowedUsernames';
 import useFollowUser from '../../hooks/useFollowUser';
 import ConfirmModal from '../ConfirmModal';
 import { forwardRef, useState } from 'react';
+import Loader from '../Loader';
 
 interface UserListProps {
   users: IUser[];
@@ -23,20 +24,12 @@ const UserList = forwardRef<LastUserRef, UserListProps>(function UserList(
   const {
     data: followedUsernames,
     isError,
-    isLoading,
     isSuccess,
+    isInitialLoading,
   } = useFollowedUsernames(
     [...queryKeys, `${page}`],
     users.map((user) => user._id),
   );
-
-  // if (isLoading && users.length) {
-  //   return <div>Loading...</div>;
-  // }
-
-  if (isError) {
-    return <div>Oops something went wrong</div>;
-  }
 
   const isUserFollowed = (username: string) =>
     isSuccess && followedUsernames.includes(username);
@@ -50,6 +43,14 @@ const UserList = forwardRef<LastUserRef, UserListProps>(function UserList(
     }
   };
 
+  if (isInitialLoading) {
+    return <Loader />;
+  }
+
+  if (isError) {
+    return <div>Oops something went wrong</div>;
+  }
+
   return (
     <>
       {users.map((user, index) => {
@@ -61,11 +62,11 @@ const UserList = forwardRef<LastUserRef, UserListProps>(function UserList(
             key={user._id}
             user={user}
             isFollowed={isUserFollowed(user.username)}
-            isFollowEnabled={!isLoading}
             onFollow={handleFollow}
           />
         );
       })}
+
       <ConfirmModal
         isOpen={isConfirmModalOpen}
         onRequestClose={() => setIsConfirmModalOpen(false)}

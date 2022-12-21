@@ -3,6 +3,7 @@ import IChirp from '../../interfaces/Chirp';
 import useLikeChirp from '../../hooks/useLikeChirp';
 import useLikedChirpIds from '../../hooks/useLikedChirpIds';
 import { forwardRef } from 'react';
+import Loader from '../Loader';
 
 interface AuthenticatedChirpListProps {
   chirps: IChirp[];
@@ -21,7 +22,7 @@ const AuthenticatedChirpList = forwardRef<
   const {
     data: likedChirpIds,
     isError,
-    isLoading,
+    isInitialLoading,
     isSuccess,
   } = useLikedChirpIds(
     [...queryKeys, `${page}`],
@@ -39,8 +40,8 @@ const AuthenticatedChirpList = forwardRef<
     }
   };
 
-  if (isLoading && chirps.length) {
-    return <div>Loading...</div>;
+  if (isInitialLoading) {
+    return <Loader />;
   }
 
   if (isError) {
