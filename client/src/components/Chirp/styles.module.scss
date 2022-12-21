@@ -1,12 +1,21 @@
 @use '../../assets/styles/util' as u;
 
+@mixin card {
+  background-color: var(--card-background-color);
+  border: u.rem(1) solid var(--border-color);
+  border-radius: u.rem(8);
+  box-shadow: var(--shadow-small);
+  padding: u.rem(12);
+}
+
 .chirp {
+  @include card;
+
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: start;
   gap: u.rem(8);
-  padding: u.rem(12) u.rem(16);
-  border-bottom: u.rem(1) solid var(--border-color);
+  margin: u.rem(12);
   outline: u.rem(2) solid transparent;
   color: var(--text-color);
   cursor: pointer;
@@ -25,6 +34,7 @@
 
   @include u.breakpoint-up('small') {
     gap: u.rem(12);
+    margin: u.rem(16);
     padding: u.rem(16);
   }
 }
