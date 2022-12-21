@@ -28,6 +28,7 @@ import {
   useNavigate,
   useSearch,
 } from '@tanstack/react-location';
+import ConfirmModal from '../ConfirmModal';
 
 type LocationGenerics = MakeGenerics<{
   Params: { id: string };
@@ -46,6 +47,8 @@ const ChirpPage = () => {
   const { deleteChirp } = useManageChirp();
   const createChirpContext = useContext(CreateChirpContext);
   const promptContext = useContext(PromptContext);
+
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
 
   const queryKeys = [id];
   const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys);
@@ -221,15 +224,28 @@ const ChirpPage = () => {
               </button>
 
               {user?._id === chirp.author._id && (
-                <button
-                  type='button'
-                  className={`${styles.button} ${styles.delete}`}
-                  onClick={() =>
-                    deleteChirp(chirp._id, { onSuccess: () => history.back() })
-                  }
-                >
-                  <BsTrash className={styles.icon} />
-                </button>
+                <>
+                  <button
+                    type='button'
+                    className={`${styles.button} ${styles.delete}`}
+                    onClick={() => setIsConfirmModalOpen(true)}
+                  >
+                    <BsTrash className={styles.icon} />
+                  </button>
+
+                  <ConfirmModal
+                    isOpen={isConfirmModalOpen}
+                    onRequestClose={() => setIsConfirmModalOpen(false)}
+                    heading='Delete Chirp?'
+                    description="This can't be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from Chirper search results."
+                    confirmText='Delete'
+                    onConfirm={() =>
+                      deleteChirp(chirp._id, {
+                        onSuccess: () => history.back(),
+                      })
+                    }
+                  />
+                </>
               )}
             </div>
           </article>
