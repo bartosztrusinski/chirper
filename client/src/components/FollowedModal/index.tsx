@@ -3,16 +3,13 @@ import UserList from '../UserList';
 import UserService from '../../api/services/User';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useCallback, useRef } from 'react';
+import Loader from '../Loader';
 
 interface FollowedModalProps extends ReactModal.Props {
   username: string;
 }
 
-const FollowedModal = ({
-  username,
-  isOpen,
-  onRequestClose,
-}: FollowedModalProps) => {
+const FollowedModal = ({ username, ...restProps }: FollowedModalProps) => {
   const queryKeys = [username, 'followed'];
 
   const {
@@ -53,29 +50,27 @@ const FollowedModal = ({
     [fetchNextPage, hasNextPage, isFetchingNextPage],
   );
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (isError) {
-    return <div>Oops something went wrong...</div>;
-  }
-
   return (
-    <Modal title='Followed' isOpen={isOpen} onRequestClose={onRequestClose}>
-      {data.pages.map((page, index) => {
-        const isLastPage = index === data.pages.length - 1;
+    <Modal title='Followed' {...restProps}>
+      {isLoading ? (
+        <Loader />
+      ) : isError ? (
+        <div>Oops something went wrong...</div>
+      ) : (
+        data.pages.map((page, index) => {
+          const isLastPage = index === data.pages.length - 1;
 
-        return (
-          <UserList
-            ref={isLastPage ? lastUserRef : null}
-            key={index}
-            users={page.data}
-            queryKeys={queryKeys}
-            page={index}
-          />
-        );
-      })}
+          return (
+            <UserList
+              ref={isLastPage ? lastUserRef : null}
+              key={index}
+              users={page.data}
+              queryKeys={queryKeys}
+              page={index}
+            />
+          );
+        })
+      )}
     </Modal>
   );
 };

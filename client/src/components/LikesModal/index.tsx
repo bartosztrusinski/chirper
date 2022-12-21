@@ -3,12 +3,13 @@ import UserList from '../UserList';
 import UserService from '../../api/services/User';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useCallback, useRef } from 'react';
+import Loader from '../Loader';
 
 interface LikesModalProps extends ReactModal.Props {
   chirpId: string;
 }
 
-const LikesModal = ({ chirpId, isOpen, onRequestClose }: LikesModalProps) => {
+const LikesModal = ({ chirpId, ...restProps }: LikesModalProps) => {
   const queryKeys = [chirpId, 'liking'];
 
   const {
@@ -49,29 +50,27 @@ const LikesModal = ({ chirpId, isOpen, onRequestClose }: LikesModalProps) => {
     [fetchNextPage, hasNextPage, isFetchingNextPage],
   );
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (isError) {
-    return <div>Oops something went wrong...</div>;
-  }
-
   return (
-    <Modal title='Liked by' isOpen={isOpen} onRequestClose={onRequestClose}>
-      {data.pages.map((page, index) => {
-        const isLastPage = index === data.pages.length - 1;
+    <Modal title='Liked by' {...restProps}>
+      {isLoading ? (
+        <Loader />
+      ) : isError ? (
+        <div>Oops something went wrong...</div>
+      ) : (
+        data.pages.map((page, index) => {
+          const isLastPage = index === data.pages.length - 1;
 
-        return (
-          <UserList
-            ref={isLastPage ? lastUserRef : null}
-            key={index}
-            users={page.data}
-            queryKeys={queryKeys}
-            page={index}
-          />
-        );
-      })}
+          return (
+            <UserList
+              ref={isLastPage ? lastUserRef : null}
+              key={index}
+              users={page.data}
+              queryKeys={queryKeys}
+              page={index}
+            />
+          );
+        })
+      )}
     </Modal>
   );
 };
