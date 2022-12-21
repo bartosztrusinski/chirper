@@ -4,6 +4,7 @@ import ChirpService from '../../api/services/Chirp';
 import useUser from '../../hooks/useUser';
 import IChirp from '../../interfaces/Chirp';
 import AuthenticatedChirpList from '../AuthenticatedChirpList';
+import Loader from '../Loader';
 import UnauthenticatedChirpList from '../UnauthenticatedChirpList';
 
 interface ChirpRepliesProps {
@@ -53,7 +54,7 @@ const ChirpReplies = ({ chirp }: ChirpRepliesProps) => {
   );
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   if (isError) {
@@ -81,6 +82,7 @@ const ChirpReplies = ({ chirp }: ChirpRepliesProps) => {
           />
         );
       })}
+      {isFetchingNextPage && <Loader />}
     </>
   );
 };

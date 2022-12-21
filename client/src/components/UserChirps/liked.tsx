@@ -5,6 +5,7 @@ import { useCallback, useRef } from 'react';
 import AuthenticatedChirpList from '../AuthenticatedChirpList';
 import UnauthenticatedChirpList from '../UnauthenticatedChirpList';
 import useUser from '../../hooks/useUser';
+import Loader from '../Loader';
 
 const UserLikedChirps = () => {
   const { user } = useUser();
@@ -52,7 +53,7 @@ const UserLikedChirps = () => {
   );
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   if (isError) {
@@ -80,6 +81,7 @@ const UserLikedChirps = () => {
           />
         );
       })}
+      {isFetchingNextPage && <Loader />}
     </>
   );
 };

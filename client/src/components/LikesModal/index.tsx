@@ -57,19 +57,22 @@ const LikesModal = ({ chirpId, ...restProps }: LikesModalProps) => {
       ) : isError ? (
         <div>Oops something went wrong...</div>
       ) : (
-        data.pages.map((page, index) => {
-          const isLastPage = index === data.pages.length - 1;
+        <>
+          {data.pages.map((page, index) => {
+            const isLastPage = index === data.pages.length - 1;
 
-          return (
-            <UserList
-              ref={isLastPage ? lastUserRef : null}
-              key={index}
-              users={page.data}
-              queryKeys={queryKeys}
-              page={index}
-            />
-          );
-        })
+            return (
+              <UserList
+                ref={isLastPage ? lastUserRef : null}
+                key={index}
+                users={page.data}
+                queryKeys={queryKeys}
+                page={index}
+              />
+            );
+          })}
+          {isFetchingNextPage && <Loader />}
+        </>
       )}
     </Modal>
   );

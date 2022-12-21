@@ -48,7 +48,7 @@ const Explore = () => {
     [fetchNextPage, hasNextPage, isFetchingNextPage],
   );
 
-  if (isLoading || isFetchingNextPage) {
+  if (isLoading) {
     return <Loader />;
   }
 
@@ -77,6 +77,7 @@ const Explore = () => {
           />
         );
       })}
+      {isFetchingNextPage && <Loader />}
     </>
   );
 };

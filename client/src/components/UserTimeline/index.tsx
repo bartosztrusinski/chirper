@@ -4,6 +4,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import useUser from '../../hooks/useUser';
 import { StoredUser } from '../../interfaces/User';
 import { useCallback, useRef } from 'react';
+import Loader from '../Loader';
 
 const UserTimeline = () => {
   const { user } = useUser() as { user: StoredUser };
@@ -48,7 +49,7 @@ const UserTimeline = () => {
   );
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   if (isError) {
@@ -70,6 +71,7 @@ const UserTimeline = () => {
           />
         );
       })}
+      {isFetchingNextPage && <Loader />}
     </>
   );
 };
