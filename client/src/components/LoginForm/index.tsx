@@ -7,6 +7,7 @@ import useAuth from '../../hooks/useAuth';
 import { useForm } from 'react-hook-form';
 import { useContext } from 'react';
 import { PromptContext } from '../UnauthenticatedApp';
+import Loader from '../Loader';
 
 interface Inputs {
   login: string;
@@ -79,13 +80,13 @@ const LoginForm = () => {
           )}
         </div>
 
-        <Button
-          type='submit'
-          disabled={!isValid || isLoggingIn}
-          className={styles.submitButton}
-        >
-          {isLoggingIn ? 'Logging In...' : 'Log In'}
-        </Button>
+        {isLoggingIn ? (
+          <Loader />
+        ) : (
+          <Button type='submit' disabled={!isValid}>
+            Log In
+          </Button>
+        )}
       </form>
 
       <p className={styles.signUpLink}>

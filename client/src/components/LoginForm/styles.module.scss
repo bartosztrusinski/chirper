@@ -28,7 +28,7 @@
     }
   }
 
-  .submitButton {
+  & > :last-child {
     margin-top: u.rem(24);
   }
 }

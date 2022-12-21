@@ -1,26 +1,11 @@
 @use '../../assets/styles/util' as u;
 
-.form {
+.stepIndexPanel {
   display: grid;
-  grid-template-columns: 1fr;
-  align-content: space-between;
-  gap: u.rem(24);
-  min-height: u.rem(400);
-  padding-bottom: u.rem(32);
-
-  .stepContainer {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: u.rem(20);
-  }
-
-  .stepIndexPanel {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-rows: u.rem(40);
-    gap: u.rem(8);
-    align-items: center;
-  }
+  grid-template-columns: auto 1fr;
+  grid-template-rows: u.rem(40);
+  gap: u.rem(8);
+  align-items: center;
 
   .backButton {
     outline: u.rem(1) solid transparent;
@@ -33,6 +18,19 @@
     &:focus {
       outline-color: var(--color-primary);
     }
+  }
+}
+
+.form {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-content: space-between;
+  gap: u.rem(20);
+
+  .stepContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: u.rem(20);
   }
 
   .heading {
@@ -50,6 +48,7 @@
   .errorMessage {
     color: var(--color-error);
     font-size: var(--fs-200);
+    padding: u.rem(4);
   }
 
   .invalidInput:focus-within {
@@ -60,12 +59,13 @@
     }
   }
 
-  .submitButton {
+  & > :last-child {
     margin-top: u.rem(24);
   }
+}
 
-  .logInLink {
-    color: var(--text-muted-color);
-    font-size: var(--fs-300);
-  }
+.logInLink {
+  color: var(--text-muted-color);
+  font-size: var(--fs-300);
+  padding-bottom: u.rem(16);
 }

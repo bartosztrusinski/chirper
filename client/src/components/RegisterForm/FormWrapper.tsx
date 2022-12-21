@@ -5,6 +5,7 @@ import Button from '../Button';
 import { MultiStepContext } from '.';
 import { MultiStep } from '../../hooks/useMultiStep';
 import { PromptContext } from '../UnauthenticatedApp';
+import Loader from '../Loader';
 
 interface FormWrapperProps extends ComponentPropsWithoutRef<'form'> {
   isInvalid?: boolean;
@@ -38,17 +39,14 @@ const FormWrapper = ({
 
       <form {...restProps} className={styles.form}>
         <div className={styles.stepContainer}>{children}</div>
-        <Button
-          type='submit'
-          disabled={isInvalid || isSubmitting}
-          className={styles.submitButton}
-        >
-          {isSubmitting
-            ? 'Signing Up...'
-            : isLastStep
-            ? 'Create Account'
-            : 'Next'}
-        </Button>
+
+        {isSubmitting ? (
+          <Loader />
+        ) : (
+          <Button type='submit' disabled={isInvalid}>
+            {isLastStep ? 'Create Account' : 'Next'}
+          </Button>
+        )}
       </form>
 
       {isFirstStep && (

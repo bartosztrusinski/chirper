@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useManageChirp from '../../hooks/useManageChirp';
 import { CreateChirpContext } from '../AuthenticatedApp';
+import Loader from '../Loader';
 
 interface CreateChirpFormProps {
   replyToId?: string;
@@ -89,13 +90,13 @@ const CreateChirpForm = ({ replyToId, autoFocus }: CreateChirpFormProps) => {
             {...rest}
           />
 
-          <Button
-            type='submit'
-            className={styles.submitButton}
-            disabled={!isDirty || !isValid || isCreatingChirp}
-          >
-            {isCreatingChirp ? 'Loading...' : replyToId ? 'Reply' : 'Chirp'}
-          </Button>
+          {isCreatingChirp ? (
+            <Loader />
+          ) : (
+            <Button type='submit' disabled={!isDirty || !isValid}>
+              {replyToId ? 'Reply' : 'Chirp'}
+            </Button>
+          )}
         </form>
       </div>
 

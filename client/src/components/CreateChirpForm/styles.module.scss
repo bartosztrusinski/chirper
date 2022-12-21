@@ -8,67 +8,64 @@
   padding: u.rem(12);
 }
 
-.container {
-  margin: u.rem(12);
+.card {
+  @include card;
 
-  .errorMessage {
-    color: var(--color-error);
-    font-size: var(--fs-200);
-    padding: u.rem(4);
+  display: grid;
+  grid-template-columns: u.rem(48) 1fr;
+  align-items: start;
+  gap: u.rem(12);
+  cursor: text;
+
+  &:focus-within {
+    outline: u.rem(2) solid var(--color-primary);
+
+    &.invalidInput {
+      outline-color: var(--color-error);
+    }
   }
 
-  .card {
-    @include card;
+  .avatar {
+    border-radius: 50%;
+  }
 
+  .form {
     display: grid;
-    grid-template-columns: u.rem(48) 1fr;
-    align-items: start;
-    gap: u.rem(12);
-    cursor: text;
+    align-items: end;
+    gap: u.rem(6);
 
-    &:focus-within {
-      outline: u.rem(2) solid var(--color-primary);
+    @include u.breakpoint-up('small') {
+      grid-template-columns: 1fr auto;
+      gap: u.rem(16);
+    }
 
-      &.invalidInput {
-        outline-color: var(--color-error);
+    .contentInput {
+      font-size: var(--fs-400);
+      resize: none;
+      overflow: hidden;
+      background-color: transparent;
+      color: var(--text-color);
+      padding-block: u.rem(12);
+      border: none;
+      outline: none;
+
+      &:disabled {
+        color: var(--text-muted-color);
       }
     }
 
-    .avatar {
-      border-radius: 50%;
-    }
-
-    .form {
-      display: grid;
-      align-items: end;
-      gap: u.rem(6);
-
-      @include u.breakpoint-up('small') {
-        grid-template-columns: 1fr auto;
-        gap: u.rem(16);
-      }
-
-      .contentInput {
-        font-size: var(--fs-400);
-        resize: none;
-        overflow: hidden;
-        background-color: transparent;
-        color: var(--text-color);
-        padding-block: u.rem(12);
-        border: none;
-        outline: none;
-
-        &:disabled {
-          color: var(--text-muted-color);
-        }
-      }
-
-      .submitButton {
-        justify-self: end;
-        padding: u.rem(10) clamp(u.rem(16), u.rem(14.4) + 0.5vw, u.rem(24));
-        font-size: var(--fs-200);
-        margin-bottom: u.rem(6);
-      }
+    & > :last-child {
+      justify-self: end;
+      align-self: end;
+      padding: u.rem(10) clamp(u.rem(16), u.rem(14.4) + 0.5vw, u.rem(24));
+      font-size: var(--fs-200);
+      margin: 0 0 u.rem(6);
     }
   }
+}
+
+.errorMessage {
+  color: var(--color-error);
+  font-size: var(--fs-200);
+  padding: u.rem(4);
 }
