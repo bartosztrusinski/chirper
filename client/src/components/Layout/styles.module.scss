@@ -15,13 +15,14 @@
 }
 
 .grid {
+  height: 100vh;
   display: grid;
   grid-template-columns: 1fr;
-  max-height: calc(100vh - u.rem(116));
+  padding-top: u.rem(57);
 
   @include u.breakpoint-up('small') {
     grid-template-columns: u.rem(90) auto;
-    max-height: calc(100vh - u.rem(73));
+    padding-top: u.rem(69);
   }
 
   @include u.breakpoint-up('medium') {
@@ -29,6 +30,7 @@
       minmax(u.rem(90), 1fr)
       minmax(auto, u.rem(650))
       1fr;
+    padding-top: u.rem(73);
   }
 
   @include u.breakpoint-up('large') {
@@ -61,8 +63,6 @@
 }
 
 .sidebar {
-  position: sticky;
-  z-index: 2;
   overflow: auto;
   padding: u.rem(12) u.rem(20);
 
@@ -96,8 +96,8 @@
 }
 
 .bottomPanel {
-  position: sticky;
-  bottom: 0;
+  position: absolute;
+  inset: auto 0 0;
   z-index: 3;
   display: grid;
   justify-content: center;
@@ -105,14 +105,13 @@
   background-color: var(--bottom-panel-background-color);
   backdrop-filter: blur(u.rem(4));
   box-shadow: var(--shadow-inverse);
-  padding: u.rem(7) u.rem(10);
+  padding: u.rem(8) u.rem(10);
   border-top: u.rem(1) solid var(--border-color);
 }
 
 .authPanel {
   position: absolute;
-  inset-inline: 0;
-  bottom: 0;
+  inset: auto 0 0;
   z-index: 3;
   display: grid;
   grid-auto-flow: column;
