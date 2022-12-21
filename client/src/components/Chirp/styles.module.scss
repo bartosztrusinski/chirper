@@ -4,8 +4,8 @@
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: start;
-  gap: u.rem(12);
-  padding: u.rem(16);
+  gap: u.rem(8);
+  padding: u.rem(12) u.rem(16);
   border-bottom: u.rem(1) solid var(--border-color);
   outline: u.rem(2) solid transparent;
   color: var(--text-color);
@@ -22,6 +22,11 @@
   &:active {
     color: inherit;
   }
+
+  @include u.breakpoint-up('small') {
+    gap: u.rem(12);
+    padding: u.rem(16);
+  }
 }
 
 .avatar {
@@ -32,29 +37,43 @@
 .mainContainer {
   display: grid;
   grid-template-columns: 1fr;
-  gap: u.rem(10);
+  gap: u.rem(8);
+
+  @include u.breakpoint-up('small') {
+    gap: u.rem(12);
+  }
 }
 
 .upperPanel {
   display: grid;
-  grid-template-columns: repeat(3, auto);
+  grid-auto-flow: column;
   justify-content: start;
   gap: u.rem(6);
-}
-
-.dot,
-.username,
-.time {
   color: var(--text-muted-color);
-}
+  font-size: var(--fs-200);
 
-.username {
-  margin-left: u.rem(4);
-}
+  @include u.breakpoint-up('small') {
+    font-size: var(--fs-300);
+  }
 
-.name {
-  color: var(--text-color);
-  font-weight: var(--fw-bold);
+  .usernames {
+    display: grid;
+    grid-auto-flow: column;
+    gap: u.rem(4);
+
+    .username {
+      color: var(--text-muted-color);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .name {
+      color: var(--text-color);
+      font-weight: var(--fw-bold);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
 }
 
 .content {

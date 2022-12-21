@@ -41,7 +41,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
 
         <div className={styles.mainContainer}>
           <div className={styles.upperPanel}>
-            <div>
+            <div className={styles.usernames}>
               <Link
                 to={`/users/${chirp.author.username}`}
                 className={styles.name}
@@ -56,7 +56,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
               </Link>
             </div>
             <div>·</div>
-            <time className={styles.time} dateTime={chirp.createdAt}>
+            <time dateTime={chirp.createdAt}>
               {utils.formatRelativeTime(chirp.createdAt)}
             </time>
           </div>
