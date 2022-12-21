@@ -16,6 +16,7 @@ import useFollowUser from '../../hooks/useFollowUser';
 import FollowedModal from '../FollowedModal';
 import FollowingModal from '../FollowingModal';
 import { PromptContext } from '../UnauthenticatedApp';
+import Loader from '../Loader';
 import {
   Link,
   MakeGenerics,
@@ -67,10 +68,10 @@ const UserProfile = () => {
     isLoading: isFollowedLoading,
   } = useFollowedUsernames(queryKeys, isSuccess ? [user._id] : []);
 
-  const isFollowed =
+  const isFollowedProfile =
     isSuccess && isFollowedSuccess && followedUsernames.includes(user.username);
 
-  const isCurrentUser =
+  const isCurrentUserProfile =
     isSuccess && currentUser && currentUser._id === user._id;
 
   const closeDialog = () =>
@@ -82,8 +83,8 @@ const UserProfile = () => {
     setIsEditModalOpen(dialog === 'edit-profile');
   }, [dialog]);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  if (isLoading || isFollowedLoading) {
+    return <Loader />;
   }
 
   if (isError) {
@@ -106,28 +107,21 @@ const UserProfile = () => {
           <Button
             type='button'
             className={styles.button}
-            disabled={
-              !isCurrentUser && Boolean(currentUser) && isFollowedLoading
-            }
             onClick={() => {
               if (!currentUser) {
                 promptContext?.openFollowPrompt(user.username);
-              } else if (isCurrentUser) {
+              } else if (isCurrentUserProfile) {
                 navigate({ search: { dialog: 'edit-profile' } });
-              } else if (isFollowed) {
+              } else if (isFollowedProfile) {
                 setIsConfirmModalOpen(true);
               } else {
                 followUser(user.username);
               }
             }}
           >
-            {!currentUser
-              ? 'Follow'
-              : isCurrentUser
+            {isCurrentUserProfile
               ? 'Edit Profile'
-              : isFollowedLoading
-              ? 'Loading...'
-              : isFollowed
+              : isFollowedProfile
               ? 'Unfollow'
               : 'Follow'}
           </Button>
@@ -218,7 +212,7 @@ const UserProfile = () => {
         <Outlet />
       </section>
 
-      {currentUser && isCurrentUser && (
+      {currentUser && isCurrentUserProfile && (
         <EditProfileModal
           isOpen={isEditModalOpen}
           onRequestClose={closeDialog}
@@ -230,6 +224,7 @@ const UserProfile = () => {
         onRequestClose={closeDialog}
         username={user.username}
       />
+
       <FollowingModal
         isOpen={isFollowingModalOpen}
         onRequestClose={closeDialog}
