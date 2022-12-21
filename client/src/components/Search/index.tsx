@@ -1,10 +1,10 @@
-import { MakeGenerics, useNavigate, useSearch } from '@tanstack/react-location';
+import { MakeGenerics, useSearch } from '@tanstack/react-location';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
 import ChirpService from '../../api/services/Chirp';
 import useUser from '../../hooks/useUser';
 import AuthenticatedChirpList from '../AuthenticatedChirpList';
-import SearchFilterModal from '../SearchFilterModal';
+import Loader from '../Loader';
 import UnauthenticatedChirpList from '../UnauthenticatedChirpList';
 
 type SearchParams = {
@@ -24,7 +24,6 @@ type LocationGenerics = MakeGenerics<{
 const Search = () => {
   const { user } = useUser();
   const search = useSearch<LocationGenerics>();
-  const navigate = useNavigate<LocationGenerics>();
 
   const searchParams = {
     query: search.query,
@@ -35,14 +34,6 @@ const Search = () => {
     startTime: search.startTime,
     endTime: search.endTime,
   };
-
-  const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState<boolean>(
-    search.dialog === 'advanced-search',
-  );
-
-  useEffect(() => {
-    setIsAdvancedSearchOpen(search.dialog === 'advanced-search');
-  }, [search.dialog]);
 
   const queryKeys = ['search', searchParams];
 
@@ -91,7 +82,7 @@ const Search = () => {
   }
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   if (isError) {
@@ -119,13 +110,7 @@ const Search = () => {
           />
         );
       })}
-
-      <SearchFilterModal
-        isOpen={isAdvancedSearchOpen}
-        onRequestClose={() =>
-          navigate({ search: (old) => ({ ...old, dialog: undefined }) })
-        }
-      />
+      {isFetchingNextPage && <Loader />}
     </>
   );
 };
