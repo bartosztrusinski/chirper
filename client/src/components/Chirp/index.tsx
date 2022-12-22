@@ -11,6 +11,7 @@ import { PromptContext } from '../UnauthenticatedApp';
 import useUser from '../../hooks/useUser';
 import formatRelativeTime from '../../utils/formatRelativeTime';
 import formatCount from '../../utils/formatCount';
+import { toast } from 'react-hot-toast';
 
 interface ChirpProps {
   chirp: Chirp;
@@ -99,6 +100,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
                   navigator.clipboard.writeText(
                     `${window.location.origin}/chirps/${chirp._id}`,
                   );
+                  toast.success('Copied to clipboard');
                 }}
               >
                 <button className={styles.iconBackground}>
