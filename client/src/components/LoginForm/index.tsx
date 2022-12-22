@@ -8,6 +8,8 @@ import { useForm } from 'react-hook-form';
 import { useContext } from 'react';
 import { PromptContext } from '../UnauthenticatedApp';
 import Loader from '../Loader';
+import toast from 'react-hot-toast';
+import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
 
 interface Inputs {
   login: string;
@@ -21,6 +23,7 @@ const LoginForm = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isValid },
   } = useForm<Inputs>({
     mode: 'onChange',
@@ -34,9 +37,11 @@ const LoginForm = () => {
     logIn(inputs, {
       onSuccess: () => {
         navigate({ to: '/' });
+        toast.success('Welcome back!');
       },
       onError: (error) => {
-        console.log(error, 'invalid credentials');
+        reset();
+        toast.error(getRequestErrorMessage(error));
       },
     });
   };
