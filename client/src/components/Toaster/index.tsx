@@ -5,11 +5,15 @@ import toast, {
   Toaster as ReactHotToaster,
   ToasterProps,
 } from 'react-hot-toast';
+import useUser from '../../hooks/useUser';
 
 const Toaster = (props: ToasterProps) => {
+  const { user } = useUser();
+
   return (
     <ReactHotToaster
       position='bottom-center'
+      containerClassName={`${styles.container} ${user ? '' : styles.space}`}
       toastOptions={{
         duration: 3000,
         success: {

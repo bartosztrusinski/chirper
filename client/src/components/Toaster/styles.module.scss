@@ -1,7 +1,27 @@
+@use '../../assets/styles/util' as u;
+
 :root {
   --toast-color: var(--color-light-80);
   --toast-success-color: var(--color-primary);
   --toast-error-color: var(--color-error);
+}
+
+.container {
+  bottom: u.rem(70) !important;
+
+  @include u.breakpoint-up('small') {
+    bottom: u.rem(10) !important;
+  }
+
+  &.space {
+    @include u.breakpoint-up('small') {
+      bottom: u.rem(75) !important;
+    }
+
+    @include u.breakpoint-up('medium') {
+      bottom: u.rem(80) !important;
+    }
+  }
 }
 
 @mixin toast {
