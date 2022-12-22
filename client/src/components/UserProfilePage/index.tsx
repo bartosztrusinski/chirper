@@ -3,7 +3,6 @@ import defaultAvatar from '../../assets/images/default_avatar.png';
 import Button from '../Button';
 import { useQuery } from '@tanstack/react-query';
 import UserService from '../../api/services/User';
-import utils from '../../utils/utils';
 import { IoCalendarOutline } from '@react-icons/all-files/io5/IoCalendarOutline';
 import { HiOutlineLocationMarker } from '@react-icons/all-files/hi/HiOutlineLocationMarker';
 import { BiLinkAlt } from '@react-icons/all-files/bi/BiLinkAlt';
@@ -25,6 +24,8 @@ import {
   useNavigate,
   useSearch,
 } from '@tanstack/react-location';
+import formatCount from '../../utils/formatCount';
+import formatTime from '../../utils/formatTime';
 
 type LocationGenerics = MakeGenerics<{
   Params: { username: string };
@@ -132,7 +133,7 @@ const UserProfile = () => {
         <div className={styles.overview}>
           <div className={styles.item}>
             <IoCalendarOutline className={styles.icon} />
-            <div>Joined {utils.formatTime(user.createdAt).formattedDate}</div>
+            <div>Joined {formatTime(user.createdAt).formattedDate}</div>
           </div>
           {user.profile.location && (
             <div className={styles.item}>
@@ -157,7 +158,7 @@ const UserProfile = () => {
             onClick={() => navigate({ search: { dialog: 'followed' } })}
           >
             <div className={styles.count}>
-              {utils.formatCount(user.metrics.followedCount)}
+              {formatCount(user.metrics.followedCount)}
             </div>
             Followed
           </button>
@@ -168,7 +169,7 @@ const UserProfile = () => {
             onClick={() => navigate({ search: { dialog: 'following' } })}
           >
             <div className={styles.count}>
-              {utils.formatCount(user.metrics.followingCount)}
+              {formatCount(user.metrics.followingCount)}
             </div>
             Following
           </button>

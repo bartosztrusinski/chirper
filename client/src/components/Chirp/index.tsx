@@ -1,6 +1,5 @@
 import styles from './styles.module.scss';
 import defaultAvatar from '../../assets/images/default_avatar.png';
-import utils from '../../utils/utils';
 import Chirp from '../../interfaces/Chirp';
 import { forwardRef, useContext } from 'react';
 import { Link } from '@tanstack/react-location';
@@ -10,6 +9,8 @@ import { FiShare } from '@react-icons/all-files/fi/FiShare';
 import { CreateChirpContext } from '../AuthenticatedApp';
 import { PromptContext } from '../UnauthenticatedApp';
 import useUser from '../../hooks/useUser';
+import formatRelativeTime from '../../utils/formatRelativeTime';
+import formatCount from '../../utils/formatCount';
 
 interface ChirpProps {
   chirp: Chirp;
@@ -57,7 +58,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
             </div>
             <div>·</div>
             <time dateTime={chirp.createdAt}>
-              {utils.formatRelativeTime(chirp.createdAt)}
+              {formatRelativeTime(chirp.createdAt)}
             </time>
           </div>
 
@@ -77,7 +78,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
                 <button className={styles.iconBackground}>
                   <FaRegCommentAlt className={styles.icon} />
                 </button>
-                <div>{utils.formatCount(chirp.replies.length)}</div>
+                <div>{formatCount(chirp.replies.length)}</div>
               </div>
               <div
                 onClick={(e) => {
@@ -89,7 +90,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
                 <button className={styles.iconBackground}>
                   <FaRegHeart className={styles.icon} />
                 </button>
-                <div>{utils.formatCount(chirp.metrics.likeCount)}</div>
+                <div>{formatCount(chirp.metrics.likeCount)}</div>
               </div>
               <div
                 className={styles.share}

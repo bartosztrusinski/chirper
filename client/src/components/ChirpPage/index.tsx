@@ -1,7 +1,6 @@
 import styles from './styles.module.scss';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import ChirpService from '../../api/services/Chirp';
-import utils from '../../utils/utils';
 import { FaArrowLeft } from '@react-icons/all-files/fa/FaArrowLeft';
 import { FaRegCommentAlt } from '@react-icons/all-files/fa/FaRegCommentAlt';
 import { FaRegHeart } from '@react-icons/all-files/fa/FaRegHeart';
@@ -20,6 +19,9 @@ import Button from '../Button';
 import { PromptContext } from '../UnauthenticatedApp';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Loader from '../Loader';
+import ConfirmModal from '../ConfirmModal';
+import formatCount from '../../utils/formatCount';
+import formatTime from '../../utils/formatTime';
 import {
   Link,
   MakeGenerics,
@@ -28,7 +30,6 @@ import {
   useNavigate,
   useSearch,
 } from '@tanstack/react-location';
-import ConfirmModal from '../ConfirmModal';
 
 type LocationGenerics = MakeGenerics<{
   Params: { id: string };
@@ -142,7 +143,7 @@ const ChirpPage = () => {
                 {chirp.replies.length > 0 && (
                   <div>
                     <span className={styles.count}>
-                      {utils.formatCount(chirp.replies.length)}
+                      {formatCount(chirp.replies.length)}
                     </span>
                     {chirp.replies.length > 1 ? 'Replies' : 'Reply'}
                   </div>
@@ -159,7 +160,7 @@ const ChirpPage = () => {
                       }
                     >
                       <span className={styles.count}>
-                        {utils.formatCount(chirp.metrics.likeCount)}
+                        {formatCount(chirp.metrics.likeCount)}
                       </span>
                       {chirp.metrics.likeCount > 1 ? 'Likes' : 'Like'}
                     </button>
@@ -177,9 +178,9 @@ const ChirpPage = () => {
                 )}
               </div>
               <div className={styles.date}>
-                <span>{utils.formatTime(chirp.createdAt).formattedTime}</span>
+                <span>{formatTime(chirp.createdAt).formattedTime}</span>
                 <span>·</span>
-                <span>{utils.formatTime(chirp.createdAt).formattedDate}</span>
+                <span>{formatTime(chirp.createdAt).formattedDate}</span>
               </div>
             </div>
             <div className={styles.buttonPanel}>
