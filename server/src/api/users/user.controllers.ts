@@ -209,7 +209,7 @@ const logIn = async (
 
   res.status(400);
 
-  const userId = await userService.confirmPassword(login, password);
+  const userId = await userService.validateCredentials(login, password);
 
   const authToken = generateAuthToken(userId);
 

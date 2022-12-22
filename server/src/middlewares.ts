@@ -79,7 +79,7 @@ const passwordAuthenticate = async (
 
   res.status(400);
 
-  await userService.confirmPassword(currentUserId, password);
+  await userService.validateCredentials(currentUserId, password);
 
   next();
 };

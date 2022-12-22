@@ -223,15 +223,24 @@ const findLikedChirpsIds = async (
   return { likedChirpsIds, nextPage };
 };
 
-const confirmPassword = async (
+const validateCredentials = async (
   id: Types.ObjectId | User['username'] | User['email'],
   password: User['password']
 ) => {
-  const user = await findOne(id, 'password');
+  const filter =
+    id instanceof Types.ObjectId
+      ? { _id: id }
+      : { $or: [{ username: id }, { email: id }] };
+
+  const user = await UserModel.findOne(filter).select('password');
+
+  if (!user) {
+    throw new Error('Invalid credentials');
+  }
 
   const isPasswordMatch = await user.isPasswordMatch(password);
   if (!isPasswordMatch) {
-    throw new Error('Sorry, wrong password!');
+    throw new Error('Invalid credentials');
   }
 
   return user._id;
@@ -268,7 +277,7 @@ export {
   deleteOne,
   exists,
   handleDuplicate,
-  confirmPassword,
+  validateCredentials,
   incrementMetrics,
   decrementMetrics,
   updateProfile,
