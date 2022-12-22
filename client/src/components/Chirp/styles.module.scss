@@ -16,6 +16,7 @@
   align-items: start;
   gap: u.rem(8);
   margin: u.rem(12);
+  padding: u.rem(12) u.rem(12) u.rem(4);
   outline: u.rem(2) solid transparent;
   color: var(--text-color);
   cursor: pointer;
@@ -35,7 +36,7 @@
   @include u.breakpoint-up('small') {
     gap: u.rem(12);
     margin: u.rem(16);
-    padding: u.rem(16);
+    padding: u.rem(16) u.rem(16) u.rem(8);
   }
 }
 
