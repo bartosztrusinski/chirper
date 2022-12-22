@@ -1,0 +1,30 @@
+:root {
+  --toast-color: var(--color-light-80);
+  --toast-success-color: var(--color-primary);
+  --toast-error-color: var(--color-error);
+}
+
+@mixin toast {
+  color: var(--toast-color) !important;
+  font-weight: var(--fw-bold) !important;
+  user-select: none;
+}
+
+.success {
+  @include toast;
+
+  background-color: var(--toast-success-color) !important;
+}
+
+.error {
+  @include toast;
+
+  background-color: var(--toast-error-color) !important;
+}
+
+.closeButton {
+  background-color: inherit;
+  font-size: var(--fs-400);
+  border: none;
+  cursor: pointer;
+}
