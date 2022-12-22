@@ -30,6 +30,8 @@ import {
   useNavigate,
   useSearch,
 } from '@tanstack/react-location';
+import { toast } from 'react-hot-toast';
+import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
 
 type LocationGenerics = MakeGenerics<{
   Params: { id: string };
@@ -216,9 +218,10 @@ const ChirpPage = () => {
               <button
                 type='button'
                 className={styles.button}
-                onClick={() =>
-                  navigator.clipboard.writeText(window.location.href)
-                }
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  toast.success('Copied to clipboard');
+                }}
               >
                 <FiShare className={styles.icon} />
               </button>
@@ -241,7 +244,13 @@ const ChirpPage = () => {
                     confirmText='Delete'
                     onConfirm={() =>
                       deleteChirp(chirp._id, {
-                        onSuccess: () => history.back(),
+                        onSuccess: () => {
+                          history.back();
+                          toast.success('Your Chirp was deleted');
+                        },
+                        onError: (error) => {
+                          toast.error(getRequestErrorMessage(error));
+                        },
                       })
                     }
                   />
