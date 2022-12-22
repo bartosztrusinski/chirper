@@ -14,6 +14,7 @@ import { IoMdAdd as CreateChirpIcon } from '@react-icons/all-files/io/IoMdAdd';
 import useAuth from '../../hooks/useAuth';
 import { PromptContext } from '../UnauthenticatedApp';
 import { CreateChirpContext } from '../AuthenticatedApp';
+import { toast } from 'react-hot-toast';
 
 interface LayountProps {
   children: ReactNode;
@@ -59,7 +60,10 @@ const Layout = ({ children }: LayountProps) => {
                   <Button
                     variant='dark'
                     className={styles.button}
-                    onClick={logOut}
+                    onClick={() => {
+                      logOut();
+                      toast.success('Logged out');
+                    }}
                   >
                     <LogOutIcon className={styles.icon} />
                   </Button>

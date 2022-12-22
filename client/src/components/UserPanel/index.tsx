@@ -7,6 +7,7 @@ import useAuth from '../../hooks/useAuth';
 import { useContext } from 'react';
 import { PromptContext } from '../UnauthenticatedApp';
 import useMediaQuery from '../../hooks/useMediaQuery';
+import toast from 'react-hot-toast';
 
 type LocationGenerics = MakeGenerics<{
   Search: { dialog?: 'followed' | 'following' | 'edit-profile' };
@@ -79,7 +80,14 @@ const UserPanel = () => {
           >
             Edit Profile
           </Button>
-          <Button variant='light' type='button' onClick={logOut}>
+          <Button
+            variant='light'
+            type='button'
+            onClick={() => {
+              logOut();
+              toast.success('Logged out');
+            }}
+          >
             Log Out
           </Button>
         </div>

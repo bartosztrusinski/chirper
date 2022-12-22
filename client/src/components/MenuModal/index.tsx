@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import useAuth from '../../hooks/useAuth';
 import useUser from '../../hooks/useUser';
 import Button from '../Button';
@@ -24,7 +25,13 @@ const MenuModal = (props: MenuModalProps) => {
       {user ? (
         <>
           <AuthenticatedNav />
-          <Button className={styles.logOutButton} onClick={() => logOut()}>
+          <Button
+            className={styles.logOutButton}
+            onClick={() => {
+              logOut();
+              toast.success('Logged out');
+            }}
+          >
             Log Out
           </Button>
         </>
