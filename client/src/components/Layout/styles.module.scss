@@ -18,11 +18,9 @@
   height: 100vh;
   display: grid;
   grid-template-columns: 1fr;
-  padding-top: u.rem(57);
 
   @include u.breakpoint-up('small') {
     grid-template-columns: u.rem(90) auto;
-    padding-top: u.rem(69);
   }
 
   @include u.breakpoint-up('medium') {
@@ -30,7 +28,6 @@
       minmax(u.rem(90), 1fr)
       minmax(auto, u.rem(650))
       1fr;
-    padding-top: u.rem(73);
   }
 
   @include u.breakpoint-up('large') {
@@ -50,15 +47,18 @@
 }
 
 .main {
+  padding-top: u.rem(57);
   padding-bottom: u.rem(150);
   overflow: auto;
 
   @include u.breakpoint-up('small') {
     border-left: u.rem(1) solid var(--border-color);
+    padding-top: u.rem(69);
   }
 
   @include u.breakpoint-up('medium') {
     border-inline: u.rem(1) solid var(--border-color);
+    padding-top: u.rem(73);
   }
 }
 
@@ -66,8 +66,16 @@
   overflow: auto;
   padding: u.rem(12) u.rem(20);
 
+  @include u.breakpoint-up('small') {
+    padding-top: u.rem(81);
+  }
+
+  @include u.breakpoint-up('medium') {
+    padding-top: u.rem(85);
+  }
+
   @include u.breakpoint-up('xlarge') {
-    padding-top: u.rem(20);
+    padding-top: u.rem(93);
   }
 
   &.nav {
