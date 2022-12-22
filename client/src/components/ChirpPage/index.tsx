@@ -77,7 +77,7 @@ const ChirpPage = () => {
 
   const isLiked = isSuccess && likedChirpIds.includes(id);
 
-  if (isLoading) {
+  if (isLoading || (user && isLikedLoading)) {
     return <Loader />;
   }
 
@@ -196,7 +196,6 @@ const ChirpPage = () => {
               </button>
 
               <button
-                disabled={Boolean(user) && isLikedLoading}
                 type='button'
                 className={`${styles.button} ${styles.like} ${
                   isLiked ? styles.liked : ''

@@ -83,7 +83,7 @@ const UserProfile = () => {
     setIsEditModalOpen(dialog === 'edit-profile');
   }, [dialog]);
 
-  if (isLoading || isFollowedLoading) {
+  if (isLoading || (currentUser && isFollowedLoading)) {
     return <Loader />;
   }
 
