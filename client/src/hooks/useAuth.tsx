@@ -1,4 +1,3 @@
-import axios from 'axios';
 import AuthService from '../api/services/Auth';
 import useUser from './useUser';
 import { UseMutateFunction, useMutation } from '@tanstack/react-query';
@@ -26,46 +25,19 @@ interface UseAuth {
 
 const useAuth = (): UseAuth => {
   const { clearUser, setUser } = useUser();
-  const SERVER_ERROR = 'There was an error contacting the server';
 
   const { mutate: logIn, status: logInStatus } = useMutation(
     ({ login, password }: LogInData) => AuthService.logIn(login, password),
-    {
-      onSuccess: (token: Token) => {
-        setUser(token);
-      },
-
-      onError: (error) => {
-        const title =
-          axios.isAxiosError(error) && error?.response?.data?.message
-            ? error?.response?.data?.message
-            : SERVER_ERROR;
-        console.log(title);
-      },
-    },
+    { onSuccess: (token: Token) => setUser(token) },
   );
 
   const { mutate: signUp, status: signUpStatus } = useMutation(
     ({ username, name, email, password }: SignUpData) =>
       AuthService.signUp(username, name, email, password),
-    {
-      onSuccess: (token: Token) => {
-        setUser(token);
-      },
-
-      onError: (error) => {
-        const title =
-          axios.isAxiosError(error) && error?.response?.data?.message
-            ? error?.response?.data?.message
-            : SERVER_ERROR;
-        console.log(title);
-      },
-    },
+    { onSuccess: (token: Token) => setUser(token) },
   );
 
-  const logOut = () => {
-    clearUser();
-  };
+  const logOut = () => clearUser();
 
   return {
     logIn,
