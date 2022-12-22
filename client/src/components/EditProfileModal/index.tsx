@@ -11,6 +11,10 @@ import { name, bio, location, website } from './schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useManageUser from '../../hooks/useManageUser';
 import { useNavigate } from '@tanstack/react-location';
+import Loader from '../Loader';
+import { toast } from 'react-hot-toast';
+import { useIsMutating } from '@tanstack/react-query';
+import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
 
 type EditProfileModalProps = ReactModal.Props;
 
@@ -35,6 +39,7 @@ const EditProfileModal = (props: EditProfileModalProps) => {
   const { user: currentUser } = useUser() as { user: StoredUser };
   const { updateProfile } = useManageUser();
   const navigate = useNavigate();
+  const isMutating = useIsMutating();
 
   const {
     register,
@@ -57,13 +62,16 @@ const EditProfileModal = (props: EditProfileModalProps) => {
       onSuccess: (updatedProfile) => {
         reset({ ...updatedProfile });
         navigate({ to: '.' });
+        toast.success('Your profile was updated!');
       },
-      onError: () => console.log('error updating profile'),
+      onError: (error) => {
+        toast.error(getRequestErrorMessage(error));
+      },
     });
   };
 
   return (
-    <Modal {...props} title='Edit profile'>
+    <Modal {...props} title='Edit profile' onAfterClose={reset}>
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
         <div>
           <Input
@@ -89,7 +97,7 @@ const EditProfileModal = (props: EditProfileModalProps) => {
             placeholderClassName={errors.bio && styles.placeholder}
             aria-invalid={errors.bio ? 'true' : 'false'}
             {...register('bio')}
-          ></Textarea>
+          />
 
           {errors.bio && (
             <p role='alert' className={styles.errorMessage}>
@@ -130,13 +138,17 @@ const EditProfileModal = (props: EditProfileModalProps) => {
           )}
         </div>
 
-        <Button
-          disabled={!isValid}
-          type='submit'
-          className={styles.submitButton}
-        >
-          Save
-        </Button>
+        {isMutating ? (
+          <Loader />
+        ) : (
+          <Button
+            disabled={!isValid}
+            type='submit'
+            className={styles.submitButton}
+          >
+            Save
+          </Button>
+        )}
       </form>
     </Modal>
   );
