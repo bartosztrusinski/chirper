@@ -13,6 +13,7 @@ import AuthenticatedApp from './components/AuthenticatedApp';
 import UnauthenticatedApp from './components/UnauthenticatedApp';
 import { createContext } from 'react';
 import useDarkMode from './hooks/useDarkMode';
+import Toaster from './components/Toaster';
 import {
   ReactLocation,
   Router,
@@ -120,6 +121,7 @@ const App = () => {
     <Router location={location} routes={routes}>
       <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
         {user ? <AuthenticatedApp /> : <UnauthenticatedApp />}
+        <Toaster />
       </ThemeContext.Provider>
       <ReactLocationDevtools
         initialIsOpen={false}
