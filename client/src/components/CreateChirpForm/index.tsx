@@ -13,6 +13,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import useManageChirp from '../../hooks/useManageChirp';
 import { CreateChirpContext } from '../AuthenticatedApp';
 import Loader from '../Loader';
+import { toast } from 'react-hot-toast';
+import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
 
 interface CreateChirpFormProps {
   replyToId?: string;
@@ -50,12 +52,12 @@ const CreateChirpForm = ({ replyToId, autoFocus }: CreateChirpFormProps) => {
       { ...inputs, parentChirpId: replyToId },
       {
         onSuccess: () => {
-          console.log('Your chirp was created!');
           reset();
           closeCreateChirpModal();
+          toast.success('Your chirp was created!');
         },
-        onError: () => {
-          console.log('Something went wrong!');
+        onError: (error) => {
+          toast.error(getRequestErrorMessage(error));
         },
       },
     );
