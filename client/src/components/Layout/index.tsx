@@ -39,7 +39,7 @@ const Layout = ({ children }: LayountProps) => {
       <Header />
       <div className={styles.grid}>
         {isSmallUp && (
-          <Sidebar className={styles.nav}>
+          <Sidebar className={`${styles.nav} ${!user && styles.withPanel}`}>
             {user ? (
               <>
                 <AuthenticatedNav showNames={isXLargeUp} />
@@ -72,7 +72,7 @@ const Layout = ({ children }: LayountProps) => {
         )}
         <main className={styles.main}>{children}</main>
         {isLargeUp && (
-          <Sidebar>
+          <Sidebar className={`${!user && styles.withPanel}`}>
             <UserPanel />
           </Sidebar>
         )}

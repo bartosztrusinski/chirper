@@ -15,7 +15,6 @@
 }
 
 .grid {
-  height: 100vh;
   display: grid;
   grid-template-columns: 1fr;
 
@@ -47,41 +46,41 @@
 }
 
 .main {
-  padding-top: u.rem(57);
   padding-bottom: u.rem(150);
-  overflow: auto;
 
   @include u.breakpoint-up('small') {
     border-left: u.rem(1) solid var(--border-color);
-    padding-top: u.rem(69);
   }
 
   @include u.breakpoint-up('medium') {
-    border-inline: u.rem(1) solid var(--border-color);
-    padding-top: u.rem(73);
+    border-right: u.rem(1) solid var(--border-color);
   }
 }
 
 .sidebar {
-  overflow: auto;
+  position: sticky;
+  top: u.rem(69);
+  height: calc(100vh - u.rem(69));
   padding: u.rem(12) u.rem(20);
-
-  @include u.breakpoint-up('small') {
-    padding-top: u.rem(81);
-  }
+  overflow: auto;
 
   @include u.breakpoint-up('medium') {
-    padding-top: u.rem(85);
+    top: u.rem(73);
+    height: calc(100vh - u.rem(73));
   }
 
   @include u.breakpoint-up('xlarge') {
-    padding-top: u.rem(93);
+    padding-top: u.rem(20);
   }
 
   &.nav {
     display: grid;
     grid-template-rows: auto 1fr auto;
     gap: u.rem(24);
+
+    @include u.breakpoint-up('medium') {
+      grid-template-rows: auto 1fr;
+    }
   }
 
   .button {
@@ -102,8 +101,16 @@
   }
 }
 
+.withPanel {
+  padding-bottom: u.rem(78);
+
+  @include u.breakpoint-up('medium') {
+    padding-bottom: u.rem(84);
+  }
+}
+
 .bottomPanel {
-  position: absolute;
+  position: sticky;
   inset: auto 0 0;
   z-index: 3;
   display: grid;
@@ -125,7 +132,7 @@
 }
 
 .authPanel {
-  position: absolute;
+  position: fixed;
   inset: auto 0 0;
   z-index: 3;
   display: grid;
