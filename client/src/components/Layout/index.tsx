@@ -9,7 +9,6 @@ import AuthenticatedNav from '../Nav/AuthenticatedNav';
 import UnauthenticatedNav from '../Nav/UnauthenticatedNav';
 import useUser from '../../hooks/useUser';
 import Button from '../Button';
-import { useNavigate } from '@tanstack/react-location';
 import { BiLogOut as LogOutIcon } from '@react-icons/all-files/bi/BiLogOut';
 import { IoMdAdd as CreateChirpIcon } from '@react-icons/all-files/io/IoMdAdd';
 import useAuth from '../../hooks/useAuth';
@@ -23,7 +22,6 @@ interface LayountProps {
 const Layout = ({ children }: LayountProps) => {
   const promptContext = useContext(PromptContext);
   const createChirpContext = useContext(CreateChirpContext);
-  const navigate = useNavigate();
   const { user } = useUser();
   const { logOut } = useAuth();
 
@@ -82,6 +80,14 @@ const Layout = ({ children }: LayountProps) => {
       {!isSmallUp ? (
         <div className={styles.bottomPanel}>
           <SearchForm />
+          {user && (
+            <Button
+              className={styles.cornerButton}
+              onClick={() => createChirpContext?.openCreateChirpModal()}
+            >
+              <CreateChirpIcon className={styles.icon} />
+            </Button>
+          )}
         </div>
       ) : (
         !user && (

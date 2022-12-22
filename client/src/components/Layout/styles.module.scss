@@ -50,7 +50,7 @@
 }
 
 .main {
-  padding: u.rem(2) 0 u.rem(150);
+  padding-bottom: u.rem(150);
   overflow: auto;
 
   @include u.breakpoint-up('small') {
@@ -81,16 +81,15 @@
     align-self: start;
     font-size: var(--fs-400);
     padding: 0;
-    margin: u.rem(4);
 
     @include u.breakpoint-up('xlarge') {
       justify-self: stretch;
-      padding-block: u.rem(8);
+      padding-block: u.rem(10);
     }
 
     .icon {
-      margin: u.rem(10);
-      font-size: var(--fs-500);
+      margin: u.rem(13);
+      font-size: var(--fs-600);
     }
   }
 }
@@ -107,6 +106,14 @@
   box-shadow: var(--shadow-inverse);
   padding: u.rem(8) u.rem(10);
   border-top: u.rem(1) solid var(--border-color);
+
+  .cornerButton {
+    position: absolute;
+    bottom: u.rem(76);
+    right: u.rem(15);
+    padding: u.rem(12);
+    font-size: var(--fs-600);
+  }
 }
 
 .authPanel {
