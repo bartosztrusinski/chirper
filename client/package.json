@@ -28,6 +28,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.40.0",
+    "react-hot-toast": "^2.4.0",
     "react-modal": "^3.16.1",
     "react-textarea-autosize": "^8.4.0",
     "zod": "^3.19.1"
