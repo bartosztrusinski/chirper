@@ -14,6 +14,7 @@ import {
   useNavigate,
   useSearch,
 } from '@tanstack/react-location';
+import SearchFilterModal from '../SearchFilterModal';
 
 type SearchParams = {
   query: string;
@@ -37,6 +38,13 @@ const SearchForm = () => {
   const [query, setQuery] = useState<string>(search.query ?? '');
   const debouncedQuery = useDebounce(query, 200);
 
+  const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState<boolean>(
+    search.dialog === 'advanced-search',
+  );
+
+  useEffect(() => {
+    setIsAdvancedSearchOpen(search.dialog === 'advanced-search');
+  }, [search.dialog]);
   const isSearchPage = location.current.pathname === '/search';
 
   // sync query params with user input
@@ -63,7 +71,7 @@ const SearchForm = () => {
   };
 
   const handleClick: MouseEventHandler<HTMLButtonElement> = () => {
-    navigate({ search: (old) => ({ ...old, dialog: 'advanced-search' }) });
+    navigate({ search: (old) => ({ ...old, dialog: 'advanced-search' }), replace: true });
   };
 
   return (
@@ -77,9 +85,18 @@ const SearchForm = () => {
       />
 
       {isSearchPage && (
-        <button type='button' className={styles.button} onClick={handleClick}>
-          <FaFilter />
-        </button>
+        <>
+          <button type='button' className={styles.button} onClick={handleClick}>
+            <FaFilter />
+          </button>
+
+          <SearchFilterModal
+            isOpen={isAdvancedSearchOpen}
+            onRequestClose={() =>
+              navigate({ search: (old) => ({ ...old, dialog: undefined }), replace: true })
+            }
+          />
+        </>
       )}
 
       <button
