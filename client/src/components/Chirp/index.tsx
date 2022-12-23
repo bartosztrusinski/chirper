@@ -2,7 +2,7 @@ import styles from './styles.module.scss';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import Chirp from '../../interfaces/Chirp';
 import { forwardRef, useContext } from 'react';
-import { Link } from '@tanstack/react-location';
+import { Link, useNavigate } from '@tanstack/react-location';
 import { FaRegCommentAlt } from '@react-icons/all-files/fa/FaRegCommentAlt';
 import { FaRegHeart } from '@react-icons/all-files/fa/FaRegHeart';
 import { FiShare } from '@react-icons/all-files/fi/FiShare';
@@ -27,12 +27,23 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
   ref,
 ) {
   const createChirpContext = useContext(CreateChirpContext);
+  const navigate = useNavigate();
   const promptContext = useContext(PromptContext);
   const { user } = useUser();
 
   return (
     <article ref={ref}>
-      <Link to={`/chirps/${chirp._id}`} className={styles.chirp}>
+      <div
+        tabIndex={0}
+        role='button'
+        onClick={() => navigate({ to: `/chirps/${chirp._id}` })}
+        onKeyUp={(e) => {
+          if (e.key === 'Enter') {
+            navigate({ to: `/chirps/${chirp._id}` });
+          }
+        }}
+        className={styles.chirp}
+      >
         <Link to={`/users/${chirp.author.username}`}>
           <img
             src={chirp.author.profile.picture ?? defaultAvatar}
@@ -69,7 +80,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
             <div className={styles.metrics}>
               <div
                 onClick={(e) => {
-                  e.preventDefault();
+                  e.stopPropagation();
                   user
                     ? createChirpContext?.openCreateChirpModal(chirp)
                     : promptContext?.openReplyPrompt(chirp.author.username);
@@ -83,7 +94,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
               </div>
               <div
                 onClick={(e) => {
-                  e.preventDefault();
+                  e.stopPropagation();
                   onLike();
                 }}
                 className={`${styles.likes} ${isLiked ? styles.liked : ''}`}
@@ -96,7 +107,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
               <div
                 className={styles.share}
                 onClick={(e) => {
-                  e.preventDefault();
+                  e.stopPropagation();
                   navigator.clipboard.writeText(
                     `${window.location.origin}/chirps/${chirp._id}`,
                   );
@@ -110,7 +121,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
             </div>
           )}
         </div>
-      </Link>
+      </div>
     </article>
   );
 });

@@ -17,20 +17,11 @@
   gap: u.rem(8);
   margin: u.rem(12);
   padding: u.rem(12) u.rem(12) u.rem(4);
-  outline: u.rem(2) solid transparent;
   color: var(--text-color);
   cursor: pointer;
 
-  &:focus-visible {
-    outline-color: var(--color-primary);
-  }
-
   &:focus-within {
-    background-color: var(--background-hover-color);
-  }
-
-  &:active {
-    color: inherit;
+    background-color: var(--card-background-color-hover);
   }
 
   @include u.breakpoint-up('small') {
