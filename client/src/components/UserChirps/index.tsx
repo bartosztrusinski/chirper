@@ -66,7 +66,8 @@ const UserChirps = ({ withReplies = false }: UserChirpsProps) => {
   }
 
   return (
-    <>
+    <section>
+      <h1 className='visually-hidden'>{`${username}'s Chirps`}</h1>
       {data.pages.map((page, index) => {
         const isLastPage = index === data.pages.length - 1;
 
@@ -87,7 +88,7 @@ const UserChirps = ({ withReplies = false }: UserChirpsProps) => {
         );
       })}
       {isFetchingNextPage && <Loader />}
-    </>
+    </section>
   );
 };
 

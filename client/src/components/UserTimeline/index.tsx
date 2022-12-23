@@ -57,7 +57,8 @@ const UserTimeline = () => {
   }
 
   return (
-    <>
+    <section>
+      <h1 className='visually-hidden'>Your Home Timeline</h1>
       {data.pages.map((page, index) => {
         const isLastPage = index === data.pages.length - 1;
 
@@ -72,7 +73,7 @@ const UserTimeline = () => {
         );
       })}
       {isFetchingNextPage && <Loader />}
-    </>
+    </section>
   );
 };
 

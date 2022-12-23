@@ -90,7 +90,8 @@ const Search = () => {
   }
 
   return (
-    <>
+    <section>
+      <h1 className='visually-hidden'>Search timeline</h1>
       {data.pages.map((page, index) => {
         const isLastPage = index === data.pages.length - 1;
 
@@ -111,7 +112,7 @@ const Search = () => {
         );
       })}
       {isFetchingNextPage && <Loader />}
-    </>
+    </section>
   );
 };
 

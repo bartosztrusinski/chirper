@@ -61,7 +61,8 @@ const UserLikedChirps = () => {
   }
 
   return (
-    <>
+    <section>
+      <h1 className='visually-hidden'>{`${username}'s liked Chirps`}</h1>
       {data.pages.map((page, index) => {
         const isLastPage = index === data.pages.length - 1;
 
@@ -82,7 +83,7 @@ const UserLikedChirps = () => {
         );
       })}
       {isFetchingNextPage && <Loader />}
-    </>
+    </section>
   );
 };
 

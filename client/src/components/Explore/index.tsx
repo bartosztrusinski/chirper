@@ -57,7 +57,8 @@ const Explore = () => {
   }
 
   return (
-    <>
+    <section>
+      <h1 className='visually-hidden'>Explore</h1>
       {data.pages.map((page, index) => {
         const isLastPage = index === data.pages.length - 1;
 
@@ -78,7 +79,7 @@ const Explore = () => {
         );
       })}
       {isFetchingNextPage && <Loader />}
-    </>
+    </section>
   );
 };
 
