@@ -8,12 +8,21 @@ import UserService from '../api/services/User';
 import { StoredUser, User } from '../interfaces/User';
 import useUser from './useUser';
 
-const useFollowUser = (queryKeys: unknown[], page?: number) => {
+interface FollowUser {
+  newFollowUsername: string;
+  page?: number;
+}
+
+interface UnfollowUser {
+  deletedFollowUsername: string;
+  page?: number;
+}
+
+const useFollowUser = (queryKeys: unknown[]) => {
   const queryClient = useQueryClient();
   const { user: currentUser, updateUser } = useUser();
   const SERVER_ERROR = 'There was an error contacting the server';
 
-  const followedUsernamesQueryKeys = ['followedUsernames', ...queryKeys];
   const currentUserQueryKeys = ['user'];
   const currentUserProfileQueryKeys = ['users', currentUser?.username];
   const currentUserFollowedQueryKeys = [
@@ -21,15 +30,16 @@ const useFollowUser = (queryKeys: unknown[], page?: number) => {
     'followed',
   ];
 
-  if (page !== undefined) {
-    followedUsernamesQueryKeys.push(page.toString());
-  }
-
   const { mutate: followUser } = useMutation(
-    (newFollowUsername: string) => UserService.followUser(newFollowUsername),
+    ({ newFollowUsername }: FollowUser) =>
+      UserService.followUser(newFollowUsername),
     {
-      onMutate: (newFollowUsername: string) => {
+      onMutate: ({ newFollowUsername, page }) => {
         const newFollowQueryKeys = ['users', newFollowUsername];
+        const followedUsernamesQueryKeys = ['followedUsernames', ...queryKeys];
+        if (page !== undefined) {
+          followedUsernamesQueryKeys.push(page.toString());
+        }
 
         queryClient.cancelQueries(followedUsernamesQueryKeys);
         queryClient.cancelQueries(newFollowQueryKeys);
@@ -91,6 +101,7 @@ const useFollowUser = (queryKeys: unknown[], page?: number) => {
 
         return {
           followedUsernamesSnapshot,
+          followedUsernamesQueryKeys,
           newFollowSnapshot,
           newFollowQueryKeys,
           currentUserSnapshot,
@@ -111,7 +122,7 @@ const useFollowUser = (queryKeys: unknown[], page?: number) => {
 
         if (context?.followedUsernamesSnapshot) {
           queryClient.setQueryData(
-            followedUsernamesQueryKeys,
+            context.followedUsernamesQueryKeys,
             context.followedUsernamesSnapshot,
           );
         }
@@ -136,7 +147,7 @@ const useFollowUser = (queryKeys: unknown[], page?: number) => {
       },
 
       onSettled: (data, error, newFollowUsername, context) => {
-        queryClient.invalidateQueries(followedUsernamesQueryKeys);
+        queryClient.invalidateQueries(context?.followedUsernamesQueryKeys);
         queryClient.invalidateQueries(context?.newFollowQueryKeys);
         queryClient.invalidateQueries(currentUserQueryKeys);
         queryClient.invalidateQueries(currentUserProfileQueryKeys);
@@ -145,11 +156,15 @@ const useFollowUser = (queryKeys: unknown[], page?: number) => {
   );
 
   const { mutate: unfollowUser } = useMutation(
-    (deletedFollowUsername: string) =>
+    ({ deletedFollowUsername }: UnfollowUser) =>
       UserService.unfollowUser(deletedFollowUsername),
     {
-      onMutate: (deletedFollowUsername: string) => {
+      onMutate: ({ deletedFollowUsername, page }) => {
         const deletedFollowQueryKeys = ['users', deletedFollowUsername];
+        const followedUsernamesQueryKeys = ['followedUsernames', ...queryKeys];
+        if (page !== undefined) {
+          followedUsernamesQueryKeys.push(page.toString());
+        }
 
         queryClient.cancelQueries(followedUsernamesQueryKeys);
         queryClient.cancelQueries(deletedFollowQueryKeys);
@@ -231,6 +246,7 @@ const useFollowUser = (queryKeys: unknown[], page?: number) => {
 
         return {
           followedUsernamesSnapshot,
+          followedUsernamesQueryKeys,
           deletedFollowSnapshot,
           deletedFollowQueryKeys,
           currentUserSnapshot,
@@ -252,7 +268,7 @@ const useFollowUser = (queryKeys: unknown[], page?: number) => {
 
         if (context?.followedUsernamesSnapshot) {
           queryClient.setQueryData(
-            followedUsernamesQueryKeys,
+            context.followedUsernamesQueryKeys,
             context.followedUsernamesSnapshot,
           );
         }
@@ -284,7 +300,7 @@ const useFollowUser = (queryKeys: unknown[], page?: number) => {
       },
 
       onSettled: (data, error, deletedFollowUsername, context) => {
-        queryClient.invalidateQueries(followedUsernamesQueryKeys);
+        queryClient.invalidateQueries(context?.followedUsernamesQueryKeys);
         queryClient.invalidateQueries(context?.deletedFollowQueryKeys);
         queryClient.invalidateQueries(currentUserQueryKeys);
         queryClient.invalidateQueries(currentUserProfileQueryKeys);
