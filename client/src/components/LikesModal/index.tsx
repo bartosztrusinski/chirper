@@ -72,7 +72,8 @@ const LikesModal = ({ chirpId, ...restProps }: LikesModalProps) => {
       ) : isError ? (
         <div>Oops something went wrong...</div>
       ) : (
-        <>
+        <section>
+          <h1 className='visually-hidden'>Liked by</h1>
           {data.pages.map((page, index) => {
             const isLastPage = index === data.pages.length - 1;
 
@@ -104,7 +105,7 @@ const LikesModal = ({ chirpId, ...restProps }: LikesModalProps) => {
               setIsConfirmModalOpen(false);
             }}
           />
-        </>
+        </section>
       )}
     </Modal>
   );

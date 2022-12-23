@@ -72,7 +72,8 @@ const FollowedModal = ({ username, ...restProps }: FollowedModalProps) => {
       ) : isError ? (
         <div>Oops something went wrong...</div>
       ) : (
-        <>
+        <section>
+          <h1 className='visually-hidden'>Followed</h1>
           {data.pages.map((page, index) => {
             const isLastPage = index === data.pages.length - 1;
 
@@ -104,7 +105,7 @@ const FollowedModal = ({ username, ...restProps }: FollowedModalProps) => {
               setIsConfirmModalOpen(false);
             }}
           />
-        </>
+        </section>
       )}
     </Modal>
   );
