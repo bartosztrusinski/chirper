@@ -45,7 +45,7 @@ const User = forwardRef<Ref, UserProps>(function User(
               @{user.username}
             </Link>
           </div>
-          {!isCurrentUser && (
+          {!isCurrentUser && currentUser && (
             <Button
               type='button'
               variant='light'
