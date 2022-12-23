@@ -1,3 +1,5 @@
+@use '../util/' as u;
+
 /* Box sizing rules */
 *,
 *::before,
@@ -27,6 +29,19 @@ html:focus-within {
 body {
   text-rendering: optimizeSpeed;
   line-height: 1.4;
+}
+
+button,
+input,
+textarea,
+select,
+a,
+[tabindex] {
+  border-radius: u.rem(4);
+
+  &:focus-visible {
+    outline: u.rem(2) solid var(--color-primary);
+  }
 }
 
 /* A elements that don't have a class get default styles */
