@@ -157,7 +157,8 @@ const ChirpPage = () => {
                       className={styles.showLikesButton}
                       onClick={() =>
                         navigate({
-                          search: (old) => ({ ...old, dialog: 'likes' }),
+                          search: (old) => ({ ...old, dialog: 'likes', }),
+                          replace: true,
                         })
                       }
                     >
@@ -172,6 +173,7 @@ const ChirpPage = () => {
                       onRequestClose={() =>
                         navigate({
                           search: (old) => ({ ...old, dialog: undefined }),
+                          replace: true,
                         })
                       }
                       chirpId={chirp._id}

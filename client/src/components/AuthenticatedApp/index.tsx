@@ -35,12 +35,18 @@ const AuthenticatedApp = () => {
 
   const openCreateChirpModal = (replyTo?: Chirp) => {
     if (replyTo) setReplyTo(replyTo);
-    navigate({ search: (old) => ({ ...old, dialog: 'create-chirp' }) });
+    navigate({
+      search: (old) => ({ ...old, dialog: 'create-chirp' }),
+      replace: true,
+    });
   };
 
   const closeCreateChirpModal = () => {
     setReplyTo(null);
-    navigate({ search: (old) => ({ ...old, dialog: undefined }) });
+    navigate({
+      search: (old) => ({ ...old, dialog: undefined }),
+      replace: true,
+    });
   };
 
   return (

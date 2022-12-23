@@ -76,7 +76,10 @@ const UserProfile = () => {
     isSuccess && currentUser && currentUser._id === user._id;
 
   const closeDialog = () =>
-    navigate({ search: (old) => ({ ...old, dialog: undefined }) });
+    navigate({
+      search: (old) => ({ ...old, dialog: undefined }),
+      replace: true,
+    });
 
   useEffect(() => {
     setIsFollowedModalOpen(dialog === 'followed');
@@ -112,11 +115,11 @@ const UserProfile = () => {
               if (!currentUser) {
                 promptContext?.openFollowPrompt(user.username);
               } else if (isCurrentUserProfile) {
-                navigate({ search: { dialog: 'edit-profile' } });
+                navigate({ search: { dialog: 'edit-profile' }, replace: true });
               } else if (isFollowedProfile) {
                 setIsConfirmModalOpen(true);
               } else {
-                followUser(user.username);
+                followUser({ newFollowUsername: user.username });
               }
             }}
           >
@@ -155,7 +158,9 @@ const UserProfile = () => {
           <button
             type='button'
             className={styles.button}
-            onClick={() => navigate({ search: { dialog: 'followed' } })}
+            onClick={() =>
+              navigate({ search: { dialog: 'followed' }, replace: true })
+            }
           >
             <div className={styles.count}>
               {formatCount(user.metrics.followedCount)}
@@ -166,7 +171,9 @@ const UserProfile = () => {
           <button
             type='button'
             className={styles.button}
-            onClick={() => navigate({ search: { dialog: 'following' } })}
+            onClick={() =>
+              navigate({ search: { dialog: 'following' }, replace: true })
+            }
           >
             <div className={styles.count}>
               {formatCount(user.metrics.followingCount)}
@@ -239,7 +246,7 @@ const UserProfile = () => {
         description='Their Chirps will no longer show up in your home timeline. You can still view their profile.'
         confirmText='Unfollow'
         onConfirm={() => {
-          unfollowUser(user.username);
+          unfollowUser({ deletedFollowUsername: user.username });
           setIsConfirmModalOpen(false);
         }}
       />

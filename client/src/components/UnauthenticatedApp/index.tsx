@@ -69,19 +69,29 @@ const UnauthenticatedApp = () => {
   };
 
   const openLogIn = () =>
-    navigate({ search: (old) => ({ ...old, dialog: 'log-in' }) });
+    navigate({
+      search: (old) => ({ ...old, dialog: 'log-in' }),
+      replace: true,
+    });
 
   const openSignUp = () =>
-    navigate({ search: (old) => ({ ...old, dialog: 'sign-up' }) });
+    navigate({
+      search: (old) => ({ ...old, dialog: 'sign-up' }),
+      replace: true,
+    });
 
   const closeDialog = () =>
-    navigate({ search: (old) => ({ ...old, dialog: undefined }) });
+    navigate({
+      search: (old) => ({ ...old, dialog: undefined }),
+      replace: true,
+    });
 
   const LogInLink = (props: LinkProps) => (
     <Link
       {...props}
       to={location.current.pathname}
       search={(old) => ({ ...old, dialog: 'log-in' })}
+      replace={true}
     />
   );
 
@@ -90,6 +100,7 @@ const UnauthenticatedApp = () => {
       {...props}
       to={location.current.pathname}
       search={(old) => ({ ...old, dialog: 'sign-up' })}
+      replace={true}
     />
   );
 

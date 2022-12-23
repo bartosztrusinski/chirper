@@ -67,7 +67,10 @@ const Header = () => {
           <button
             className={styles.menu}
             onClick={() =>
-              navigate({ search: (old) => ({ ...old, dialog: 'menu' }) })
+              navigate({
+                search: (old) => ({ ...old, dialog: 'menu' }),
+                replace: true,
+              })
             }
           >
             {user ? (
@@ -84,7 +87,10 @@ const Header = () => {
           <MenuModal
             isOpen={isMenuOpen}
             onRequestClose={() =>
-              navigate({ search: (old) => ({ ...old, dialog: undefined }) })
+              navigate({
+                search: (old) => ({ ...old, dialog: undefined }),
+                replace: true,
+              })
             }
           />
         </>
