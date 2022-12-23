@@ -105,13 +105,13 @@ const ChirpPage = () => {
     <>
       <h2 className='visually-hidden'>Conversation</h2>
 
-      <div
-        className={styles.navigation}
+      <Button
+        className={styles.backButton}
         onClick={() => location.history.back()}
       >
         <FaArrowLeft />
         Back
-      </div>
+      </Button>
 
       <section>
         <div className={styles.container}>
@@ -157,7 +157,7 @@ const ChirpPage = () => {
                       className={styles.showLikesButton}
                       onClick={() =>
                         navigate({
-                          search: (old) => ({ ...old, dialog: 'likes', }),
+                          search: (old) => ({ ...old, dialog: 'likes' }),
                           replace: true,
                         })
                       }

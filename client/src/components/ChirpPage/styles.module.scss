@@ -8,15 +8,14 @@
   padding: u.rem(12);
 }
 
-.navigation {
+.backButton {
   display: grid;
   grid-auto-flow: column;
-  justify-content: start;
+  justify-content: stretch;
   gap: u.rem(12);
   align-items: center;
-  padding: u.rem(16) u.rem(16) 0;
-  font-weight: var(--fw-semi-bold);
-  cursor: pointer;
+  margin: u.rem(16) u.rem(16) 0;
+  padding: u.rem(8) u.rem(12);
 }
 
 .container {
@@ -105,7 +104,7 @@
       transition: background-color 140ms ease;
 
       &:hover {
-        background-color: var(--background-hover-color);
+        background-color: var(--card-background-color-hover);
       }
 
       &:focus-visible {
