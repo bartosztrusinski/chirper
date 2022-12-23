@@ -26,7 +26,14 @@ const User = forwardRef<Ref, UserProps>(function User(
     <div
       ref={ref}
       className={styles.userContainer}
+      tabIndex={0}
+      role='button'
       onClick={() => navigate({ to: `/users/${user.username}` })}
+      onKeyUp={(e) => {
+        if (e.key === 'Enter') {
+          navigate({ to: `/users/${user.username}` });
+        }
+      }}
     >
       <Link to={`/users/${user.username}`} className={styles.avatarContainer}>
         <img
