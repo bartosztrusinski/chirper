@@ -3,17 +3,16 @@ import useMultiStep, { MultiStep } from '../../hooks/useMultiStep';
 import Modal from '../Modal';
 import ReactModal from 'react-modal';
 import EmailForm from './EmailForm';
-import VerificationCodeForm from './VerificationCodeForm';
 import PasswordForm from './PasswordForm';
 import UsernameForm from './UsernameForm';
 import useAuth from '../../hooks/useAuth';
 import { useNavigate } from '@tanstack/react-location';
+import { toast } from 'react-hot-toast';
+import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
 
 interface FormData {
   email: string;
   name: string;
-  verificationCode: string;
-  generatedVerificationCode: string;
   password: string;
   passwordConfirm: string;
   username: string;
@@ -23,26 +22,17 @@ type RegisterFormProps = ReactModal.Props;
 
 const MultiStepContext = createContext<MultiStep | null>(null);
 
-const multiStepElements = [
-  EmailForm,
-  VerificationCodeForm,
-  PasswordForm,
-  UsernameForm,
-];
+const multiStepElements = [EmailForm, PasswordForm, UsernameForm];
 
 const getDefaultFormData = (): FormData => ({
   email: '',
   name: '',
-  verificationCode: '',
-  generatedVerificationCode: generateCode().toString(),
   password: '',
   passwordConfirm: '',
   username: '',
 });
 
-const generateCode = () => Math.floor(Math.random() * 900000) + 100000;
-
-const RegisterForm = ({ isOpen, onRequestClose }: RegisterFormProps) => {
+const RegisterForm = (props: RegisterFormProps) => {
   const navigate = useNavigate();
   const { signUp, isSigningUp } = useAuth();
   const [formData, setFormData] = useState<FormData>(getDefaultFormData());
@@ -52,26 +42,25 @@ const RegisterForm = ({ isOpen, onRequestClose }: RegisterFormProps) => {
   };
 
   const handleSubmit = (inputs: Partial<FormData>) => {
-    if (isFirstStep) {
-      // Send verification code to email
-      console.log(formData.generatedVerificationCode);
-    }
-
     if (isLastStep) {
       signUp(
         { ...formData, ...inputs },
         {
-          onSuccess: () => navigate({ to: '/' }),
-          onError: () => {
+          onSuccess: () => {
+            navigate({ to: '/' });
+            toast.success('Welcome to Chirper!');
+          },
+          onError: (error) => {
             clearFormData();
             resetSteps();
+            toast.error(getRequestErrorMessage(error));
           },
         },
       );
+    } else {
+      setFormData((prev) => ({ ...prev, ...inputs }));
+      nextStep();
     }
-
-    setFormData((prev) => ({ ...prev, ...inputs }));
-    nextStep();
   };
 
   const {
@@ -96,8 +85,7 @@ const RegisterForm = ({ isOpen, onRequestClose }: RegisterFormProps) => {
 
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
+      {...props}
       onAfterClose={clearFormData}
       shouldCloseOnEsc={isFirstStep}
       shouldCloseOnOverlayClick={isFirstStep}

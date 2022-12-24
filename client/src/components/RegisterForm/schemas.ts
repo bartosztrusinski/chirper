@@ -1,4 +1,5 @@
-import * as z from 'zod';
+/* eslint-disable camelcase */
+import { z } from 'zod';
 
 const user = {
   fields: {
@@ -82,8 +83,4 @@ const name = createInputSchema('name')
   .max(user.name.max, `Profile name cannot exceed ${user.name.max} characters`)
   .regex(/^[^<>]*$/, 'Profile name cannot include invalid characters');
 
-const verificationCode = z.string({
-  required_error: 'Verification code is required',
-});
-
-export { username, email, password, passwordConfirm, name, verificationCode };
+export { username, email, password, passwordConfirm, name };
