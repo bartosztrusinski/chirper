@@ -10,6 +10,7 @@ import { PromptContext } from '../UnauthenticatedApp';
 import Loader from '../Loader';
 import toast from 'react-hot-toast';
 import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
+import { useIsMutating } from '@tanstack/react-query';
 
 interface Inputs {
   login: string;
@@ -17,7 +18,8 @@ interface Inputs {
 }
 
 const LoginForm = () => {
-  const { logIn, isLoggingIn } = useAuth();
+  const isLoggingIn = useIsMutating();
+  const { logIn } = useAuth();
   const { SignUpLink } = useContext(PromptContext) as PromptContext;
   const navigate = useNavigate();
   const {

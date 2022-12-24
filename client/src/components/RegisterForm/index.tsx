@@ -9,6 +9,7 @@ import useAuth from '../../hooks/useAuth';
 import { useNavigate } from '@tanstack/react-location';
 import { toast } from 'react-hot-toast';
 import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
+import { useIsMutating } from '@tanstack/react-query';
 
 interface FormData {
   email: string;
@@ -34,7 +35,8 @@ const getDefaultFormData = (): FormData => ({
 
 const RegisterForm = (props: RegisterFormProps) => {
   const navigate = useNavigate();
-  const { signUp, isSigningUp } = useAuth();
+  const isSigningUp = useIsMutating();
+  const { signUp } = useAuth();
   const [formData, setFormData] = useState<FormData>(getDefaultFormData());
 
   const clearFormData = () => {
@@ -78,7 +80,7 @@ const RegisterForm = (props: RegisterFormProps) => {
         key={index}
         formData={formData}
         onSubmit={handleSubmit}
-        isSubmitting={isSigningUp}
+        isSubmitting={Boolean(isSigningUp)}
       />
     )),
   );

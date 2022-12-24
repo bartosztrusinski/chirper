@@ -19,19 +19,17 @@ interface UseAuth {
   logIn: UseMutateFunction<Token, unknown, LogInData, unknown>;
   signUp: UseMutateFunction<Token, unknown, SignUpData, unknown>;
   logOut: () => void;
-  isLoggingIn: boolean;
-  isSigningUp: boolean;
 }
 
 const useAuth = (): UseAuth => {
   const { clearUser, setUser } = useUser();
 
-  const { mutate: logIn, status: logInStatus } = useMutation(
+  const { mutate: logIn } = useMutation(
     ({ login, password }: LogInData) => AuthService.logIn(login, password),
     { onSuccess: (token: Token) => setUser(token) },
   );
 
-  const { mutate: signUp, status: signUpStatus } = useMutation(
+  const { mutate: signUp } = useMutation(
     ({ username, name, email, password }: SignUpData) =>
       AuthService.signUp(username, name, email, password),
     { onSuccess: (token: Token) => setUser(token) },
@@ -43,8 +41,6 @@ const useAuth = (): UseAuth => {
     logIn,
     signUp,
     logOut,
-    isLoggingIn: logInStatus === 'loading' || logInStatus === 'success',
-    isSigningUp: signUpStatus === 'loading' || signUpStatus === 'success',
   };
 };
 
