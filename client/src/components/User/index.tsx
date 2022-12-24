@@ -8,8 +8,8 @@ import { forwardRef } from 'react';
 
 interface UserProps {
   user: User;
-  isFollowed: boolean;
-  onFollow: (username: string) => void;
+  isFollowed?: boolean;
+  onFollow?: (username: string) => void;
 }
 
 type Ref = HTMLDivElement | null;
@@ -59,7 +59,7 @@ const User = forwardRef<Ref, UserProps>(function User(
               className={styles.followButton}
               onClick={(e) => {
                 e.stopPropagation();
-                onFollow(user.username);
+                onFollow?.(user.username);
               }}
             >
               {isFollowed ? 'Unfollow' : 'Follow'}

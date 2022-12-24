@@ -1,17 +1,20 @@
 import Modal from '../Modal';
-import UserList from '../UserList';
 import UserService from '../../api/services/User';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useCallback, useRef, useState } from 'react';
 import Loader from '../Loader';
 import useFollowUser from '../../hooks/useFollowUser';
 import ConfirmModal from '../ConfirmModal';
+import AuthenticatedUserList from '../UserList/AuthenticatedUserList';
+import UnauthenticatedUserList from '../UserList/UnauthenticatedUserList';
+import useUser from '../../hooks/useUser';
 
 interface FollowingModalProps extends ReactModal.Props {
   username: string;
 }
 
 const FollowingModal = ({ username, ...restProps }: FollowingModalProps) => {
+  const { user } = useUser();
   const queryKeys = [username, 'following'];
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
@@ -77,8 +80,8 @@ const FollowingModal = ({ username, ...restProps }: FollowingModalProps) => {
           {data.pages.map((page, index) => {
             const isLastPage = index === data.pages.length - 1;
 
-            return (
-              <UserList
+            return user ? (
+              <AuthenticatedUserList
                 ref={isLastPage ? lastUserRef : null}
                 key={index}
                 users={page.data}
@@ -86,6 +89,11 @@ const FollowingModal = ({ username, ...restProps }: FollowingModalProps) => {
                 page={index}
                 onFollow={handleFollowUser}
                 onUnfollow={handleUnfollowUser}
+              />
+            ) : (
+              <UnauthenticatedUserList
+                ref={isLastPage ? lastUserRef : null}
+                users={page.data}
               />
             );
           })}
