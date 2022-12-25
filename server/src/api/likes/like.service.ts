@@ -1,4 +1,4 @@
-import { FilterQuery, Types } from 'mongoose';
+import { FilterQuery, PopulateOptions, Types } from 'mongoose';
 import LikeModel from './like.model';
 import { Like } from './like.interfaces';
 import { SortQuery } from '../../interfaces';
@@ -7,7 +7,7 @@ import config from '../../config/request.config';
 const defaultFields = config.like.fields.default;
 
 const findOne = async (user: Types.ObjectId, chirp: Types.ObjectId) => {
-  const like = await LikeModel.findOne({ user, chirp }).select('user chirp');
+  const like = await LikeModel.findOne({ user, chirp }).select(defaultFields);
 
   if (!like) {
     throw new Error('Sorry, we could not find that like');
@@ -19,12 +19,14 @@ const findOne = async (user: Types.ObjectId, chirp: Types.ObjectId) => {
 const findMany = async (
   filter: FilterQuery<Like>,
   select: string = defaultFields,
+  populate?: PopulateOptions | PopulateOptions[],
   sort?: SortQuery,
   limit?: number,
   skip?: number
 ) => {
   const query = LikeModel.find(filter).select(select).sort(sort);
 
+  if (populate) query.populate(populate);
   if (limit) query.limit(limit);
   if (skip) query.skip(skip);
 

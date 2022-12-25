@@ -1,4 +1,4 @@
-import { FilterQuery, Types } from 'mongoose';
+import { FilterQuery, PopulateOptions, Types } from 'mongoose';
 import FollowModel from './follow.model';
 import { Follow } from './follow.interfaces';
 import { SortQuery } from '../../interfaces';
@@ -7,9 +7,7 @@ import config from '../../config/request.config';
 const defaultFields = config.follow.fields.default;
 
 const findOne = async (filter: FilterQuery<Follow>) => {
-  const follow = await FollowModel.findOne(filter).select(
-    'sourceUser targetUser'
-  );
+  const follow = await FollowModel.findOne(filter).select(defaultFields);
 
   if (!follow) {
     throw new Error('Sorry, we could not find the follow you are looking for');
@@ -21,12 +19,14 @@ const findOne = async (filter: FilterQuery<Follow>) => {
 const findMany = async (
   filter: FilterQuery<Follow>,
   select: string = defaultFields,
+  populate?: PopulateOptions | PopulateOptions[],
   sort?: SortQuery,
   limit?: number,
   skip?: number
 ) => {
   const query = FollowModel.find(filter).select(select).sort(sort);
 
+  if (populate) query.populate(populate);
   if (limit) query.limit(limit);
   if (skip) query.skip(skip);
 

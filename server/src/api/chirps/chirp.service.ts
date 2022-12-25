@@ -98,7 +98,13 @@ const findLikingUsersIds = async (
   const filter: FilterQuery<Like> = { chirp };
   if (sinceId) filter._id = { $lt: sinceId };
 
-  const likes = await likeService.findMany(filter, 'user', { _id: -1 }, limit);
+  const likes = await likeService.findMany(
+    filter,
+    'user',
+    undefined,
+    { _id: -1 },
+    limit
+  );
 
   const likingUsersIds = likes.map((like) => like.user);
   const nextPage =

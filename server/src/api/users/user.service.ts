@@ -148,6 +148,7 @@ const findFollowedUsersIds = async (
   const follows = await followService.findMany(
     filter,
     'targetUser',
+    undefined,
     { _id: -1 },
     isUserIds ? userIdsOrSinceId.length : limit
   );
@@ -179,6 +180,7 @@ const findFollowingUsersIds = async (
   const follows = await followService.findMany(
     filter,
     'sourceUser',
+    undefined,
     { _id: -1 },
     isUserIds ? userIdsOrSinceId.length : limit
   );
@@ -210,6 +212,7 @@ const findLikedChirpsIds = async (
   const likes = await likeService.findMany(
     filter,
     'chirp',
+    undefined,
     { _id: -1 },
     isChirpIds ? chirpIdsOrSinceId.length : limit
   );
