@@ -3,6 +3,7 @@ import { FilterQuery } from 'mongoose';
 import { SuccessResponse } from '../../interfaces';
 import { Chirp, ChirpControllers } from './chirp.interfaces.';
 import * as chirpService from './chirp.service';
+import * as likeService from '../likes/like.service';
 import * as userService from '../users/user.service';
 import {
   calculateSkip,
@@ -266,12 +267,20 @@ const findManyLiked = async (
     chirpIds ?? sinceId
   );
 
-  const likedChirps = await chirpService.findMany(
-    { _id: likedChirpsIds },
-    expandAuthor ? chirpFields + 'author' : chirpFields,
-    expandAuthor ? [{ path: 'author', select: userFields }] : [],
+  const likes = await likeService.findMany(
+    { chirp: likedChirpsIds, user: existingUser._id },
+    'chirp',
+    {
+      path: 'chirp',
+      select: expandAuthor ? chirpFields + 'author' : chirpFields,
+      populate: expandAuthor
+        ? { path: 'author', select: userFields }
+        : undefined,
+    },
     { _id: -1 }
   );
+
+  const likedChirps = likes.map((like) => like.chirp);
 
   res.status(200).json(createSuccessResponse(likedChirps, { nextPage }));
 };
