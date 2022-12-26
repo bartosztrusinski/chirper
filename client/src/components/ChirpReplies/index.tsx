@@ -3,16 +3,15 @@ import { useCallback, useRef } from 'react';
 import ChirpService from '../../api/services/Chirp';
 import useUser from '../../hooks/useUser';
 import IChirp from '../../interfaces/Chirp';
-import AuthenticatedChirpList from '../AuthenticatedChirpList';
+import Chirp from '../Chirp';
 import Loader from '../Loader';
-import UnauthenticatedChirpList from '../UnauthenticatedChirpList';
 
 interface ChirpRepliesProps {
   chirp: IChirp;
 }
 
 const ChirpReplies = ({ chirp }: ChirpRepliesProps) => {
-  const { user } = useUser();
+  const { user: currentUser } = useUser();
   const queryKeys = [chirp._id, 'replies'];
 
   const {
@@ -24,10 +23,30 @@ const ChirpReplies = ({ chirp }: ChirpRepliesProps) => {
     isFetchingNextPage,
   } = useInfiniteQuery(
     ['chirps', ...queryKeys],
-    ({ pageParam }) => ChirpService.getReplies(chirp._id, pageParam),
-    {
-      getNextPageParam: (lastPage) => lastPage.meta?.nextPage,
+    async ({ pageParam }) => {
+      const { data, ...rest } = await ChirpService.getReplies(
+        chirp._id,
+        pageParam,
+      );
+
+      if (!currentUser || data.length === 0) {
+        return { data, ...rest };
+      }
+
+      const likedChirpIds = await ChirpService.getLikedChirpIds(
+        currentUser.username,
+        data.map((chirp) => chirp._id),
+      );
+
+      return {
+        data: data.map((chirp) => ({
+          ...chirp,
+          isLiked: likedChirpIds.includes(chirp._id),
+        })),
+        ...rest,
+      };
     },
+    { getNextPageParam: (lastPage) => lastPage.meta?.nextPage },
   );
 
   const intersectionObserver = useRef<IntersectionObserver>();
@@ -61,29 +80,23 @@ const ChirpReplies = ({ chirp }: ChirpRepliesProps) => {
     return <div>Oops something went wrong...</div>;
   }
 
-  return (
-    <>
-      {data.pages.map((page, index) => {
-        const isLastPage = index === data.pages.length - 1;
+  const chirps = data.pages.reduce(
+    (chirps: Chirp[], page) => [...chirps, ...page.data],
+    [],
+  );
 
-        return user ? (
-          <AuthenticatedChirpList
-            ref={isLastPage ? lastChirpRef : null}
-            key={index}
-            chirps={page.data}
-            queryKeys={queryKeys}
-            page={index}
-          />
-        ) : (
-          <UnauthenticatedChirpList
-            ref={isLastPage ? lastChirpRef : null}
-            key={index}
-            chirps={page.data}
-          />
-        );
-      })}
+  return (
+    <section>
+      {chirps.map((chirp, index) => (
+        <Chirp
+          key={chirp._id}
+          ref={index === chirps.length - 1 ? lastChirpRef : null}
+          chirp={chirp}
+          queryKeys={queryKeys}
+        />
+      ))}
       {isFetchingNextPage && <Loader />}
-    </>
+    </section>
   );
 };
 
