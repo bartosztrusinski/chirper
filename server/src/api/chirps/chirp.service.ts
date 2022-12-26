@@ -131,19 +131,22 @@ const decrementMetrics = async (
   id: Types.ObjectId,
   ...metricsField: MetricsField[]
 ) => {
-  const chirp = await findOne(id, 'metrics');
-  const uniqueMetricsField = [...new Set(metricsField)];
+  const chirp = await ChirpModel.findById(id, 'metrics');
 
-  uniqueMetricsField.forEach((field) => {
-    chirp.metrics[field]--;
-  });
+  if (chirp) {
+    const uniqueMetricsField = [...new Set(metricsField)];
 
-  await chirp.save();
+    uniqueMetricsField.forEach((field) => {
+      chirp.metrics[field]--;
+    });
+
+    await chirp.save();
+  }
 };
 
 const deleteMany = async (filter: FilterQuery<Chirp>) => {
   const chirps = await findMany(filter, 'author parent replies');
-  await Promise.all(chirps.map((chirp) => chirp.remove()));
+  await Promise.all(chirps.map(async (chirp) => await chirp.remove()));
 };
 
 const pushReply = async (id: Types.ObjectId, replyId: Types.ObjectId) => {

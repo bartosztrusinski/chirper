@@ -54,7 +54,7 @@ const handleDuplicate = async (user: Types.ObjectId, chirp: Types.ObjectId) => {
 
 const deleteMany = async (filter: FilterQuery<Like>) => {
   const likes = await findMany(filter);
-  await Promise.all(likes.map((like) => like.remove()));
+  await Promise.all(likes.map(async (like) => await like.remove()));
 };
 
 export { findOne, findMany, createOne, deleteOne, handleDuplicate, deleteMany };

@@ -64,7 +64,7 @@ const handleDuplicate = async (
 
 const deleteMany = async (filter: FilterQuery<Follow>) => {
   const follows = await findMany(filter);
-  await Promise.all(follows.map((follow) => follow.remove()));
+  await Promise.all(follows.map(async (follow) => await follow.remove()));
 };
 
 export { findOne, findMany, createOne, deleteOne, handleDuplicate, deleteMany };

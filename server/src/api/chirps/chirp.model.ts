@@ -68,8 +68,8 @@ chirpSchema.post('save', async function incrementMetrics() {
 
 chirpSchema.post('remove', async function removeDependencies() {
   await userService.decrementMetrics(this.author, 'chirpCount');
-  await chirpService.deleteMany({ _id: this.replies });
   await likeService.deleteMany({ chirp: this._id });
+  await chirpService.deleteMany({ _id: this.replies });
 });
 
 replySchema.post('save', async function pushToParent() {
