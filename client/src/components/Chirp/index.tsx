@@ -12,24 +12,54 @@ import useUser from '../../hooks/useUser';
 import formatRelativeTime from '../../utils/formatRelativeTime';
 import formatCount from '../../utils/formatCount';
 import { toast } from 'react-hot-toast';
+import useLikeChirp from '../../hooks/useLikeChirp';
 
 interface ChirpProps {
   chirp: Chirp;
+  queryKeys: unknown[];
   showMetrics?: boolean;
-  isLiked?: boolean;
-  onLike: () => void;
 }
 
 type Ref = HTMLElement | null;
 
 const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
-  { chirp, showMetrics = true, isLiked = false, onLike },
+  { chirp, queryKeys, showMetrics = true },
   ref,
 ) {
-  const createChirpContext = useContext(CreateChirpContext);
   const navigate = useNavigate();
+  const createChirpContext = useContext(CreateChirpContext);
   const promptContext = useContext(PromptContext);
-  const { user } = useUser();
+  const { user: currentUser } = useUser();
+  const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys);
+
+  const likeClasses = [styles.likes, chirp.isLiked && styles.liked]
+    .filter(Boolean)
+    .join(' ');
+
+  const handleLike = () => {
+    if (!currentUser) {
+      promptContext?.openLikePrompt(chirp.author.username);
+    } else if (chirp.isLiked) {
+      unlikeChirp(chirp);
+    } else {
+      likeChirp(chirp);
+    }
+  };
+
+  const handleReply = () => {
+    if (currentUser) {
+      createChirpContext?.openCreateChirpModal(chirp);
+    } else {
+      promptContext?.openReplyPrompt(chirp.author.username);
+    }
+  };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(
+      `${window.location.origin}/chirps/${chirp._id}`,
+    );
+    toast.success('Copied to clipboard');
+  };
 
   return (
     <article ref={ref}>
@@ -44,7 +74,10 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
         }}
         className={styles.chirp}
       >
-        <Link to={`/users/${chirp.author.username}`}>
+        <Link
+          to={`/users/${chirp.author.username}`}
+          onClick={(e) => e.stopPropagation()}
+        >
           <img
             src={chirp.author.profile.picture ?? defaultAvatar}
             alt={`${chirp.author.username}'s avatar`}
@@ -56,14 +89,16 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
           <div className={styles.upperPanel}>
             <div className={styles.usernames}>
               <Link
-                to={`/users/${chirp.author.username}`}
                 className={styles.name}
+                to={`/users/${chirp.author.username}`}
+                onClick={(e) => e.stopPropagation()}
               >
                 {chirp.author.profile.name}
               </Link>
               <Link
-                to={`/users/${chirp.author.username}`}
                 className={styles.username}
+                to={`/users/${chirp.author.username}`}
+                onClick={(e) => e.stopPropagation()}
               >
                 @{chirp.author.username}
               </Link>
@@ -79,13 +114,11 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
           {showMetrics && (
             <div className={styles.metrics}>
               <div
+                className={styles.replies}
                 onClick={(e) => {
                   e.stopPropagation();
-                  user
-                    ? createChirpContext?.openCreateChirpModal(chirp)
-                    : promptContext?.openReplyPrompt(chirp.author.username);
+                  handleReply();
                 }}
-                className={styles.replies}
               >
                 <button className={styles.iconBackground}>
                   <FaRegCommentAlt className={styles.icon} />
@@ -93,11 +126,11 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
                 <div>{formatCount(chirp.replies.length)}</div>
               </div>
               <div
+                className={likeClasses}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onLike();
+                  handleLike();
                 }}
-                className={`${styles.likes} ${isLiked ? styles.liked : ''}`}
               >
                 <button className={styles.iconBackground}>
                   <FaRegHeart className={styles.icon} />
@@ -108,10 +141,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
                 className={styles.share}
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigator.clipboard.writeText(
-                    `${window.location.origin}/chirps/${chirp._id}`,
-                  );
-                  toast.success('Copied to clipboard');
+                  handleShare();
                 }}
               >
                 <button className={styles.iconBackground}>
