@@ -99,8 +99,12 @@ const searchMany = async (
   }
 
   if (from) {
-    const fromUser = await userService.findOne(from);
-    filter.author = fromUser._id;
+    try {
+      const fromUser = await userService.findOne(from);
+      filter.author = fromUser._id;
+    } catch {
+      filter.author = null;
+    }
   }
 
   const createdAt: { $gte?: Date; $lte?: Date } = {};
