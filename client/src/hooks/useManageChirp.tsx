@@ -20,12 +20,14 @@ const useManageChirp = (): UseManageChirp => {
   const queryClient = useQueryClient();
 
   const { mutate: createChirp } = useMutation(
+    ['chirps', 'create'],
     ({ content, parentChirpId }: CreateChirp) =>
       ChirpService.createChirp(content, parentChirpId),
     { onSuccess: () => queryClient.invalidateQueries(['chirps']) },
   );
 
   const { mutate: deleteChirp } = useMutation(
+    ['chirps', 'delete'],
     (chirpId: string) => ChirpService.deleteChirp(chirpId),
     { onSuccess: () => queryClient.invalidateQueries(['chirps']) },
   );

@@ -67,6 +67,7 @@ const useManageUser = (): UseManageUser => {
   };
 
   const { mutate: updateProfile } = useMutation(
+    ['user', 'update'],
     (newProfile: StoredUser['profile']) =>
       UserService.updateProfile(newProfile),
     {
@@ -85,6 +86,7 @@ const useManageUser = (): UseManageUser => {
   );
 
   const { mutate: updateUsername } = useMutation(
+    ['user', 'update'],
     ({ newUsername, password }: UpdateUsername) =>
       UserService.updateUsername(newUsername, password),
     {
@@ -102,16 +104,19 @@ const useManageUser = (): UseManageUser => {
   );
 
   const { mutate: updateEmail } = useMutation(
+    ['user', 'update'],
     ({ newEmail, password }: UpdateEmail) =>
       UserService.updateEmail(newEmail, password),
   );
 
   const { mutate: updatePassword } = useMutation(
+    ['user', 'update'],
     ({ password, newPassword }: UpdatePassword) =>
       UserService.updatePassword(password, newPassword),
   );
 
   const { mutate: deleteUser } = useMutation(
+    ['user', 'update'],
     (password: string) => UserService.deleteCurrentOne(password),
     {
       onMutate: () => {

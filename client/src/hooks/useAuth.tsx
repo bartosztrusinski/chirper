@@ -22,14 +22,16 @@ interface UseAuth {
 }
 
 const useAuth = (): UseAuth => {
-  const { clearUser, setUser } = useUser();
+  const { setUser, clearUser } = useUser();
 
   const { mutate: logIn } = useMutation(
+    ['user', 'auth'],
     ({ login, password }: LogInData) => AuthService.logIn(login, password),
     { onSuccess: (token: Token) => setUser(token) },
   );
 
   const { mutate: signUp } = useMutation(
+    ['user', 'auth'],
     ({ username, name, email, password }: SignUpData) =>
       AuthService.signUp(username, name, email, password),
     { onSuccess: (token: Token) => setUser(token) },
@@ -37,11 +39,7 @@ const useAuth = (): UseAuth => {
 
   const logOut = () => clearUser();
 
-  return {
-    logIn,
-    signUp,
-    logOut,
-  };
+  return { logIn, signUp, logOut };
 };
 
 export default useAuth;
