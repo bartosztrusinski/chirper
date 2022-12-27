@@ -50,10 +50,12 @@ const sortOrder = zodEnum(config.chirp.sort.allowed, {
   },
 }).default(config.chirp.sort.default);
 
-const content = createInputSchema('content').max(
-  config.chirp.content.max,
-  `Chirp content cannot exceed ${config.chirp.content.max} characters`
-);
+const content = createInputSchema('content')
+  .max(
+    config.chirp.content.max,
+    `Chirp content cannot exceed ${config.chirp.content.max} characters`
+  )
+  .transform((content) => content.replace(/(\s*\n){2,}/g, '\n\n'));
 
 const author = objectId;
 
