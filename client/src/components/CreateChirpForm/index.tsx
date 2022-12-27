@@ -24,12 +24,10 @@ interface CreateChirpFormProps {
 
 type Inputs = z.infer<typeof inputsSchema>;
 
-const inputsSchema = z.object({
-  content,
-});
+const inputsSchema = z.object({ content });
 
 const CreateChirpForm = ({ replyToId, autoFocus }: CreateChirpFormProps) => {
-  const isCreatingChirp = useIsMutating();
+  const isCreatingChirp = useIsMutating(['chirps', 'create']);
   const { user: currentUser } = useUser() as { user: StoredUser };
   const { createChirp } = useManageChirp();
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
@@ -104,7 +102,11 @@ const CreateChirpForm = ({ replyToId, autoFocus }: CreateChirpFormProps) => {
           {isCreatingChirp ? (
             <Loader />
           ) : (
-            <Button type='submit' disabled={!isDirty || !isValid}>
+            <Button
+              type='submit'
+              className={styles.submitButton}
+              disabled={!isDirty || !isValid}
+            >
               {replyToId ? 'Reply' : 'Chirp'}
             </Button>
           )}
