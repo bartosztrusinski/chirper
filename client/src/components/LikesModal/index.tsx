@@ -5,22 +5,19 @@ import { useCallback, useRef, useState } from 'react';
 import Loader from '../Loader';
 import useFollowUser from '../../hooks/useFollowUser';
 import ConfirmModal from '../ConfirmModal';
-import AuthenticatedUserList from '../UserList/AuthenticatedUserList';
-import UnauthenticatedUserList from '../UserList/UnauthenticatedUserList';
 import useUser from '../../hooks/useUser';
+import User from '../User';
 
 interface LikesModalProps extends ReactModal.Props {
   chirpId: string;
 }
 
 const LikesModal = ({ chirpId, ...restProps }: LikesModalProps) => {
-  const { user } = useUser();
   const queryKeys = [chirpId, 'liking'];
-
+  const { user: currentUser } = useUser();
+  const { followUser, unfollowUser } = useFollowUser(queryKeys);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
   const [selectedUsername, setSelectedUsername] = useState<string>('');
-  const [selectedPage, setSelectedPage] = useState<number>(0);
-  const { followUser, unfollowUser } = useFollowUser(queryKeys);
 
   const {
     data,
@@ -31,7 +28,29 @@ const LikesModal = ({ chirpId, ...restProps }: LikesModalProps) => {
     isFetchingNextPage,
   } = useInfiniteQuery(
     ['users', ...queryKeys],
-    ({ pageParam }) => UserService.getManyLiking(chirpId, pageParam),
+    async ({ pageParam }) => {
+      const { data, ...rest } = await UserService.getManyLiking(
+        chirpId,
+        pageParam,
+      );
+
+      if (!currentUser || data.length === 0) {
+        return { data, ...rest };
+      }
+
+      const followedUsernames = await UserService.getFollowedUsernames(
+        currentUser.username,
+        data.map((user) => user._id),
+      );
+
+      return {
+        data: data.map((user) => ({
+          ...user,
+          isFollowed: followedUsernames.includes(user.username),
+        })),
+        ...rest,
+      };
+    },
     { getNextPageParam: (lastPage) => lastPage.meta?.nextPage },
   );
 
@@ -58,15 +77,7 @@ const LikesModal = ({ chirpId, ...restProps }: LikesModalProps) => {
     [fetchNextPage, hasNextPage, isFetchingNextPage],
   );
 
-  const handleFollowUser = (newFollowUsername: string, page: number) => {
-    followUser({ newFollowUsername, page });
-  };
-
-  const handleUnfollowUser = (username: string, page: number) => {
-    setSelectedUsername(username);
-    setSelectedPage(page);
-    setIsConfirmModalOpen(true);
-  };
+  const users = data?.pages.flatMap((page) => page.data);
 
   return (
     <Modal title='Liked by' {...restProps}>
@@ -77,26 +88,22 @@ const LikesModal = ({ chirpId, ...restProps }: LikesModalProps) => {
       ) : (
         <section>
           <h1 className='visually-hidden'>Liked by</h1>
-          {data.pages.map((page, index) => {
-            const isLastPage = index === data.pages.length - 1;
 
-            return user ? (
-              <AuthenticatedUserList
-                ref={isLastPage ? lastUserRef : null}
-                key={index}
-                users={page.data}
-                queryKeys={queryKeys}
-                page={index}
-                onFollow={handleFollowUser}
-                onUnfollow={handleUnfollowUser}
-              />
-            ) : (
-              <UnauthenticatedUserList
-                ref={isLastPage ? lastUserRef : null}
-                users={page.data}
-              />
-            );
-          })}
+          {users?.map((user, index) => (
+            <User
+              key={user._id}
+              ref={index === users.length - 1 ? lastUserRef : null}
+              user={user}
+              onFollow={() => {
+                if (user.isFollowed) {
+                  setSelectedUsername(user.username);
+                  setIsConfirmModalOpen(true);
+                } else {
+                  followUser(user.username);
+                }
+              }}
+            />
+          ))}
           {isFetchingNextPage && <Loader />}
 
           <ConfirmModal
@@ -106,10 +113,7 @@ const LikesModal = ({ chirpId, ...restProps }: LikesModalProps) => {
             description='Their Chirps will no longer show up in your home timeline. You can still view their profile.'
             confirmText='Unfollow'
             onConfirm={() => {
-              unfollowUser({
-                deletedFollowUsername: selectedUsername,
-                page: selectedPage,
-              });
+              unfollowUser(selectedUsername);
               setIsConfirmModalOpen(false);
             }}
           />
