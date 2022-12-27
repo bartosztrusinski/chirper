@@ -3,7 +3,6 @@ import ChirpService from '../../api/services/Chirp';
 import ChirpReplies from '../ChirpReplies';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import useUser from '../../hooks/useUser';
-import useLikedChirpIds from '../../hooks/useLikedChirpIds';
 import useLikeChirp from '../../hooks/useLikeChirp';
 import useManageChirp from '../../hooks/useManageChirp';
 import LikesModal from '../LikesModal';
@@ -23,6 +22,7 @@ import { FaRegHeart as LikeIcon } from '@react-icons/all-files/fa/FaRegHeart';
 import { FiShare as ShareIcon } from '@react-icons/all-files/fi/FiShare';
 import { BsTrash as DeleteIcon } from '@react-icons/all-files/bs/BsTrash';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { StoredUser } from '../../interfaces/User';
 import {
   Link,
   MakeGenerics,
@@ -45,15 +45,13 @@ const AuthenticatedChirpPage = () => {
   const {
     params: { id },
   } = useMatch<LocationGenerics>();
-  const { user: currentUser } = useUser();
-  const { deleteChirp } = useManageChirp();
-  const createChirpContext = useContext(CreateChirpContext);
-
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
-
   const queryKeys = [id];
+  const createChirpContext = useContext(CreateChirpContext);
+  const { user: currentUser } = useUser() as { user: StoredUser };
+  const { deleteChirp } = useManageChirp();
   const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys);
 
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
   const [isLikesModalOpen, setIsLikesModalOpen] = useState<boolean>(
     dialog === 'likes',
   );
@@ -66,26 +64,25 @@ const AuthenticatedChirpPage = () => {
     data: chirp,
     isLoading,
     isError,
-  } = useQuery(['chirps', ...queryKeys], () => ChirpService.getOne(id), {
-    retry: false,
-  });
+  } = useQuery(
+    ['chirps', ...queryKeys],
+    async () => {
+      const chirp = await ChirpService.getOne(id);
+      const likedChirpIds = await ChirpService.getLikedChirpIds(
+        currentUser.username,
+        [chirp._id],
+      );
 
-  const {
-    data: likedChirpIds,
-    isSuccess,
-    isError: isLikedError,
-    isLoading: isLikedLoading,
-  } = useLikedChirpIds(queryKeys, [id]);
+      return { ...chirp, isLiked: likedChirpIds.includes(chirp._id) };
+    },
+    { retry: false },
+  );
 
-  const isLiked = isSuccess && likedChirpIds.includes(id);
-
-  const isCurrentUserAuthor = currentUser?._id === chirp?.author._id;
-
-  if (isLoading || isLikedLoading) {
+  if (isLoading) {
     return <Loader />;
   }
 
-  if (isError || isLikedError) {
+  if (isError) {
     return (
       <div>
         <p> Oops something went wrong...</p>
@@ -200,10 +197,10 @@ const AuthenticatedChirpPage = () => {
               <button
                 type='button'
                 className={`${styles.button} ${styles.like} ${
-                  isLiked ? styles.liked : ''
+                  chirp.isLiked ? styles.liked : ''
                 }`}
                 onClick={() =>
-                  isLiked ? unlikeChirp(chirp) : likeChirp(chirp)
+                  chirp.isLiked ? unlikeChirp(chirp) : likeChirp(chirp)
                 }
               >
                 <LikeIcon className={styles.icon} />
@@ -220,7 +217,7 @@ const AuthenticatedChirpPage = () => {
                 <ShareIcon className={styles.icon} />
               </button>
 
-              {isCurrentUserAuthor && (
+              {currentUser._id === chirp.author._id && (
                 <>
                   <button
                     type='button'
@@ -236,17 +233,23 @@ const AuthenticatedChirpPage = () => {
                     heading='Delete Chirp?'
                     description="This can't be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from Chirper search results."
                     confirmText='Delete'
-                    onConfirm={() =>
+                    onConfirm={() => {
+                      const toastId = toast.loading('Deleting your Chirp...');
                       deleteChirp(chirp._id, {
                         onSuccess: () => {
+                          toast.success('Your Chirp was deleted', {
+                            id: toastId,
+                          });
+                          setIsConfirmModalOpen(false);
                           history.back();
-                          toast.success('Your Chirp was deleted');
                         },
                         onError: (error) => {
-                          toast.error(getRequestErrorMessage(error));
+                          toast.error(getRequestErrorMessage(error), {
+                            id: toastId,
+                          });
                         },
-                      })
-                    }
+                      });
+                    }}
                   />
                 </>
               )}
