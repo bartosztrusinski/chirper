@@ -119,6 +119,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
                   e.stopPropagation();
                   handleReply();
                 }}
+                onKeyUp={(e) => e.stopPropagation()}
               >
                 <button className={styles.iconBackground}>
                   <FaRegCommentAlt className={styles.icon} />
@@ -131,6 +132,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
                   e.stopPropagation();
                   handleLike();
                 }}
+                onKeyUp={(e) => e.stopPropagation()}
               >
                 <button className={styles.iconBackground}>
                   <FaRegHeart className={styles.icon} />
@@ -143,6 +145,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
                   e.stopPropagation();
                   handleShare();
                 }}
+                onKeyUp={(e) => e.stopPropagation()}
               >
                 <button className={styles.iconBackground}>
                   <FiShare className={styles.icon} />
