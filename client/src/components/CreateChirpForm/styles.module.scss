@@ -69,3 +69,24 @@
   font-size: var(--fs-200);
   padding: u.rem(4);
 }
+
+.toast {
+  display: grid;
+  grid-auto-flow: column;
+  gap: u.rem(8);
+
+  .message {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .link {
+    color: var(--text-color);
+    font-weight: var(--fw-bold);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

@@ -15,6 +15,7 @@ import { CreateChirpContext } from '../AuthenticatedApp';
 import Loader from '../Loader';
 import { toast } from 'react-hot-toast';
 import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
+import { useIsMutating } from '@tanstack/react-query';
 
 interface CreateChirpFormProps {
   replyToId?: string;
@@ -28,8 +29,9 @@ const inputsSchema = z.object({
 });
 
 const CreateChirpForm = ({ replyToId, autoFocus }: CreateChirpFormProps) => {
+  const isCreatingChirp = useIsMutating();
   const { user: currentUser } = useUser() as { user: StoredUser };
-  const { createChirp, isCreatingChirp } = useManageChirp();
+  const { createChirp } = useManageChirp();
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
   const { closeCreateChirpModal } = useContext(
     CreateChirpContext,
@@ -47,14 +49,21 @@ const CreateChirpForm = ({ replyToId, autoFocus }: CreateChirpFormProps) => {
 
   const { ref, ...rest } = register('content');
 
-  const onSubmit = (inputs: Inputs) => {
+  const onSubmit = ({ content }: Inputs) => {
     createChirp(
-      { ...inputs, parentChirpId: replyToId },
+      { content, parentChirpId: replyToId },
       {
-        onSuccess: () => {
+        onSuccess: (newChirpId) => {
           reset();
           closeCreateChirpModal();
-          toast.success('Your chirp was created!');
+          toast.success(
+            <div className={styles.toast}>
+              <div className={styles.message}>Your chirp was created!</div>
+              <Link className={styles.link} to={`/chirps/${newChirpId}`}>
+                View
+              </Link>
+            </div>,
+          );
         },
         onError: (error) => {
           toast.error(getRequestErrorMessage(error));
@@ -85,7 +94,7 @@ const CreateChirpForm = ({ replyToId, autoFocus }: CreateChirpFormProps) => {
               contentRef.current = e;
             }}
             autoFocus={autoFocus}
-            disabled={isCreatingChirp}
+            disabled={Boolean(isCreatingChirp)}
             placeholder={replyToId ? 'Chirp your reply' : "What's happening?"}
             className={styles.contentInput}
             aria-invalid={errors.content ? 'true' : 'false'}
