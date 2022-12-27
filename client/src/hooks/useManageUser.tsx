@@ -1,4 +1,3 @@
-import axios from 'axios';
 import UserService from '../api/services/User';
 import useUser from './useUser';
 import { StoredUser } from '../interfaces/User';
@@ -41,50 +40,29 @@ interface UpdatePassword {
   password: string;
 }
 
-const usePatchUser = (): UseManageUser => {
+const useManageUser = (): UseManageUser => {
   const queryClient = useQueryClient();
-  const { updateUser, clearUser } = useUser();
-  const SERVER_ERROR = 'There was an error contacting the server';
+  const { user, updateUser, clearUser } = useUser();
 
-  const handleError = (
-    error: unknown,
-    previousUserData?: StoredUser | null,
-  ) => {
-    const title =
-      axios.isAxiosError(error) && error?.response?.data?.message
-        ? error?.response?.data?.message
-        : SERVER_ERROR;
+  const handleUpdateMutate = (newData: Partial<StoredUser>) => {
+    queryClient.cancelQueries(['user']);
 
-    console.log(`Update failed: ${title}`);
+    const previousUserData = queryClient.getQueryData<StoredUser>(['user']);
 
-    // roll back cache to saved value
+    if (previousUserData && newData) {
+      updateUser({ ...previousUserData, ...newData });
+    }
+
+    return previousUserData;
+  };
+
+  const handleError = (previousUserData?: StoredUser) => {
     if (previousUserData) {
       updateUser(previousUserData);
     }
   };
 
-  const handleUpdateMutate = (newData: Partial<StoredUser>) => {
-    // cancel any outgoing queries for user data, so old server data
-    // doesn't overwrite our optimistic update
-    queryClient.cancelQueries(['user']);
-
-    // snapshot of previous user value
-    const previousUserData = queryClient.getQueryData<StoredUser | null>([
-      'user',
-    ]);
-
-    // if there is no user, we can't update
-    if (previousUserData && newData) {
-      // optimistically update the cache with new user value
-      updateUser({ ...previousUserData, ...newData });
-    }
-
-    // return context object with snapshotted value
-    return previousUserData;
-  };
-
   const handleSettled = () => {
-    // invalidate user query to make sure we're in sync with server data
     queryClient.invalidateQueries(['user']);
   };
 
@@ -97,15 +75,11 @@ const usePatchUser = (): UseManageUser => {
         return { previousUserData };
       },
       onError: (error, profileData, context) => {
-        handleError(error, context?.previousUserData);
-      },
-      onSuccess: (updatedProfile) => {
-        if (updatedProfile) {
-          console.log('Profile updated successfully');
-        }
+        handleError(context?.previousUserData);
       },
       onSettled: () => {
         handleSettled();
+        queryClient.invalidateQueries(['users', user?.username]);
       },
     },
   );
@@ -119,12 +93,7 @@ const usePatchUser = (): UseManageUser => {
         return { previousUserData };
       },
       onError: (error, usernameData, context) => {
-        handleError(error, context?.previousUserData);
-      },
-      onSuccess: (updatedUsername) => {
-        if (updatedUsername) {
-          console.log('Username updated successfully');
-        }
+        handleError(context?.previousUserData);
       },
       onSettled: () => {
         handleSettled();
@@ -135,30 +104,11 @@ const usePatchUser = (): UseManageUser => {
   const { mutate: updateEmail } = useMutation(
     ({ newEmail, password }: UpdateEmail) =>
       UserService.updateEmail(newEmail, password),
-    {
-      // mutate & settled - add email to stored user
-      onError: (error) => {
-        handleError(error);
-      },
-      onSuccess: (updatedEmail) => {
-        if (updatedEmail) {
-          console.log('Email updated successfully');
-        }
-      },
-    },
   );
 
   const { mutate: updatePassword } = useMutation(
     ({ password, newPassword }: UpdatePassword) =>
       UserService.updatePassword(password, newPassword),
-    {
-      onError: (error) => {
-        handleError(error);
-      },
-      onSuccess: () => {
-        console.log('Password updated successfully');
-      },
-    },
   );
 
   const { mutate: deleteUser } = useMutation(
@@ -167,9 +117,7 @@ const usePatchUser = (): UseManageUser => {
       onMutate: () => {
         queryClient.cancelQueries(['user']);
 
-        const previousUserData = queryClient.getQueryData<StoredUser | null>([
-          'user',
-        ]);
+        const previousUserData = queryClient.getQueryData<StoredUser>(['user']);
 
         if (previousUserData) {
           clearUser();
@@ -178,10 +126,7 @@ const usePatchUser = (): UseManageUser => {
         return { previousUserData };
       },
       onError: (error, passwordData, context) => {
-        handleError(error, context?.previousUserData);
-      },
-      onSuccess: () => {
-        console.log('User deleted successfully');
+        handleError(context?.previousUserData);
       },
       onSettled: () => {
         handleSettled();
@@ -198,4 +143,4 @@ const usePatchUser = (): UseManageUser => {
   };
 };
 
-export default usePatchUser;
+export default useManageUser;
