@@ -2,7 +2,6 @@ import styles from './styles.module.scss';
 import UserService from '../../api/services/User';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import useUser from '../../hooks/useUser';
-import useFollowedUsernames from '../../hooks/useFollowedUsernames';
 import useFollowUser from '../../hooks/useFollowUser';
 import EditProfileModal from '../EditProfileModal';
 import FollowedModal from '../FollowedModal';
@@ -16,7 +15,8 @@ import { useEffect, useState } from 'react';
 import { IoCalendarOutline as DateIcon } from '@react-icons/all-files/io5/IoCalendarOutline';
 import { HiOutlineLocationMarker as LocationIcon } from '@react-icons/all-files/hi/HiOutlineLocationMarker';
 import { BiLinkAlt as WebsiteIcon } from '@react-icons/all-files/bi/BiLinkAlt';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { StoredUser } from '../../interfaces/User';
 import {
   Link,
   MakeGenerics,
@@ -32,18 +32,20 @@ type LocationGenerics = MakeGenerics<{
 }>;
 
 const AuthenticatedProfilePage = () => {
+  const queryClient = useQueryClient();
   const navigate = useNavigate<LocationGenerics>();
   const { dialog } = useSearch<LocationGenerics>();
   const {
     params: { username },
   } = useMatch<LocationGenerics>();
-  const { user: currentUser } = useUser();
-
   const queryKeys = [username];
+  const { user: currentUser } = useUser() as { user: StoredUser };
   const { followUser, unfollowUser } = useFollowUser(queryKeys);
 
+  const isCurrentUserProfile = currentUser.username === username;
+
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(
-    dialog === 'edit-profile',
+    dialog === 'edit-profile' && isCurrentUserProfile,
   );
   const [isFollowedModalOpen, setIsFollowedModalOpen] = useState<boolean>(
     dialog === 'followed',
@@ -51,28 +53,25 @@ const AuthenticatedProfilePage = () => {
   const [isFollowingModalOpen, setIsFollowingModalOpen] = useState<boolean>(
     dialog === 'following',
   );
-
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
 
   const {
     data: user,
     isLoading,
     isError,
-    isSuccess,
-  } = useQuery(['users', ...queryKeys], () => UserService.getOne(username));
+  } = useQuery(
+    ['users', ...queryKeys],
+    async () => {
+      const user = await UserService.getOne(username);
+      const followedUsernames = await UserService.getFollowedUsernames(
+        currentUser.username,
+        [user._id],
+      );
 
-  const {
-    data: followedUsernames,
-    isSuccess: isFollowedSuccess,
-    isLoading: isFollowedLoading,
-    isError: isFollowedError,
-  } = useFollowedUsernames(queryKeys, isSuccess ? [user._id] : []);
-
-  const isFollowedProfile =
-    isSuccess && isFollowedSuccess && followedUsernames.includes(user.username);
-
-  const isCurrentUserProfile =
-    isSuccess && currentUser && currentUser._id === user._id;
+      return { ...user, isFollowed: followedUsernames.includes(user.username) };
+    },
+    { retry: false },
+  );
 
   const closeDialog = () =>
     navigate({
@@ -83,15 +82,29 @@ const AuthenticatedProfilePage = () => {
   useEffect(() => {
     setIsFollowedModalOpen(dialog === 'followed');
     setIsFollowingModalOpen(dialog === 'following');
-    setIsEditModalOpen(dialog === 'edit-profile');
+    setIsEditModalOpen(dialog === 'edit-profile' && isCurrentUserProfile);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dialog]);
 
-  if (isLoading || isFollowedLoading) {
+  if (isLoading) {
     return <Loader />;
   }
 
-  if (isError || isFollowedError) {
-    return <div>Oops something went wrong...</div>;
+  if (isError) {
+    return (
+      <div>
+        <p> Oops something went wrong...</p>
+        <Button
+          onClick={() =>
+            queryClient.refetchQueries(['users', ...queryKeys], {
+              exact: true,
+            })
+          }
+        >
+          Retry
+        </Button>
+      </div>
+    );
   }
 
   return (
@@ -113,16 +126,16 @@ const AuthenticatedProfilePage = () => {
             onClick={() => {
               if (isCurrentUserProfile) {
                 navigate({ search: { dialog: 'edit-profile' }, replace: true });
-              } else if (isFollowedProfile) {
+              } else if (user.isFollowed) {
                 setIsConfirmModalOpen(true);
               } else {
-                followUser({ newFollowUsername: user.username });
+                followUser(user.username);
               }
             }}
           >
             {isCurrentUserProfile
               ? 'Edit Profile'
-              : isFollowedProfile
+              : user.isFollowed
               ? 'Unfollow'
               : 'Follow'}
           </Button>
@@ -215,12 +228,7 @@ const AuthenticatedProfilePage = () => {
 
       <Outlet />
 
-      {isCurrentUserProfile && (
-        <EditProfileModal
-          isOpen={isEditModalOpen}
-          onRequestClose={closeDialog}
-        />
-      )}
+      <EditProfileModal isOpen={isEditModalOpen} onRequestClose={closeDialog} />
 
       <FollowedModal
         isOpen={isFollowedModalOpen}
@@ -234,19 +242,17 @@ const AuthenticatedProfilePage = () => {
         username={user.username}
       />
 
-      {isFollowedProfile && (
-        <ConfirmModal
-          isOpen={isConfirmModalOpen}
-          onRequestClose={() => setIsConfirmModalOpen(false)}
-          heading={`Unfollow @${user.username}?`}
-          description='Their Chirps will no longer show up in your home timeline. You can still view their profile.'
-          confirmText='Unfollow'
-          onConfirm={() => {
-            unfollowUser({ deletedFollowUsername: user.username });
-            setIsConfirmModalOpen(false);
-          }}
-        />
-      )}
+      <ConfirmModal
+        isOpen={isConfirmModalOpen}
+        onRequestClose={() => setIsConfirmModalOpen(false)}
+        heading={`Unfollow @${user.username}?`}
+        description='Their Chirps will no longer show up in your home timeline. You can still view their profile.'
+        confirmText='Unfollow'
+        onConfirm={() => {
+          unfollowUser(user.username);
+          setIsConfirmModalOpen(false);
+        }}
+      />
     </>
   );
 };
