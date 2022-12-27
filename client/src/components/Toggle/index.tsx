@@ -2,29 +2,33 @@ import styles from './styles.module.scss';
 import { ComponentPropsWithoutRef, forwardRef, useState } from 'react';
 
 interface ToggleProps extends ComponentPropsWithoutRef<'input'> {
-  title: string;
+  label: string;
 }
 
 const Toggle = forwardRef<HTMLInputElement, ToggleProps>(function Toggle(
-  { title, defaultChecked, ...restProps },
+  { label, checked, onChange, ...restProps },
   ref,
 ) {
-  const [isEnabled, setIsEnabled] = useState<boolean>(defaultChecked ?? false);
+  const [isChecked, setIsChecked] = useState<boolean>(Boolean(checked));
+  const classes = [styles.toggle, isChecked && styles.enabled]
+    .filter(Boolean)
+    .join(' ');
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange?.(e);
+    setIsChecked(e.target.checked);
+  };
 
   return (
-    <label className={`${styles.toggle} ${isEnabled ? styles.enabled : ''}`}>
+    <label className={classes}>
       <span className='visually-hidden'>
-        {isEnabled ? `Disable ${title}` : `Enable ${title}`}
+        {`${isChecked ? 'Disable' : 'Enable'} ${label}`}
       </span>
       <input
+        {...restProps}
         ref={ref}
         type='checkbox'
         className={styles.input}
-        {...restProps}
-        onChange={(e) => {
-          restProps.onChange?.(e);
-          setIsEnabled(e.target.checked);
-        }}
+        onChange={handleChange}
       />
     </label>
   );

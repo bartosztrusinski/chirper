@@ -18,18 +18,8 @@ type LocationGenerics = MakeGenerics<{
 const Search = () => {
   const search = useSearch<LocationGenerics>();
 
-  const searchParams: Partial<SearchParams> = {
-    query: search.query,
-    sortOrder: search.sortOrder,
-    from: search.from,
-    includeReplies: search.includeReplies,
-    followedOnly: search.followedOnly,
-    startTime: search.startTime,
-    endTime: search.endTime,
-  };
-
-  return searchParams.query ? (
-    <SearchChirps searchParams={searchParams as SearchParams} />
+  return search.query ? (
+    <SearchChirps searchParams={search as SearchParams} />
   ) : (
     <div>Search for something</div>
   );

@@ -35,41 +35,20 @@ const filterObject = <T,>(
 const SearchFilterModal = (props: SearchFilterModalProps) => {
   const navigate = useNavigate<LocationGenerics>();
   const search = useSearch<LocationGenerics>();
-
-  const getDefaultValues = () => ({
-    sortOrder: search.sortOrder ?? 'relevant',
-    from: search.from ?? '',
-    includeReplies: search.includeReplies ?? true,
-    followedOnly: search.followedOnly ?? false,
-    startTime: search.startTime ?? '',
-    endTime: search.endTime ?? '',
-  });
-
   const {
     register,
     handleSubmit,
     reset,
     formState: { isValid },
-  } = useForm<Inputs>({ defaultValues: getDefaultValues() });
+  } = useForm<Inputs>({ defaultValues: search });
 
   const onSubmit = (inputs: Inputs) => {
-    const filteredInputs = filterObject(
-      inputs,
-      (input) => input !== '',
-    ) as Omit<SearchParams, 'query'>;
-
-    navigate({
-      to: '/search',
-      search: () => ({ query: search.query, ...filteredInputs }),
-    });
+    const filteredInputs = filterObject(inputs, (input) => input !== '');
+    navigate({ search: { ...filteredInputs, dialog: undefined } });
   };
 
   return (
-    <Modal
-      {...props}
-      title='Advanced Search'
-      onAfterOpen={() => reset(getDefaultValues())}
-    >
+    <Modal {...props} title='Advanced Search' onAfterOpen={() => reset(search)}>
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
         <div>
           <h3 className={styles.heading}>Sort by</h3>
@@ -98,8 +77,8 @@ const SearchFilterModal = (props: SearchFilterModalProps) => {
             <div className={styles.toggle}>
               <div>Replies included</div>
               <Toggle
-                title='include replies'
-                defaultChecked={getDefaultValues().includeReplies}
+                label='Include replies'
+                checked={search.includeReplies}
                 {...register('includeReplies')}
               />
             </div>
@@ -107,8 +86,8 @@ const SearchFilterModal = (props: SearchFilterModalProps) => {
             <div className={styles.toggle}>
               <div>Followed only</div>
               <Toggle
-                title='followed only'
-                defaultChecked={getDefaultValues().followedOnly}
+                label='Followed only'
+                checked={search.followedOnly}
                 {...register('followedOnly')}
               />
             </div>
