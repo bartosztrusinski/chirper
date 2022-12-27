@@ -1,47 +1,36 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  UseMutateFunction,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import ChirpService from '../api/services/Chirp';
+import Chirp from '../interfaces/Chirp';
 
-interface CreateChirp {
-  content: string;
-  parentChirpId?: string;
+interface UseManageChirp {
+  createChirp: UseMutateFunction<Chirp['_id'], unknown, CreateChirp, unknown>;
+  deleteChirp: UseMutateFunction<void, unknown, string, unknown>;
 }
 
-const useManageChirp = () => {
+interface CreateChirp {
+  content: Chirp['content'];
+  parentChirpId?: Chirp['_id'];
+}
+
+const useManageChirp = (): UseManageChirp => {
   const queryClient = useQueryClient();
 
-  const { mutate: createChirp, isLoading: isCreatingChirp } = useMutation(
+  const { mutate: createChirp } = useMutation(
     ({ content, parentChirpId }: CreateChirp) =>
-      parentChirpId
-        ? ChirpService.createReplyChirp(content, parentChirpId)
-        : ChirpService.createChirp(content),
-
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['chirps']);
-      },
-      onError: () => {
-        console.log('error creating reply');
-      },
-    },
+      ChirpService.createChirp(content, parentChirpId),
+    { onSuccess: () => queryClient.invalidateQueries(['chirps']) },
   );
 
   const { mutate: deleteChirp } = useMutation(
     (chirpId: string) => ChirpService.deleteChirp(chirpId),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['chirps']);
-      },
-      onError: () => {
-        console.log('error deleting chirp');
-      },
-    },
+    { onSuccess: () => queryClient.invalidateQueries(['chirps']) },
   );
 
-  return {
-    createChirp,
-    isCreatingChirp,
-    deleteChirp,
-  };
+  return { createChirp, deleteChirp };
 };
 
 export default useManageChirp;
