@@ -2,29 +2,24 @@ import styles from './styles.module.scss';
 import FormWrapper from './FormWrapper';
 import Input from '../Input';
 import UserService from '../../api/services/User';
-import { FormData } from '.';
+import { RegisterFormData } from '.';
 import { username } from './schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import toast from 'react-hot-toast';
+import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
 
 interface UsernameFormProps {
-  formData: FormData;
-  onSubmit: (data: Partial<FormData>) => void;
-  isSubmitting: boolean;
+  formData: RegisterFormData;
+  onSubmit: (data: Partial<RegisterFormData>) => void;
 }
 
 type Inputs = z.infer<typeof inputsSchema>;
 
-const inputsSchema = z.object({
-  username,
-});
+const inputsSchema = z.object({ username });
 
-const UsernameForm = ({
-  formData,
-  onSubmit,
-  isSubmitting,
-}: UsernameFormProps) => {
+const UsernameForm = ({ formData, onSubmit }: UsernameFormProps) => {
   const {
     register,
     handleSubmit,
@@ -52,17 +47,13 @@ const UsernameForm = ({
       } else {
         onSubmit(inputs);
       }
-    } catch {
-      console.log('error checking username');
+    } catch (error) {
+      toast.error(getRequestErrorMessage(error));
     }
   };
 
   return (
-    <FormWrapper
-      onSubmit={handleSubmit(onUsernameSubmit)}
-      isInvalid={!isValid}
-      isSubmitting={isSubmitting}
-    >
+    <FormWrapper onSubmit={handleSubmit(onUsernameSubmit)} isInvalid={!isValid}>
       <div>
         <h3 className={styles.heading}>What should we call you?</h3>
         <p className={styles.description}>

@@ -6,19 +6,19 @@ import { MultiStepContext } from '.';
 import { MultiStep } from '../../hooks/useMultiStep';
 import { PromptContext } from '../UnauthenticatedApp';
 import Loader from '../Loader';
+import { useIsMutating } from '@tanstack/react-query';
 
 interface FormWrapperProps extends ComponentPropsWithoutRef<'form'> {
   isInvalid?: boolean;
-  isSubmitting?: boolean;
 }
 
 const FormWrapper = ({
   children,
   isInvalid = false,
-  isSubmitting = false,
   ...restProps
 }: FormWrapperProps) => {
-  const { LogInLink: LoginLink } = useContext(PromptContext) as PromptContext;
+  const isSigningUp = useIsMutating(['user', 'auth']);
+  const { LogInLink } = useContext(PromptContext) as PromptContext;
   const { previousStep, currentStepIndex, isFirstStep, isLastStep, steps } =
     useContext(MultiStepContext) as MultiStep;
 
@@ -40,7 +40,7 @@ const FormWrapper = ({
       <form {...restProps} className={styles.form}>
         <div className={styles.stepContainer}>{children}</div>
 
-        {isSubmitting ? (
+        {isSigningUp ? (
           <Loader />
         ) : (
           <Button type='submit' disabled={isInvalid}>
@@ -51,7 +51,7 @@ const FormWrapper = ({
 
       {isFirstStep && (
         <p className={styles.logInLink}>
-          Have an account already? <LoginLink>Log In</LoginLink>
+          Have an account already? <LogInLink>Log In</LogInLink>
         </p>
       )}
     </>

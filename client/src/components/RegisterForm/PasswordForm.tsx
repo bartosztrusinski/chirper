@@ -1,24 +1,21 @@
 import styles from './styles.module.scss';
 import FormWrapper from './FormWrapper';
 import PasswordInput from '../PasswordInput';
-import { FormData } from '.';
+import { RegisterFormData } from '.';
 import { passwordConfirm, password } from './schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
 interface PasswordFormProps {
-  formData: FormData;
-  onSubmit: (data: Partial<FormData>) => void;
+  formData: RegisterFormData;
+  onSubmit: (data: Partial<RegisterFormData>) => void;
 }
 
 type Inputs = z.infer<typeof inputsSchema>;
 
 const inputsSchema = z
-  .object({
-    password,
-    passwordConfirm,
-  })
+  .object({ password, passwordConfirm })
   .refine((data) => data.password === data.passwordConfirm, {
     message: 'Passwords do not match',
     path: ['passwordConfirm'],

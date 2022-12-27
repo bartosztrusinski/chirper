@@ -9,9 +9,8 @@ import useAuth from '../../hooks/useAuth';
 import { useNavigate } from '@tanstack/react-location';
 import { toast } from 'react-hot-toast';
 import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
-import { useIsMutating } from '@tanstack/react-query';
 
-interface FormData {
+interface RegisterFormData {
   email: string;
   name: string;
   password: string;
@@ -25,25 +24,24 @@ const MultiStepContext = createContext<MultiStep | null>(null);
 
 const multiStepElements = [EmailForm, PasswordForm, UsernameForm];
 
-const getDefaultFormData = (): FormData => ({
+const defaultFormData: RegisterFormData = {
   email: '',
   name: '',
   password: '',
   passwordConfirm: '',
   username: '',
-});
+};
 
 const RegisterForm = (props: RegisterFormProps) => {
   const navigate = useNavigate();
-  const isSigningUp = useIsMutating();
   const { signUp } = useAuth();
-  const [formData, setFormData] = useState<FormData>(getDefaultFormData());
+  const [formData, setFormData] = useState<RegisterFormData>(defaultFormData);
 
   const clearFormData = () => {
-    setFormData(getDefaultFormData());
+    setFormData(defaultFormData);
   };
 
-  const handleSubmit = (inputs: Partial<FormData>) => {
+  const handleSubmit = (inputs: Partial<RegisterFormData>) => {
     if (isLastStep) {
       signUp(
         { ...formData, ...inputs },
@@ -76,12 +74,7 @@ const RegisterForm = (props: RegisterFormProps) => {
     resetSteps,
   } = useMultiStep(
     multiStepElements.map((Step, index) => (
-      <Step
-        key={index}
-        formData={formData}
-        onSubmit={handleSubmit}
-        isSubmitting={Boolean(isSigningUp)}
-      />
+      <Step key={index} formData={formData} onSubmit={handleSubmit} />
     )),
   );
 
@@ -112,4 +105,4 @@ const RegisterForm = (props: RegisterFormProps) => {
 };
 
 export default RegisterForm;
-export { FormData, MultiStepContext };
+export { RegisterFormData, MultiStepContext };
