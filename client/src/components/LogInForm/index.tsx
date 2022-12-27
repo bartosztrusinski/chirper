@@ -12,22 +12,22 @@ import toast from 'react-hot-toast';
 import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
 import { useIsMutating } from '@tanstack/react-query';
 
-interface Inputs {
+interface LogInInputs {
   login: string;
   password: string;
 }
 
-const LoginForm = () => {
-  const isLoggingIn = useIsMutating();
-  const { logIn } = useAuth();
-  const { SignUpLink } = useContext(PromptContext) as PromptContext;
+const LogInForm = () => {
   const navigate = useNavigate();
+  const isLoggingIn = useIsMutating(['user', 'auth']);
+  const { SignUpLink } = useContext(PromptContext) as PromptContext;
+  const { logIn } = useAuth();
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isValid },
-  } = useForm<Inputs>({
+  } = useForm<LogInInputs>({
     mode: 'onChange',
     defaultValues: {
       login: '',
@@ -35,7 +35,7 @@ const LoginForm = () => {
     },
   });
 
-  const onSubmit = (inputs: Inputs) => {
+  const onSubmit = (inputs: LogInInputs) => {
     logIn(inputs, {
       onSuccess: () => {
         navigate({ to: '/' });
@@ -103,4 +103,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default LogInForm;
