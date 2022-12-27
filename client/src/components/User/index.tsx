@@ -8,19 +8,15 @@ import { forwardRef } from 'react';
 
 interface UserProps {
   user: User;
-  isFollowed?: boolean;
-  onFollow?: (username: string) => void;
+  onFollow: () => void;
 }
 
-type Ref = HTMLDivElement | null;
-
-const User = forwardRef<Ref, UserProps>(function User(
-  { user, isFollowed, onFollow },
+const User = forwardRef<HTMLDivElement | null, UserProps>(function User(
+  { user, onFollow },
   ref,
 ) {
-  const { user: currentUser } = useUser();
   const navigate = useNavigate();
-  const isCurrentUser = currentUser?.username === user.username;
+  const { user: currentUser } = useUser();
 
   return (
     <div
@@ -52,17 +48,17 @@ const User = forwardRef<Ref, UserProps>(function User(
               @{user.username}
             </Link>
           </div>
-          {!isCurrentUser && currentUser && (
+          {currentUser && currentUser.username !== user.username && (
             <Button
               type='button'
               variant='light'
               className={styles.followButton}
               onClick={(e) => {
                 e.stopPropagation();
-                onFollow?.(user.username);
+                onFollow();
               }}
             >
-              {isFollowed ? 'Unfollow' : 'Follow'}
+              {user.isFollowed ? 'Unfollow' : 'Follow'}
             </Button>
           )}
         </div>
