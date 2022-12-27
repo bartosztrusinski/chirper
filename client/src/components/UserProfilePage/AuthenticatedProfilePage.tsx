@@ -4,8 +4,6 @@ import defaultAvatar from '../../assets/images/default_avatar.png';
 import useUser from '../../hooks/useUser';
 import useFollowUser from '../../hooks/useFollowUser';
 import EditProfileModal from '../EditProfileModal';
-import FollowedModal from '../FollowedModal';
-import FollowingModal from '../FollowingModal';
 import ConfirmModal from '../ConfirmModal';
 import Button from '../Button';
 import Loader from '../Loader';
@@ -25,6 +23,9 @@ import {
   useNavigate,
   useSearch,
 } from '@tanstack/react-location';
+import Modal from '../Modal';
+import FollowedUsers from '../FollowedUsers';
+import FollowingUsers from '../FollowingUsers';
 
 type LocationGenerics = MakeGenerics<{
   Params: { username: string };
@@ -230,17 +231,13 @@ const AuthenticatedProfilePage = () => {
 
       <EditProfileModal isOpen={isEditModalOpen} onRequestClose={closeDialog} />
 
-      <FollowedModal
-        isOpen={isFollowedModalOpen}
-        onRequestClose={closeDialog}
-        username={user.username}
-      />
+      <Modal isOpen={isFollowedModalOpen} onRequestClose={closeDialog}>
+        <FollowedUsers username={user.username} />
+      </Modal>
 
-      <FollowingModal
-        isOpen={isFollowingModalOpen}
-        onRequestClose={closeDialog}
-        username={user.username}
-      />
+      <Modal isOpen={isFollowingModalOpen} onRequestClose={closeDialog}>
+        <FollowingUsers username={user.username} />
+      </Modal>
 
       <ConfirmModal
         isOpen={isConfirmModalOpen}

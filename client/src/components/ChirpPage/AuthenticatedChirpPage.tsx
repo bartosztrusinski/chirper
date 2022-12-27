@@ -5,7 +5,6 @@ import defaultAvatar from '../../assets/images/default_avatar.png';
 import useUser from '../../hooks/useUser';
 import useLikeChirp from '../../hooks/useLikeChirp';
 import useManageChirp from '../../hooks/useManageChirp';
-import LikesModal from '../LikesModal';
 import CreateChirpForm from '../CreateChirpForm';
 import ConfirmModal from '../ConfirmModal';
 import Button from '../Button';
@@ -31,6 +30,8 @@ import {
   useNavigate,
   useSearch,
 } from '@tanstack/react-location';
+import Modal from '../Modal';
+import LikingUsers from '../LikingUsers';
 
 type LocationGenerics = MakeGenerics<{
   Params: { id: string };
@@ -166,7 +167,7 @@ const AuthenticatedChirpPage = () => {
                       {chirp.metrics.likeCount > 1 ? 'Likes' : 'Like'}
                     </button>
 
-                    <LikesModal
+                    <Modal
                       isOpen={isLikesModalOpen}
                       onRequestClose={() =>
                         navigate({
@@ -174,8 +175,9 @@ const AuthenticatedChirpPage = () => {
                           replace: true,
                         })
                       }
-                      chirpId={chirp._id}
-                    />
+                    >
+                      <LikingUsers chirpId={chirp._id} />
+                    </Modal>
                   </>
                 )}
               </div>

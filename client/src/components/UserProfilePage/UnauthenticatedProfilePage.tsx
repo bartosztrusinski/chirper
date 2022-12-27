@@ -1,8 +1,6 @@
 import styles from './styles.module.scss';
 import UserService from '../../api/services/User';
 import defaultAvatar from '../../assets/images/default_avatar.png';
-import FollowedModal from '../FollowedModal';
-import FollowingModal from '../FollowingModal';
 import Button from '../Button';
 import Loader from '../Loader';
 import formatCount from '../../utils/formatCount';
@@ -21,6 +19,9 @@ import {
   useNavigate,
   useSearch,
 } from '@tanstack/react-location';
+import Modal from '../Modal';
+import FollowedUsers from '../FollowedUsers';
+import FollowingUsers from '../FollowingUsers';
 
 type LocationGenerics = MakeGenerics<{
   Params: { username: string };
@@ -178,17 +179,13 @@ const UnauthenticatedProfilePage = () => {
 
       <Outlet />
 
-      <FollowedModal
-        isOpen={isFollowedModalOpen}
-        onRequestClose={closeDialog}
-        username={user.username}
-      />
+      <Modal isOpen={isFollowedModalOpen} onRequestClose={closeDialog}>
+        <FollowedUsers username={user.username} />
+      </Modal>
 
-      <FollowingModal
-        isOpen={isFollowingModalOpen}
-        onRequestClose={closeDialog}
-        username={user.username}
-      />
+      <Modal isOpen={isFollowingModalOpen} onRequestClose={closeDialog}>
+        <FollowingUsers username={user.username} />
+      </Modal>
     </>
   );
 };
