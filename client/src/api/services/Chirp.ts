@@ -1,5 +1,6 @@
 import { privateClient, publicClient } from '../client';
 import Chirp from '../../interfaces/Chirp';
+import { User } from '../../interfaces/User';
 
 interface ChirpsResponse {
   data: Chirp[];
@@ -115,9 +116,9 @@ const unlikeChirp = async (chirpId: string) => {
 };
 
 const getLikedChirpIds = async (
-  username: string,
-  chirpIds?: string[],
-): Promise<string[]> => {
+  username: User['username'],
+  chirpIds?: Chirp['_id'][],
+): Promise<Chirp['_id'][]> => {
   const params = {
     chirpIds,
   };
@@ -130,12 +131,16 @@ const getLikedChirpIds = async (
   return data.data.map((chirp) => chirp._id);
 };
 
-const createChirp = async (content: string) => {
-  await privateClient.post('/chirps', { content });
-};
+const createChirp = async (
+  content: Chirp['content'],
+  parentChirpId?: Chirp['_id'],
+): Promise<Chirp['_id']> => {
+  const { data } = await privateClient.post<{ data: Chirp['_id'] }>('/chirps', {
+    content,
+    parentId: parentChirpId,
+  });
 
-const createReplyChirp = async (content: string, parentChirpId: string) => {
-  await privateClient.post('/chirps', { content, parentId: parentChirpId });
+  return data.data;
 };
 
 const deleteChirp = async (chirpId: string) => {
@@ -179,7 +184,6 @@ export default {
   unlikeChirp,
   getLikedChirpIds,
   createChirp,
-  createReplyChirp,
   deleteChirp,
   searchChirps,
 };
