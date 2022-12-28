@@ -19,9 +19,7 @@ const CreateChirpModal = (props: CreateChirpModalProps) => {
     >
       {replyTo && (
         <>
-          <div className={styles.replyToChirp}>
-            <Chirp chirp={replyTo} showMetrics={false} onLike={() => null} />
-          </div>
+          <Chirp chirp={replyTo} showMetrics={false} queryKeys={[]} />
           <div className={styles.line}></div>
         </>
       )}

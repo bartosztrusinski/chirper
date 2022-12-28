@@ -5,7 +5,7 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr auto;
-  background-color: var(--color-light-70);
+  background-color: var(--color-dark-10);
   padding: clamp(u.rem(20), u.rem(20) + 2vw, u.rem(40))
     clamp(u.rem(25), u.rem(25) + 2vw, u.rem(58))
     clamp(u.rem(48), u.rem(48) + 2vw, u.rem(54));

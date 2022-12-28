@@ -1,4 +1,4 @@
-import LoginForm from '../LoginForm';
+import LogInForm from '../LogInForm';
 import Modal from '../Modal';
 import RegisterForm from '../RegisterForm';
 import ReplyPrompt from '../Prompt/ReplyPrompt';
@@ -126,7 +126,7 @@ const UnauthenticatedApp = () => {
         <Outlet />
 
         <Modal isOpen={isLogInOpen} onRequestClose={closeDialog}>
-          <LoginForm />
+          <LogInForm />
         </Modal>
 
         <RegisterForm isOpen={isSignUpOpen} onRequestClose={closeDialog} />

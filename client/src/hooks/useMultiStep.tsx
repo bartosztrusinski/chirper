@@ -1,6 +1,6 @@
 import { ReactNode, useState } from 'react';
 
-interface UseMultiStep {
+interface MultiStep {
   steps: ReactNode[];
   currentStepIndex: number;
   currentStep: ReactNode;
@@ -11,7 +11,7 @@ interface UseMultiStep {
   resetSteps: () => void;
 }
 
-const useMultiStep = (steps: ReactNode[]): UseMultiStep => {
+const useMultiStep = (steps: ReactNode[]): MultiStep => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   const firstStepIndex = 0;
@@ -46,4 +46,4 @@ const useMultiStep = (steps: ReactNode[]): UseMultiStep => {
 };
 
 export default useMultiStep;
-export { UseMultiStep };
+export { MultiStep };

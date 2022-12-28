@@ -26,7 +26,7 @@
 
 @mixin toast {
   color: var(--toast-color) !important;
-  font-weight: var(--fw-bold) !important;
+  font-weight: var(--fw-semi-bold) !important;
   user-select: none;
 }
 

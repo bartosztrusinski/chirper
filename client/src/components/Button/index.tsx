@@ -1,18 +1,16 @@
+import { ComponentPropsWithoutRef } from 'react';
 import styles from './styles.module.scss';
 
-interface Props {
-  children: React.ReactNode;
+interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   variant?: 'primary' | 'light' | 'dark';
-  className?: string;
-  [key: string]: unknown;
 }
 
-function Button({
+const Button = ({
   children,
   className,
   variant = 'primary',
   ...restProps
-}: Props) {
+}: ButtonProps) => {
   const classes = [styles.button, styles[variant], className]
     .filter(Boolean)
     .join(' ');
@@ -22,6 +20,6 @@ function Button({
       {children}
     </button>
   );
-}
+};
 
 export default Button;

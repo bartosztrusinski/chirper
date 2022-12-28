@@ -23,10 +23,8 @@ $tones: 10, 20, 30, 40, 50, 60, 70, 80;
   --color-primary: hsl(var(--color-primary-hsl));
 
   // Semantic Colors
-  --color-error: hsl(4deg 90% 41%);
-  --color-warning: hsl(45deg 90% 46%);
-  --color-info: hsl(207deg 90% 44%);
-  --color-success: hsl(141deg 90% 38%);
+  --color-error-hsl: 4deg 90% 41%;
+  --color-error: hsl(var(--color-error-hsl));
   --color-like-hsl: 332deg 95% 44%;
   --color-like: hsl(var(--color-like-hsl));
 

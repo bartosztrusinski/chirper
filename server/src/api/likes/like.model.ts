@@ -2,7 +2,6 @@ import { model, Schema } from 'mongoose';
 import { LikeModel, Like } from './like.interfaces';
 import * as chirpService from '../chirps/chirp.service';
 import * as userService from '../users/user.service';
-import { NextFunction } from 'express';
 
 const likeSchema = new Schema<Like, LikeModel>(
   {

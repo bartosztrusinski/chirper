@@ -2,9 +2,9 @@ import { StoredUser } from '../interfaces/User';
 
 const USER_LOCALSTORAGE_KEY = 'chirper_user';
 
-const getStoredUser = (): StoredUser | null => {
+const getStoredUser = (): StoredUser | undefined => {
   const storedUser = localStorage.getItem(USER_LOCALSTORAGE_KEY);
-  return storedUser ? JSON.parse(storedUser) : null;
+  return storedUser ? JSON.parse(storedUser) : undefined;
 };
 
 const setStoredUser = (user: StoredUser): void => {

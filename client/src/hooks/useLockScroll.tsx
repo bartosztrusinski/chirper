@@ -17,7 +17,7 @@ const useLockBodyScroll = () => {
     clearAllBodyScrollLocks();
   };
 
-  return [lockScroll, unlockScroll, clearLocks] as const;
+  return { lockScroll, unlockScroll, clearLocks } as const;
 };
 
 export default useLockBodyScroll;

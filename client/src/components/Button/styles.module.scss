@@ -21,14 +21,14 @@
   color: var(--button-text-color);
   box-shadow: var(--shadow-small);
   font-weight: var(--fw-bold);
-  outline: u.rem(2) solid transparent;
   border-radius: u.rem(12);
   border: none;
   cursor: pointer;
   padding: u.rem(12) u.rem(24);
-  transition: all 200ms ease-in-out;
+  outline-offset: u.rem(2);
+  transition: transform 160ms ease-in-out, background-color 160ms ease-in-out;
 
-  &:focus {
+  &:focus-visible {
     outline-color: var(--button-outline-color);
   }
 

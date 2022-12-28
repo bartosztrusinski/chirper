@@ -16,6 +16,7 @@ interface User {
     followingCount: number;
   };
   createdAt: string;
+  isFollowed?: boolean;
 }
 
 type Token = string;

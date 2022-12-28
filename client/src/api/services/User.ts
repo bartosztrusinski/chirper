@@ -23,10 +23,7 @@ const getOne = async (username: string) => {
 };
 
 const getManyLiking = async (chirpId: string, sinceId?: string) => {
-  const params = {
-    userFields: 'username, profile',
-    sinceId,
-  };
+  const params = { userFields: 'username, profile', sinceId };
 
   const { data } = await publicClient.get<UsersResponse>(
     `/chirps/${chirpId}/liking-users`,
@@ -37,10 +34,7 @@ const getManyLiking = async (chirpId: string, sinceId?: string) => {
 };
 
 const getManyFollowed = async (username: string, sinceId?: string) => {
-  const params = {
-    userFields: 'username, profile',
-    sinceId,
-  };
+  const params = { userFields: 'username, profile', sinceId };
 
   const { data } = await publicClient.get<UsersResponse>(
     `/users/${username}/followed`,
@@ -53,10 +47,7 @@ const getManyFollowed = async (username: string, sinceId?: string) => {
 };
 
 const getManyFollowing = async (username: string, sinceId?: string) => {
-  const params = {
-    userFields: 'username, profile',
-    sinceId,
-  };
+  const params = { userFields: 'username, profile', sinceId };
 
   const { data } = await publicClient.get<UsersResponse>(
     `/users/${username}/following`,
@@ -70,13 +61,8 @@ const getCurrentOne = async (
   token: Token,
   signal?: AbortSignal,
 ): Promise<User> => {
-  const params = {
-    userFields: 'username, profile, metrics, createdAt',
-  };
-
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
+  const params = { userFields: 'username, profile, metrics, createdAt' };
+  const headers = { Authorization: `Bearer ${token}` };
 
   const { data } = await publicClient.get<{ data: User }>('/me', {
     params,
@@ -91,9 +77,7 @@ const getFollowedUsernames = async (
   username: string,
   userIds?: string[],
 ): Promise<string[]> => {
-  const params = {
-    userIds,
-  };
+  const params = { userIds };
 
   const { data } = await publicClient.get<UsersResponse>(
     `/users/${username}/followed`,

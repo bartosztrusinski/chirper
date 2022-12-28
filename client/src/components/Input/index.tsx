@@ -32,7 +32,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         ref={ref}
         type='text'
         className={styles.input}
-        placeholder=''
+        placeholder=' '
         {...restProps}
       />
       <div className={placeholderClasses}>{placeholder}</div>

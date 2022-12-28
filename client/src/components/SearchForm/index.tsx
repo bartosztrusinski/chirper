@@ -71,7 +71,10 @@ const SearchForm = () => {
   };
 
   const handleClick: MouseEventHandler<HTMLButtonElement> = () => {
-    navigate({ search: (old) => ({ ...old, dialog: 'advanced-search' }), replace: true });
+    navigate({
+      search: (old) => ({ ...old, dialog: 'advanced-search' }),
+      replace: true,
+    });
   };
 
   return (
@@ -93,7 +96,10 @@ const SearchForm = () => {
           <SearchFilterModal
             isOpen={isAdvancedSearchOpen}
             onRequestClose={() =>
-              navigate({ search: (old) => ({ ...old, dialog: undefined }), replace: true })
+              navigate({
+                search: (old) => ({ ...old, dialog: undefined }),
+                replace: true,
+              })
             }
           />
         </>

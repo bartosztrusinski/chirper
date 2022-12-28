@@ -19,10 +19,11 @@
     outline: u.rem(2) solid transparent;
     font-weight: var(--fw-semi-bold);
     font-size: var(--fs-500);
-    transition: transform 140ms ease-in-out, background-color 140ms ease-in-out,
-      box-shadow 140ms ease-in-out;
+    transition-property: transform, background-color;
+    transition-duration: 200ms;
+    transition-timing-function: ease-in-out;
 
-    &:focus {
+    &:focus-visible {
       outline-color: var(--color-primary);
     }
 

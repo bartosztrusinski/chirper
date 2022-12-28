@@ -26,7 +26,7 @@
     border: u.rem(2) solid var(--border-color);
     cursor: pointer;
 
-    &:focus {
+    &:focus-visible {
       border-color: var(--color-primary);
     }
   }
