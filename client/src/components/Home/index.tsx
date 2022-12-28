@@ -1,20 +1,32 @@
 import { Navigate } from '@tanstack/react-location';
+import { useEffect } from 'react';
 import useUser from '../../hooks/useUser';
-import ComposeChirpForm from '../ComposeChirpForm';
+import CreateChirpForm from '../CreateChirpForm';
 import UserTimeline from '../UserTimeline';
 
 const Home = () => {
   const { user } = useUser();
 
-  return user ? (
+  useEffect(() => {
+    document.title = 'Home';
+  }, []);
+
+  if (!user) {
+    return <Navigate to='/' />;
+  }
+
+  return (
     <>
-      <ComposeChirpForm />
-      <div style={{ borderTop: '1px solid var(--border-color)' }}>
-        <UserTimeline />
+      <div
+        style={{
+          padding: '16px',
+          borderBottom: '1px solid var(--border-color)',
+        }}
+      >
+        <CreateChirpForm />
       </div>
+      <UserTimeline />
     </>
-  ) : (
-    <Navigate to='/?login=true' />
   );
 };
 
