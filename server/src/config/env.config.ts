@@ -5,6 +5,8 @@ const defaults = {
   port: '3000',
   dbUri: 'mongodb://localhost:27017/db',
   jwtSecret: 'someRandomSecret',
+  jwtExpiresIn: '7d',
+  clientUrl: 'http://localhost:8080',
 };
 
 const port = {
@@ -24,15 +26,16 @@ const jwtSecret = {
 
 const config = {
   app: {
-    port: port[environment] || defaults.port,
     environment,
+    port: port[environment] || defaults.port,
+    clientUrl: process.env.CLIENT_URL || defaults.clientUrl,
   },
   db: {
     uri: dbUri[environment] || defaults.dbUri,
   },
   jwt: {
     secret: jwtSecret[environment] || defaults.jwtSecret,
-    expiresIn: '7d',
+    expiresIn: process.env.JWT_EXPIRES_IN || defaults.jwtExpiresIn,
   },
 } as const;
 
