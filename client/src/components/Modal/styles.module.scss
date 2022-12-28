@@ -1,7 +1,7 @@
 @use '../../assets/styles/util' as u;
 
 :root {
-  --backdrop-background-color: hsl(157deg 28% 34% / 40%);
+  --backdrop-background-color: hsl(var(--color-green-10-hsl) / 25%);
 }
 
 [data-theme='light'] {
@@ -16,29 +16,31 @@
   position: fixed;
   inset: 0;
   z-index: 100;
+  display: grid;
+  justify-items: center;
+  align-items: start;
   background-color: var(--backdrop-background-color);
   backdrop-filter: blur(u.rem(1));
 }
 
 .modal {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: u.rem(40) 1fr;
-  gap: u.rem(24);
-  width: min(90vw, u.rem(600));
-  max-height: 75vh;
-  overflow: auto;
-  margin-inline: auto;
-  margin-top: u.rem(100);
+  width: 96vw;
+  max-height: 96vh;
+  margin-block: 2vh;
+  overflow-y: scroll;
   border-radius: u.rem(16);
-  border: none;
-  outline: u.rem(1) solid transparent;
   background-color: var(--background-color);
   color: var(--text-color);
-  box-shadow: var(--shadow-medium);
+  box-shadow: var(--shadow-xlarge);
+
+  @include u.breakpoint-up('small') {
+    width: min(90vw, u.rem(600));
+    max-height: 90vh;
+    margin-block: 5vh;
+  }
 
   &:focus-visible {
-    outline-color: var(--color-primary);
+    outline: u.rem(1) solid var(--color-primary);
   }
 
   .panel {
@@ -53,6 +55,7 @@
     backdrop-filter: blur(u.rem(4));
     padding-left: u.rem(56);
     padding-right: u.rem(16);
+    margin-bottom: u.rem(12);
 
     .icon {
       font-size: var(--fs-900);
@@ -75,7 +78,7 @@
       outline: u.rem(1) solid transparent;
       cursor: pointer;
 
-      &:focus {
+      &:focus-visible {
         outline-color: var(--color-primary);
       }
     }
@@ -83,9 +86,9 @@
 
   .content {
     display: grid;
-    grid-template-columns: min(90%, u.rem(480));
+    grid-template-columns: 90%;
     justify-content: center;
     gap: u.rem(12);
-    padding: 0 u.rem(12) u.rem(24);
+    padding: 0 u.rem(12) u.rem(40);
   }
 }
