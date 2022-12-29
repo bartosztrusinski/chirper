@@ -140,6 +140,7 @@
   gap: u.rem(15);
   padding: u.rem(10) u.rem(20);
   background-color: var(--color-primary);
+  color: var(--color-light-80);
 
   @include u.breakpoint-up('medium') {
     padding-inline: u.rem(60);
