@@ -1,10 +1,8 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, CreateAxiosDefaults } from 'axios';
 import { getStoredUser } from '../user-storage';
 
-const BASE_URL = 'http://localhost:3000/api';
-
-const config = {
-  baseURL: BASE_URL,
+const config: CreateAxiosDefaults = {
+  baseURL: 'https://chirper-api.up.railway.app/api',
 };
 
 const requestInterceptor = (config: AxiosRequestConfig): AxiosRequestConfig => {
