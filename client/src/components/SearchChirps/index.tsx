@@ -90,10 +90,7 @@ const SearchChirps = ({ searchParams }: SearchChirpsProps) => {
     return <div>Error</div>;
   }
 
-  const chirps = data.pages.reduce(
-    (chirps: Chirp[], page) => [...chirps, ...page.data],
-    [],
-  );
+  const chirps = data.pages.flatMap((page) => page.data);
 
   return (
     <section>
