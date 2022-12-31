@@ -1,9 +1,9 @@
 import LogInForm from '../LogInForm';
 import Modal from '../Modal';
 import RegisterForm from '../RegisterForm';
-import ReplyPrompt from '../Prompt/ReplyPrompt';
-import LikePrompt from '../Prompt/LikePrompt';
-import FollowPrompt from '../Prompt/FollowPrompt';
+import LikePromptModal from '../Prompt/LikePromptModal';
+import FollowPromptModal from '../Prompt/FollowPromptModal';
+import ReplyPromptModal from '../Prompt/ReplyPromptModal';
 import { createContext, useEffect, useState } from 'react';
 import {
   Outlet,
@@ -131,29 +131,23 @@ const UnauthenticatedApp = () => {
 
         <RegisterForm isOpen={isSignUpOpen} onRequestClose={closeDialog} />
 
-        <Modal
+        <ReplyPromptModal
           isOpen={isReplyPromptOpen}
           onRequestClose={() => setIsReplyPromptOpen(false)}
-          title=' '
-        >
-          <ReplyPrompt username={promptUsername} />
-        </Modal>
+          username={promptUsername}
+        />
 
-        <Modal
+        <LikePromptModal
           isOpen={isLikePromptOpen}
           onRequestClose={() => setIsLikePromptOpen(false)}
-          title=' '
-        >
-          <LikePrompt username={promptUsername} />
-        </Modal>
+          username={promptUsername}
+        />
 
-        <Modal
+        <FollowPromptModal
           isOpen={isFollowPromptOpen}
           onRequestClose={() => setIsFollowPromptOpen(false)}
-          title=' '
-        >
-          <FollowPrompt username={promptUsername} />
-        </Modal>
+          username={promptUsername}
+        />
       </PromptContext.Provider>
     </>
   );
