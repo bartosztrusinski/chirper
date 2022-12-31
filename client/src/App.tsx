@@ -11,7 +11,7 @@ import UserLikedChirps from './components/UserChirps/liked';
 import useUser from './hooks/useUser';
 import AuthenticatedApp from './components/AuthenticatedApp';
 import UnauthenticatedApp from './components/UnauthenticatedApp';
-import { createContext } from 'react';
+import { createContext, lazy } from 'react';
 import useDarkMode from './hooks/useDarkMode';
 import Toaster from './components/Toaster';
 import {
@@ -21,7 +21,6 @@ import {
   Outlet,
   Navigate,
 } from '@tanstack/react-location';
-import { ReactLocationDevtools } from '@tanstack/react-location-devtools';
 
 const location = new ReactLocation();
 const routes: Route[] = [
@@ -112,6 +111,15 @@ interface ThemeContext {
 }
 
 const ThemeContext = createContext<ThemeContext | null>(null);
+
+const ReactLocationDevtools =
+  process.env.NODE_ENV === 'production'
+    ? () => null
+    : lazy(() =>
+        import('@tanstack/react-location-devtools').then((res) => ({
+          default: res.ReactLocationDevtools,
+        })),
+      );
 
 const App = () => {
   const { user } = useUser();
