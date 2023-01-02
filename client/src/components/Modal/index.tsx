@@ -1,78 +1,66 @@
 import styles from './styles.module.scss';
 import ReactModal from 'react-modal';
-// import useLockScroll from '../../hooks/useLockScroll';
-import { RiCloseFill as CloseIcon } from '@react-icons/all-files/ri/RiCloseFill';
+import useLockScroll from '../../hooks/useLockScroll';
+import { IoMdClose as CloseIcon } from '@react-icons/all-files/io/IoMdClose';
 import { RiTwitterLine as ChirperIcon } from '@react-icons/all-files/ri/RiTwitterLine';
-// import { useEffect, useRef } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 
 interface ModalProps extends ReactModal.Props {
-  title?: string;
+  header?: ReactNode;
   hasCloseButton?: boolean;
   contentClassName?: string;
 }
 
 const Modal = ({
-  title,
+  header,
   hasCloseButton = true,
   children,
   onAfterOpen,
-  onAfterClose,
   onRequestClose,
   className,
   contentClassName,
   ...restProps
 }: ModalProps) => {
-  // const { lockScroll, clearLocks, unlockScroll } = useLockScroll();
-  // const contentRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const { lockScroll, unlockScroll } = useLockScroll();
+
   const modalClasses = [className, styles.modal].filter(Boolean).join(' ');
   const contentClasses = [contentClassName, styles.content]
     .filter(Boolean)
     .join(' ');
 
-  // useEffect(() => {
-  //   return () => clearLocks();
-  // });
+  useEffect(() => {
+    if (contentRef.current && restProps.isOpen) {
+      lockScroll(contentRef.current);
+    }
+
+    return () => {
+      if (contentRef.current) {
+        unlockScroll(contentRef.current);
+      }
+    };
+  });
 
   return (
     <ReactModal
-      onRequestClose={onRequestClose}
-      onAfterOpen={() => {
-        const scrollbarWidth = window.innerWidth - document.body.offsetWidth;
-        document.body.style.marginRight = `${scrollbarWidth}px`;
-        document.body.style.overflowY = 'hidden';
-        onAfterOpen?.();
-      }}
-      onAfterClose={() => {
-        document.body.style.overflowY = 'unset';
-        document.body.style.marginRight = 'unset';
-        onAfterClose?.();
-      }}
-      // contentRef={(element) => (contentRef.current = element)}
-      // onAfterClose={onAfterClose}
-      // onAfterOpen={() => {
-      //   lockScroll(contentRef.current as HTMLDivElement);
-      //   onAfterOpen?.();
-      // }}
-      // onRequestClose={(e) => {
-      //   unlockScroll(contentRef.current as HTMLDivElement);
-      //   onRequestClose?.(e);
-      // }}
       {...restProps}
+      contentRef={(element) => (contentRef.current = element)}
       className={modalClasses}
       overlayClassName={styles.overlay}
-      aria={{ labelledby: `${title ?? 'Chirper'} Modal` }}
+      aria={{ labelledby: 'Chirper Modal' }}
+      onRequestClose={onRequestClose}
+      onAfterOpen={() => {
+        lockScroll(contentRef.current as HTMLDivElement);
+        onAfterOpen?.();
+      }}
     >
-      <div className={styles.panel}>
-        {title ? (
-          <div className={styles.title}>{title}</div>
-        ) : (
-          <ChirperIcon className={styles.icon} />
-        )}
+      <div className={styles.topBar}>
+        {header ?? <ChirperIcon className={styles.icon} />}
         {hasCloseButton && (
           <button
             type='button'
-            onClick={onRequestClose}
             className={styles.closeButton}
+            onClick={onRequestClose}
           >
             <CloseIcon />
           </button>
