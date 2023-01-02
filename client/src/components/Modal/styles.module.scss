@@ -5,11 +5,11 @@
 }
 
 [data-theme='light'] {
-  --panel-background-color: hsl(var(--color-light-80-hsl) / 85%);
+  --bar-background-color: hsl(var(--color-light-80-hsl) / 85%);
 }
 
 [data-theme='dark'] {
-  --panel-background-color: hsl(var(--color-dark-10-hsl) / 85%);
+  --bar-background-color: hsl(var(--color-dark-10-hsl) / 85%);
 }
 
 .overlay {
@@ -24,71 +24,75 @@
 }
 
 .modal {
-  width: 96vw;
-  max-height: 96vh;
-  margin-block: 2vh;
-  overflow-y: scroll;
+  width: 96%;
+  max-width: u.rem(400);
+  align-self: center;
+  max-height: 96%;
+  overflow-y: auto;
   border-radius: u.rem(16);
   background-color: var(--background-color);
   color: var(--text-color);
   box-shadow: var(--shadow-xlarge);
+  overscroll-behavior: none;
 
   @include u.breakpoint-up('small') {
-    width: min(90vw, u.rem(600));
-    max-height: 90vh;
-    margin-block: 5vh;
+    max-width: u.rem(480);
+    max-height: 90%;
   }
 
-  &:focus-visible {
-    outline: u.rem(1) solid var(--color-primary);
+  &:focus {
+    outline: none;
   }
 
-  .panel {
+  .topBar {
     position: sticky;
     top: 0;
     z-index: 101;
-    height: u.rem(56);
+    min-height: u.rem(50);
     display: grid;
-    grid-template-columns: 1fr u.rem(40);
     place-items: center;
-    background-color: var(--panel-background-color);
+    background-color: var(--bar-background-color);
     backdrop-filter: blur(u.rem(4));
-    padding-left: u.rem(56);
-    padding-right: u.rem(16);
-    margin-bottom: u.rem(12);
+    margin-inline: u.rem(16);
 
-    .icon {
-      font-size: var(--fs-900);
-      color: var(--color-primary);
+    @include u.breakpoint-up('medium') {
+      min-height: u.rem(60);
     }
 
-    .title {
-      font-size: var(--fs-600);
-      font-weight: var(--fw-bold);
+    .icon {
+      font-size: var(--fs-800);
+      color: var(--color-primary);
+
+      @include u.breakpoint-up('small') {
+        font-size: var(--fs-900);
+      }
     }
 
     .closeButton {
-      place-self: center;
+      position: absolute;
+      left: 0;
       background-color: transparent;
       color: inherit;
       font-size: var(--fs-500);
-      padding: u.rem(8);
+      padding: u.rem(2);
       border-radius: u.rem(4);
       border: none;
-      outline: u.rem(1) solid transparent;
       cursor: pointer;
-
-      &:focus-visible {
-        outline-color: var(--color-primary);
-      }
     }
   }
 
   .content {
     display: grid;
-    grid-template-columns: 90%;
-    justify-content: center;
+    grid-auto-flow: row;
     gap: u.rem(12);
-    padding: 0 u.rem(12) u.rem(40);
+    padding: 0 u.rem(24) u.rem(24);
+
+    @include u.breakpoint-up('small') {
+      padding: 0 u.rem(30) u.rem(30);
+    }
+
+    @include u.breakpoint-up('medium') {
+      padding: 0 u.rem(36) u.rem(36);
+    }
   }
 }
