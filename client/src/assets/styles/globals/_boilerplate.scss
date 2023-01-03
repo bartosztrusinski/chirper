@@ -20,6 +20,11 @@ ol[role='list'] {
   list-style: none;
 }
 
+/* Prevent font scaling when changing orientation */
+html {
+  text-size-adjust: 100%;
+}
+
 /* Set core root defaults */
 html:focus-within {
   scroll-behavior: smooth;
@@ -29,6 +34,11 @@ html:focus-within {
 body {
   text-rendering: optimizeSpeed;
   line-height: 1.4;
+}
+
+input,
+textarea {
+  caret-color: var(--text-muted-color);
 }
 
 button,
