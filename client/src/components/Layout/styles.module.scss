@@ -1,5 +1,14 @@
 @use '../../assets/styles/util' as u;
 
+:root {
+  --viewport-height: 100%;
+  --bottom-panel-height: #{u.rem(67)};
+
+  @include u.breakpoint-up('medium') {
+    --bottom-panel-height: #{u.rem(72)};
+  }
+}
+
 [data-theme='light'] {
   --bottom-panel-background-color: hsl(var(--color-light-80-hsl) / 85%);
 }
@@ -10,11 +19,15 @@
 
 .container {
   min-height: 100vh;
+  min-height: var(--viewport-height);
+  min-height: 100dvh;
   display: grid;
   grid-template-rows: auto 1fr auto;
+  padding: 0 env(safe-area-inset-right) 0 env(safe-area-inset-left);
 }
 
 .grid {
+  overscroll-behavior: contain;
   display: grid;
   grid-template-columns: 1fr;
 
@@ -46,7 +59,7 @@
 }
 
 .main {
-  padding-bottom: u.rem(150);
+  padding-bottom: u.rem(100);
 
   @include u.breakpoint-up('small') {
     border-left: u.rem(1) solid var(--border-color);
@@ -59,18 +72,20 @@
 
 .sidebar {
   position: sticky;
-  top: u.rem(69);
-  height: calc(100vh - u.rem(69));
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  height: calc(var(--viewport-height) - var(--header-height));
+  height: calc(100dvh - var(--header-height));
+  overscroll-behavior: contain;
+  overflow-y: auto;
   padding: u.rem(12) u.rem(20);
-  overflow: auto;
-
-  @include u.breakpoint-up('medium') {
-    top: u.rem(73);
-    height: calc(100vh - u.rem(73));
-  }
 
   @include u.breakpoint-up('xlarge') {
     padding-top: u.rem(20);
+  }
+
+  &.withPanel {
+    padding-bottom: calc(var(--bottom-panel-height) + u.rem(12));
   }
 
   &.nav {
@@ -101,40 +116,11 @@
   }
 }
 
-.withPanel {
-  padding-bottom: u.rem(78);
-
-  @include u.breakpoint-up('medium') {
-    padding-bottom: u.rem(84);
-  }
-}
-
-.bottomPanel {
-  position: sticky;
-  inset: auto 0 0;
-  z-index: 3;
-  display: grid;
-  justify-content: center;
-  grid-template-columns: minmax(auto, u.rem(360));
-  background-color: var(--bottom-panel-background-color);
-  backdrop-filter: blur(u.rem(4));
-  box-shadow: var(--shadow-inverse);
-  padding: u.rem(8) u.rem(10);
-  border-top: u.rem(1) solid var(--border-color);
-
-  .cornerButton {
-    position: absolute;
-    bottom: u.rem(71);
-    right: u.rem(10);
-    padding: u.rem(12);
-    font-size: var(--fs-600);
-  }
-}
-
 .authPanel {
   position: fixed;
   inset: auto 0 0;
   z-index: 3;
+  height: var(--bottom-panel-height);
   display: grid;
   grid-auto-flow: column;
   gap: u.rem(15);
@@ -163,4 +149,12 @@
   .subText {
     font-size: var(--fs-200);
   }
+}
+
+.createChirpButton {
+  position: fixed;
+  bottom: u.rem(12);
+  right: u.rem(12);
+  font-size: var(--fs-600);
+  padding: u.rem(12);
 }
