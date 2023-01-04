@@ -1,10 +1,9 @@
-import { ReactNode, useContext } from 'react';
+import { ReactNode, useContext, useEffect } from 'react';
 import styles from './styles.module.scss';
 import Header from '../Header';
 import useMediaQuery from '../../hooks/useMediaQuery';
 import UserPanel from '../UserPanel';
 import Sidebar from './Sidebar';
-import SearchForm from '../SearchForm';
 import AuthenticatedNav from '../Nav/AuthenticatedNav';
 import UnauthenticatedNav from '../Nav/UnauthenticatedNav';
 import useUser from '../../hooks/useUser';
@@ -16,11 +15,11 @@ import { PromptContext } from '../UnauthenticatedApp';
 import { CreateChirpContext } from '../AuthenticatedApp';
 import { toast } from 'react-hot-toast';
 
-interface LayountProps {
+interface LayoutProps {
   children: ReactNode;
 }
 
-const Layout = ({ children }: LayountProps) => {
+const Layout = ({ children }: LayoutProps) => {
   const promptContext = useContext(PromptContext);
   const createChirpContext = useContext(CreateChirpContext);
   const { user } = useUser();
@@ -35,9 +34,27 @@ const Layout = ({ children }: LayountProps) => {
   const isLargeUp = useMediaQuery(`(min-width: ${largeBreakpoint}px)`);
   const isXLargeUp = useMediaQuery(`(min-width: ${xLargeBreakpoint}px)`);
 
+  useEffect(() => {
+    const setViewportHeight = () => {
+      document.documentElement.style.setProperty(
+        '--viewport-height',
+        `${window.visualViewport?.height}px`,
+      );
+    };
+
+    setViewportHeight();
+
+    window.visualViewport?.addEventListener('resize', setViewportHeight);
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', setViewportHeight);
+    };
+  }, []);
+
   return (
     <div className={styles.container}>
       <Header />
+
       <div className={styles.grid}>
         {isSmallUp && (
           <Sidebar className={`${styles.nav} ${!user && styles.withPanel}`}>
@@ -74,46 +91,44 @@ const Layout = ({ children }: LayountProps) => {
             )}
           </Sidebar>
         )}
+
         <main className={styles.main}>{children}</main>
+
         {isLargeUp && (
           <Sidebar className={`${!user && styles.withPanel}`}>
             <UserPanel />
           </Sidebar>
         )}
       </div>
-      {!isSmallUp ? (
-        <div className={styles.bottomPanel}>
-          <SearchForm />
-          {user && (
-            <Button
-              className={styles.cornerButton}
-              onClick={() => createChirpContext?.openCreateChirpModal()}
-            >
-              <CreateChirpIcon className={styles.icon} />
-            </Button>
-          )}
-        </div>
-      ) : (
-        !user && (
-          <div className={styles.authPanel}>
-            {isMediumUp && (
-              <div>
-                <div className={styles.mainText}>
-                  Don&apos;t miss what&apos;s happening
-                </div>
-                <div className={styles.subText}>
-                  People on Chirper are the first to know
-                </div>
+
+      {!isSmallUp && user && (
+        <Button
+          className={styles.createChirpButton}
+          onClick={() => createChirpContext?.openCreateChirpModal()}
+        >
+          <CreateChirpIcon className={styles.icon} />
+        </Button>
+      )}
+
+      {!user && (
+        <div className={styles.authPanel}>
+          {isMediumUp && (
+            <div>
+              <div className={styles.mainText}>
+                Don&apos;t miss what&apos;s happening
               </div>
-            )}
-            <Button variant='light' onClick={promptContext?.openLogIn}>
-              Log in
-            </Button>
-            <Button variant='light' onClick={promptContext?.openSignUp}>
-              Sign up
-            </Button>
-          </div>
-        )
+              <div className={styles.subText}>
+                People on Chirper are the first to know
+              </div>
+            </div>
+          )}
+          <Button variant='light' onClick={promptContext?.openLogIn}>
+            Log in
+          </Button>
+          <Button variant='light' onClick={promptContext?.openSignUp}>
+            Sign up
+          </Button>
+        </div>
       )}
     </div>
   );
