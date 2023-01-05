@@ -7,6 +7,12 @@ $breakpoints: (
   'xlarge': f.em(1150),
 );
 
+:root {
+  @each $key_name, $value in $breakpoints {
+    --breakpoint-#{$key_name}: #{$value};
+  }
+}
+
 @mixin breakpoint-up($size) {
   @media (min-width: map-get($breakpoints, $size)) {
     @content;
