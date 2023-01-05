@@ -1,9 +1,12 @@
 import styles from './styles.module.scss';
 import ReactModal from 'react-modal';
-import useLockScroll from '../../hooks/useLockScroll';
 import { IoMdClose as CloseIcon } from '@react-icons/all-files/io/IoMdClose';
 import { RiTwitterLine as ChirperIcon } from '@react-icons/all-files/ri/RiTwitterLine';
 import { ReactNode, useEffect, useRef } from 'react';
+import {
+  clearAllBodyScrollLocks,
+  disableBodyScroll,
+} from '../../utils/lockBodyScroll';
 
 interface ModalProps extends ReactModal.Props {
   header?: ReactNode;
@@ -15,6 +18,7 @@ const Modal = ({
   header,
   hasCloseButton = true,
   children,
+  isOpen,
   onAfterOpen,
   onRequestClose,
   className,
@@ -22,7 +26,6 @@ const Modal = ({
   ...restProps
 }: ModalProps) => {
   const contentRef = useRef<HTMLDivElement | null>(null);
-  const { lockScroll, unlockScroll } = useLockScroll();
 
   const modalClasses = [className, styles.modal].filter(Boolean).join(' ');
   const contentClasses = [contentClassName, styles.content]
@@ -30,29 +33,22 @@ const Modal = ({
     .join(' ');
 
   useEffect(() => {
-    if (contentRef.current && restProps.isOpen) {
-      lockScroll(contentRef.current);
-    }
-
-    return () => {
-      if (contentRef.current) {
-        unlockScroll(contentRef.current);
-      }
-    };
-  });
+    return () => clearAllBodyScrollLocks();
+  }, [isOpen]);
 
   return (
     <ReactModal
       {...restProps}
       contentRef={(element) => (contentRef.current = element)}
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      onAfterOpen={() => {
+        disableBodyScroll(contentRef.current, { reserveScrollBarGap: true });
+        onAfterOpen?.();
+      }}
       className={modalClasses}
       overlayClassName={styles.overlay}
       aria={{ labelledby: 'Chirper Modal' }}
-      onRequestClose={onRequestClose}
-      onAfterOpen={() => {
-        lockScroll(contentRef.current as HTMLDivElement);
-        onAfterOpen?.();
-      }}
     >
       <div className={styles.topBar}>
         {header ?? <ChirperIcon className={styles.icon} />}
