@@ -16,6 +16,7 @@
   position: fixed;
   inset: 0;
   z-index: 100;
+  touch-action: none;
   display: grid;
   justify-items: center;
   align-items: start;
@@ -26,18 +27,22 @@
 .modal {
   width: 96%;
   max-width: u.rem(400);
-  align-self: center;
   max-height: 96%;
   overflow-y: auto;
-  border-radius: u.rem(16);
+  overscroll-behavior: contain;
+  align-self: center;
   background-color: var(--background-color);
   color: var(--text-color);
+  border-radius: u.rem(16);
   box-shadow: var(--shadow-xlarge);
-  overscroll-behavior: none;
 
   @include u.breakpoint-up('small') {
-    max-width: u.rem(480);
+    max-width: u.rem(400);
     max-height: 90%;
+  }
+
+  @include u.breakpoint-up('medium') {
+    max-width: u.rem(480);
   }
 
   &:focus {
