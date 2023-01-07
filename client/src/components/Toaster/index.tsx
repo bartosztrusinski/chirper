@@ -12,11 +12,11 @@ const Toaster = (props: ToasterProps) => {
 
   return (
     <ReactHotToaster
-      position='bottom-center'
       containerClassName={`${styles.container} ${user ? '' : styles.space}`}
       toastOptions={{
         duration: 3000,
         success: {
+          position: 'bottom-center',
           className: styles.success,
           iconTheme: {
             primary: 'var(--toast-color)',
@@ -24,6 +24,7 @@ const Toaster = (props: ToasterProps) => {
           },
         },
         error: {
+          position: 'top-center',
           className: styles.error,
           iconTheme: {
             primary: 'var(--toast-color)',
