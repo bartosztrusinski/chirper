@@ -37,38 +37,39 @@ const PasswordForm = ({ formData, onSubmit }: PasswordFormProps) => {
 
   return (
     <FormWrapper onSubmit={handleSubmit(onSubmit)} isInvalid={!isValid}>
-      <h3 className={styles.heading}>You&apos;ll need a password</h3>
+      <h1 className={styles.heading}>You&apos;ll need a password</h1>
+      <div className={styles.inputGroup}>
+        <div>
+          <PasswordInput
+            autoFocus
+            className={errors.password && styles.invalidInput}
+            placeholderClassName={errors.password && styles.placeholder}
+            aria-invalid={errors.password ? 'true' : 'false'}
+            {...register('password')}
+          />
 
-      <div>
-        <PasswordInput
-          autoFocus
-          className={errors.password && styles.invalidInput}
-          placeholderClassName={errors.password && styles.placeholder}
-          aria-invalid={errors.password ? 'true' : 'false'}
-          {...register('password')}
-        />
+          {errors.password && (
+            <p role='alert' className={styles.errorMessage}>
+              {errors.password?.message}
+            </p>
+          )}
+        </div>
 
-        {errors.password && (
-          <p role='alert' className={styles.errorMessage}>
-            {errors.password?.message}
-          </p>
-        )}
-      </div>
+        <div>
+          <PasswordInput
+            placeholder='Confirm password'
+            className={errors.passwordConfirm && styles.invalidInput}
+            placeholderClassName={errors.passwordConfirm && styles.placeholder}
+            aria-invalid={errors.passwordConfirm ? 'true' : 'false'}
+            {...register('passwordConfirm')}
+          />
 
-      <div>
-        <PasswordInput
-          placeholder='Confirm password'
-          className={errors.passwordConfirm && styles.invalidInput}
-          placeholderClassName={errors.passwordConfirm && styles.placeholder}
-          aria-invalid={errors.passwordConfirm ? 'true' : 'false'}
-          {...register('passwordConfirm')}
-        />
-
-        {errors.passwordConfirm && (
-          <p role='alert' className={styles.errorMessage}>
-            {errors.passwordConfirm?.message}
-          </p>
-        )}
+          {errors.passwordConfirm && (
+            <p role='alert' className={styles.errorMessage}>
+              {errors.passwordConfirm?.message}
+            </p>
+          )}
+        </div>
       </div>
     </FormWrapper>
   );

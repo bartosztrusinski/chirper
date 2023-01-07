@@ -35,6 +35,10 @@ const EmailForm = ({ formData, onSubmit }: EmailFormProps) => {
   });
 
   const onEmailSubmit = async (inputs: Inputs) => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
     try {
       const isEmailTaken = await UserService.isEmailTaken(inputs.email);
 
@@ -53,39 +57,42 @@ const EmailForm = ({ formData, onSubmit }: EmailFormProps) => {
 
   return (
     <FormWrapper onSubmit={handleSubmit(onEmailSubmit)} isInvalid={!isValid}>
-      <h3 className={styles.heading}>Create your account</h3>
+      <h1 className={styles.heading}>Create your account</h1>
 
-      <div>
-        <Input
-          autoFocus
-          placeholder='Email'
-          className={errors.email && styles.invalidInput}
-          placeholderClassName={errors.email && styles.placeholder}
-          aria-invalid={errors.email ? 'true' : 'false'}
-          {...register('email')}
-        />
+      <div className={styles.inputGroup}>
+        <div>
+          <Input
+            autoFocus
+            type='email'
+            placeholder='Email'
+            className={errors.email && styles.invalidInput}
+            placeholderClassName={errors.email && styles.placeholder}
+            aria-invalid={errors.email ? 'true' : 'false'}
+            {...register('email')}
+          />
 
-        {errors.email && (
-          <p role='alert' className={styles.errorMessage}>
-            {errors.email?.message}
-          </p>
-        )}
-      </div>
+          {errors.email && (
+            <p role='alert' className={styles.errorMessage}>
+              {errors.email?.message}
+            </p>
+          )}
+        </div>
 
-      <div>
-        <Input
-          placeholder='Name'
-          className={errors.name && styles.invalidInput}
-          placeholderClassName={errors.name && styles.placeholder}
-          aria-invalid={errors.name ? 'true' : 'false'}
-          {...register('name')}
-        />
+        <div>
+          <Input
+            placeholder='Name'
+            className={errors.name && styles.invalidInput}
+            placeholderClassName={errors.name && styles.placeholder}
+            aria-invalid={errors.name ? 'true' : 'false'}
+            {...register('name')}
+          />
 
-        {errors.name && (
-          <p role='alert' className={styles.errorMessage}>
-            {errors.name?.message}
-          </p>
-        )}
+          {errors.name && (
+            <p role='alert' className={styles.errorMessage}>
+              {errors.name?.message}
+            </p>
+          )}
+        </div>
       </div>
     </FormWrapper>
   );

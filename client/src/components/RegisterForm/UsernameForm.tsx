@@ -34,6 +34,10 @@ const UsernameForm = ({ formData, onSubmit }: UsernameFormProps) => {
   });
 
   const onUsernameSubmit = async (inputs: Inputs) => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
     try {
       const isUsernameTaken = await UserService.isUsernameTaken(
         inputs.username,
@@ -55,27 +59,28 @@ const UsernameForm = ({ formData, onSubmit }: UsernameFormProps) => {
   return (
     <FormWrapper onSubmit={handleSubmit(onUsernameSubmit)} isInvalid={!isValid}>
       <div>
-        <h3 className={styles.heading}>What should we call you?</h3>
+        <h1 className={styles.heading}>What should we call you?</h1>
         <p className={styles.description}>
           Your @username is unique. You can always change it later
         </p>
       </div>
+      <div className={styles.inputGroup}>
+        <div>
+          <Input
+            autoFocus
+            placeholder='Username'
+            className={errors.username && styles.invalidInput}
+            placeholderClassName={errors.username && styles.placeholder}
+            aria-invalid={errors.username ? 'true' : 'false'}
+            {...register('username')}
+          />
 
-      <div>
-        <Input
-          autoFocus
-          placeholder='Username'
-          className={errors.username && styles.invalidInput}
-          placeholderClassName={errors.username && styles.placeholder}
-          aria-invalid={errors.username ? 'true' : 'false'}
-          {...register('username')}
-        />
-
-        {errors.username && (
-          <p role='alert' className={styles.errorMessage}>
-            {errors.username?.message}
-          </p>
-        )}
+          {errors.username && (
+            <p role='alert' className={styles.errorMessage}>
+              {errors.username?.message}
+            </p>
+          )}
+        </div>
       </div>
     </FormWrapper>
   );
