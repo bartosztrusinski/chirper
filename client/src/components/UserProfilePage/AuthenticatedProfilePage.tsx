@@ -231,11 +231,19 @@ const AuthenticatedProfilePage = () => {
 
       <EditProfileModal isOpen={isEditModalOpen} onRequestClose={closeDialog} />
 
-      <Modal isOpen={isFollowedModalOpen} onRequestClose={closeDialog}>
+      <Modal
+        isOpen={isFollowedModalOpen}
+        onRequestClose={closeDialog}
+        header={<h1 className={styles.followModalHeading}>Followed</h1>}
+      >
         <FollowedUsers username={user.username} />
       </Modal>
 
-      <Modal isOpen={isFollowingModalOpen} onRequestClose={closeDialog}>
+      <Modal
+        isOpen={isFollowingModalOpen}
+        onRequestClose={closeDialog}
+        header={<h1 className={styles.followModalHeading}>Following</h1>}
+      >
         <FollowingUsers username={user.username} />
       </Modal>
 
