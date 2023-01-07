@@ -3,9 +3,10 @@ import defaultAvatar from '../../assets/images/default_avatar.png';
 import Chirp from '../../interfaces/Chirp';
 import { forwardRef, useContext } from 'react';
 import { Link, useNavigate } from '@tanstack/react-location';
-import { FaRegCommentAlt } from '@react-icons/all-files/fa/FaRegCommentAlt';
-import { FaRegHeart } from '@react-icons/all-files/fa/FaRegHeart';
-import { FiShare } from '@react-icons/all-files/fi/FiShare';
+import { BiComment as ReplyIcon } from '@react-icons/all-files/bi/BiComment';
+import { RiHeart2Line as LikeIconOutline } from '@react-icons/all-files/ri/RiHeart2Line';
+import { RiHeart2Fill as LikeIconFill } from '@react-icons/all-files/ri/RiHeart2Fill';
+import { RiShareLine as ShareIcon } from '@react-icons/all-files/ri/RiShareLine';
 import { CreateChirpContext } from '../AuthenticatedApp';
 import { PromptContext } from '../UnauthenticatedApp';
 import useUser from '../../hooks/useUser';
@@ -61,18 +62,20 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
     toast.success('Copied to clipboard');
   };
 
+  const LikeIcon = chirp.isLiked ? LikeIconFill : LikeIconOutline;
+
   return (
     <article ref={ref}>
       <div
         tabIndex={0}
         role='button'
+        className={styles.chirp}
         onClick={() => navigate({ to: `/chirps/${chirp._id}` })}
         onKeyUp={(e) => {
           if (e.key === 'Enter') {
             navigate({ to: `/chirps/${chirp._id}` });
           }
         }}
-        className={styles.chirp}
       >
         <Link
           to={`/users/${chirp.author.username}`}
@@ -122,7 +125,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
                 onKeyUp={(e) => e.stopPropagation()}
               >
                 <button className={styles.iconBackground}>
-                  <FaRegCommentAlt className={styles.icon} />
+                  <ReplyIcon className={styles.icon} />
                 </button>
                 <div>{formatCount(chirp.replies.length)}</div>
               </div>
@@ -135,7 +138,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
                 onKeyUp={(e) => e.stopPropagation()}
               >
                 <button className={styles.iconBackground}>
-                  <FaRegHeart className={styles.icon} />
+                  <LikeIcon className={styles.icon} />
                 </button>
                 <div>{formatCount(chirp.metrics.likeCount)}</div>
               </div>
@@ -148,7 +151,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
                 onKeyUp={(e) => e.stopPropagation()}
               >
                 <button className={styles.iconBackground}>
-                  <FiShare className={styles.icon} />
+                  <ShareIcon className={styles.icon} />
                 </button>
               </div>
             </div>
