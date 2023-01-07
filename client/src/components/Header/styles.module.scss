@@ -1,7 +1,11 @@
 @use '../../assets/styles/util/' as u;
 
 :root {
-  --logo-text-color: var(--color-primary);
+  --header-height: #{u.rem(69)};
+
+  @include u.breakpoint-up('medium') {
+    --header-height: #{u.rem(73)};
+  }
 }
 
 [data-theme='light'] {
@@ -16,19 +20,20 @@
   position: sticky;
   inset: 0 0 auto;
   z-index: 3;
+  min-height: var(--header-height);
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: u.rem(12);
   background-color: var(--header-background-color);
   backdrop-filter: blur(u.rem(4));
   box-shadow: var(--shadow-small);
-  padding: u.rem(8) u.rem(12);
+  padding-inline: u.rem(12);
   border-bottom: u.rem(1) solid var(--border-color);
 
   @include u.breakpoint-up('small') {
     grid-template-columns: 1fr 3fr 1fr;
-    padding: u.rem(12) u.rem(16);
+    padding-inline: u.rem(16);
   }
 
   @include u.breakpoint-up('medium') {
@@ -49,7 +54,7 @@
     grid-template-columns: repeat(2, auto);
     gap: u.rem(4);
     justify-self: start;
-    color: var(--logo-text-color);
+    color: var(--color-primary);
 
     .name {
       order: 2;
@@ -95,6 +100,7 @@
     cursor: pointer;
 
     .icon {
+      color: var(--text-color);
       font-size: var(--fs-600);
       margin: u.rem(6);
     }
@@ -102,6 +108,15 @@
     .image {
       width: u.rem(40);
       border-radius: 50%;
+    }
+
+    &:hover,
+    &:active {
+      transform: scale(1.1);
+
+      .icon {
+        color: var(--color-primary);
+      }
     }
   }
 }
