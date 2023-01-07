@@ -12,10 +12,12 @@ const CreateChirpModal = (props: CreateChirpModalProps) => {
 
   return (
     <Modal
-      title={
-        replyTo ? `Replying to ${replyTo.author.profile.name}` : 'Create Chirp'
-      }
       {...props}
+      header={
+        <h1 className={styles.heading}>
+          {replyTo ? 'Reply to' : 'Create Chirp'}
+        </h1>
+      }
     >
       {replyTo && (
         <>
