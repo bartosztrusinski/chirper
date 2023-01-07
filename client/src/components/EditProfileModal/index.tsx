@@ -53,6 +53,10 @@ const EditProfileModal = (props: EditProfileModalProps) => {
   });
 
   const onSubmit = (inputs: Inputs) => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
     const filteredInputs = filterObject(
       inputs,
       (input) => input.length > 0,
@@ -71,7 +75,11 @@ const EditProfileModal = (props: EditProfileModalProps) => {
   };
 
   return (
-    <Modal {...props} title='Edit profile' onAfterClose={reset}>
+    <Modal
+      {...props}
+      header={<h1 className={styles.heading}>Edit profile</h1>}
+      onAfterClose={reset}
+    >
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
         <div>
           <Input
