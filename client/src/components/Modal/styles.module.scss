@@ -90,14 +90,14 @@
     display: grid;
     grid-auto-flow: row;
     gap: u.rem(12);
-    padding: 0 u.rem(24) u.rem(24);
+    padding: u.rem(5) u.rem(24) u.rem(24);
 
     @include u.breakpoint-up('small') {
-      padding: 0 u.rem(30) u.rem(30);
+      padding: u.rem(5) u.rem(30) u.rem(30);
     }
 
     @include u.breakpoint-up('medium') {
-      padding: 0 u.rem(36) u.rem(36);
+      padding: u.rem(5) u.rem(36) u.rem(36);
     }
   }
 }

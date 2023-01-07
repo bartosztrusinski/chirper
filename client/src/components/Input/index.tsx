@@ -33,6 +33,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         type='text'
         className={styles.input}
         placeholder=' '
+        enterKeyHint='done'
         {...restProps}
       />
       <div className={placeholderClasses}>{placeholder}</div>
@@ -40,10 +41,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         <button
           type='button'
           className={styles.inputButton}
-          onClick={(e) => {
-            e.preventDefault();
-            onButtonClick?.();
-          }}
+          onClick={onButtonClick}
         >
           {button}
         </button>

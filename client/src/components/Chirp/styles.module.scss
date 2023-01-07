@@ -15,18 +15,16 @@
   grid-template-columns: auto 1fr;
   align-items: start;
   gap: u.rem(8);
-  margin: u.rem(12);
-  padding: u.rem(12) u.rem(12) u.rem(4);
   color: var(--text-color);
+  padding: u.rem(12) u.rem(12) u.rem(4);
   cursor: pointer;
 
-  &:focus-within {
+  &:focus-visible {
     background-color: var(--card-background-color-hover);
   }
 
   @include u.breakpoint-up('small') {
     gap: u.rem(12);
-    margin: u.rem(16);
     padding: u.rem(16) u.rem(16) u.rem(8);
   }
 }
@@ -79,6 +77,7 @@
 }
 
 .content {
+  text-align: initial;
   padding-bottom: u.rem(8);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -107,7 +106,7 @@
     .iconBackground {
       background-color: inherit;
       color: inherit;
-      padding: u.rem(10);
+      padding: u.rem(8);
       border-radius: 50%;
       border: none;
       cursor: pointer;
@@ -118,7 +117,7 @@
       }
 
       .icon {
-        font-size: var(--fs-300);
+        font-size: var(--fs-400);
       }
     }
   }

@@ -4,7 +4,7 @@ import { IoMdClose as CloseIcon } from '@react-icons/all-files/io/IoMdClose';
 import { RiTwitterLine as ChirperIcon } from '@react-icons/all-files/ri/RiTwitterLine';
 import { ReactNode, useEffect, useRef } from 'react';
 import {
-  clearAllBodyScrollLocks,
+  enableBodyScroll,
   disableBodyScroll,
 } from '../../utils/lockBodyScroll';
 
@@ -20,6 +20,7 @@ const Modal = ({
   children,
   isOpen,
   onAfterOpen,
+  onAfterClose,
   onRequestClose,
   className,
   contentClassName,
@@ -33,7 +34,7 @@ const Modal = ({
     .join(' ');
 
   useEffect(() => {
-    return () => clearAllBodyScrollLocks();
+    return () => enableBodyScroll(contentRef.current);
   }, [isOpen]);
 
   return (
@@ -45,6 +46,10 @@ const Modal = ({
       onAfterOpen={() => {
         disableBodyScroll(contentRef.current, { reserveScrollBarGap: true });
         onAfterOpen?.();
+      }}
+      onAfterClose={() => {
+        enableBodyScroll(contentRef.current);
+        onAfterClose?.();
       }}
       className={modalClasses}
       overlayClassName={styles.overlay}

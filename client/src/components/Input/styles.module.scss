@@ -57,8 +57,9 @@
 }
 
 .inputButton {
-  aspect-ratio: 1 /1;
+  aspect-ratio: 1 / 1;
   background-color: inherit;
+  color: inherit;
   margin-right: u.rem(8);
   padding-inline: u.rem(6);
   font-size: var(--fs-400);

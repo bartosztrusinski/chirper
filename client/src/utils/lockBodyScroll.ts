@@ -1,7 +1,8 @@
-/* eslint-disable */
 // Vercel fork of body-scroll-lock package (with some fixes)
 // https://github.com/vercel/body-scroll-lock/blob/master/src/bodyScrollLock.js
 
+/* eslint-disable */
+// @ts-nocheck
 export interface BodyScrollOptions {
   reserveScrollBarGap?: boolean;
   allowTouchMove?: (el: any) => boolean;

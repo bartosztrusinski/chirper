@@ -1,15 +1,13 @@
-@import 'https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Roboto:wght@300;400;700&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Roboto:wght@300;400;500;700&display=swap';
 
 :root {
   --ff-primary: Roboto, Helvetica, Arial, sans-serif;
   --ff-secondary: Poppins, Roboto, Helvetica, Arial, sans-serif;
-  --ff-body: var(--ff-primary);
-  --ff-heading: var(--ff-primary);
   --ff-logo: var(--ff-secondary);
 }
 
 body {
-  font-family: var(--ff-body);
+  font-family: var(--ff-primary);
 }
 
 h1,
@@ -18,5 +16,5 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--ff-heading);
+  font-family: var(--ff-primary);
 }

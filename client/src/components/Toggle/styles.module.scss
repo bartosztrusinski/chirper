@@ -54,7 +54,6 @@
     border-radius: 50%;
     background-color: var(--toggle-handle-color);
     position: absolute;
-    z-index: 2;
     transform: translate(0);
     transition: transform 180ms ease-in-out;
     box-shadow: var(--shadow-medium);
@@ -79,7 +78,6 @@
       color: var(--toggle-icon-color);
       height: calc(var(--toggle-width) / 4.3);
       width: calc(var(--toggle-width) / 4.3);
-      z-index: 0;
     }
   }
 

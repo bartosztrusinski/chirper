@@ -25,11 +25,6 @@ html {
   text-size-adjust: 100%;
 }
 
-/* Set core root defaults */
-html:focus-within {
-  scroll-behavior: smooth;
-}
-
 /* Set core body defaults */
 body {
   text-rendering: optimizeSpeed;
@@ -41,6 +36,7 @@ textarea {
   caret-color: var(--text-muted-color);
 }
 
+/* Set default outline on interactive elements */
 button,
 input,
 textarea,

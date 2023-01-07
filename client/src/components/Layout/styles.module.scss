@@ -122,9 +122,9 @@
   z-index: 3;
   height: var(--bottom-panel-height);
   display: grid;
-  grid-auto-flow: column;
-  gap: u.rem(15);
-  padding: u.rem(10) u.rem(20);
+  grid-template-columns: repeat(2, 1fr);
+  gap: u.rem(12);
+  padding: u.rem(10) u.rem(25);
   background-color: var(--color-primary);
   color: var(--color-light-80);
 

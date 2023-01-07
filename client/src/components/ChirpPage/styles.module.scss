@@ -12,8 +12,8 @@
   display: grid;
   grid-auto-flow: column;
   justify-content: stretch;
-  gap: u.rem(12);
   align-items: center;
+  gap: u.rem(12);
   margin: u.rem(16) u.rem(16) 0;
   padding: u.rem(8) u.rem(12);
 }
@@ -31,7 +31,7 @@
   @include card;
 
   display: grid;
-  gap: u.rem(10);
+  gap: u.rem(5);
   padding: u.rem(12) u.rem(12) u.rem(4);
 
   @include u.breakpoint-up('small') {
@@ -70,30 +70,31 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   font-size: var(--fs-600);
-  padding-bottom: u.rem(16);
+  padding-bottom: u.rem(10);
   border-bottom: u.rem(1) solid var(--border-color);
 }
 
 .meta {
+  min-height: u.rem(33);
   display: grid;
-  grid-template-columns: 1fr;
+  grid-auto-flow: row;
   place-items: center;
   padding-inline: u.rem(4);
   color: var(--text-muted-color);
 
   @include u.breakpoint-up('medium') {
-    grid-template-columns: repeat(2, 1fr);
+    grid-auto-flow: column;
     justify-items: initial;
   }
 
   .metrics {
     display: grid;
-    grid-template-columns: repeat(2, auto);
-    justify-content: start;
+    grid-auto-flow: column;
     align-items: center;
     gap: u.rem(8);
 
     .showLikesButton {
+      justify-self: start;
       background-color: inherit;
       color: inherit;
       padding: u.rem(5) u.rem(8);
@@ -122,8 +123,7 @@
   .date {
     display: grid;
     grid-template-columns: repeat(3, auto);
-    gap: u.rem(4);
-    padding-block: u.rem(5);
+    gap: u.rem(6);
 
     @include u.breakpoint-up('medium') {
       justify-self: end;
@@ -142,7 +142,7 @@
   .button {
     background-color: transparent;
     color: var(--text-muted-color);
-    padding: u.rem(9);
+    padding: u.rem(8);
     border: none;
     border-radius: 50%;
     outline: u.rem(2) solid transparent;
@@ -154,7 +154,7 @@
     }
 
     .icon {
-      font-size: var(--fs-400);
+      font-size: var(--fs-600);
     }
 
     &:focus-visible {
@@ -185,4 +185,9 @@
       }
     }
   }
+}
+
+.likesModalHeading {
+  font-size: var(--fs-600);
+  font-weight: var(--fw-bold);
 }
