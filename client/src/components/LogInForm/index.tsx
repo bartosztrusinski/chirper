@@ -36,6 +36,10 @@ const LogInForm = () => {
   });
 
   const onSubmit = (inputs: LogInInputs) => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
     logIn(inputs, {
       onSuccess: () => {
         navigate({ to: '/' });
@@ -51,15 +55,15 @@ const LogInForm = () => {
   return (
     <>
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-        <h3 className={styles.heading}>Sign in to Chirper</h3>
+        <h1 className={styles.heading}>Sign in to Chirper</h1>
         <div className={styles.inputGroup}>
           <div>
             <Input
               autoFocus
               placeholder='Username or email'
+              className={errors.login && styles.invalidInput}
               placeholderClassName={errors.login && styles.placeholder}
               aria-invalid={errors.login ? 'true' : 'false'}
-              className={errors.login && styles.invalidInput}
               {...register('login', {
                 required: 'Please enter username or email',
               })}
@@ -74,9 +78,9 @@ const LogInForm = () => {
 
           <div>
             <PasswordInput
+              className={errors.password && styles.invalidInput}
               placeholderClassName={errors.password && styles.placeholder}
               aria-invalid={errors.password ? 'true' : 'false'}
-              className={errors.password && styles.invalidInput}
               {...register('password', { required: 'Please enter password' })}
             />
 
