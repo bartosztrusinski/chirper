@@ -5,6 +5,7 @@ import Input from '../Input';
 import Modal from '../Modal';
 import Toggle from '../Toggle';
 import styles from './styles.module.scss';
+import { HiSelector as SelectIcon } from '@react-icons/all-files/hi/HiSelector';
 
 type SearchFilterModalProps = ReactModal.Props;
 
@@ -48,10 +49,14 @@ const SearchFilterModal = (props: SearchFilterModalProps) => {
   };
 
   return (
-    <Modal {...props} title='Advanced Search' onAfterOpen={() => reset(search)}>
+    <Modal
+      {...props}
+      header={<h1 className={styles.heading}>Advanced Search</h1>}
+      onAfterOpen={() => reset(search)}
+    >
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
         <div>
-          <h3 className={styles.heading}>Sort by</h3>
+          <h2 className={styles.heading}>Sort by</h2>
           <div className={styles.selectContainer}>
             <select
               autoFocus
@@ -62,16 +67,21 @@ const SearchFilterModal = (props: SearchFilterModalProps) => {
               <option value='popular'>Popular</option>
               <option value='recent'>Latest</option>
             </select>
+            <SelectIcon className={styles.icon} />
           </div>
         </div>
 
         <div>
-          <h3 className={styles.heading}>Accounts</h3>
-          <Input placeholder='From these accounts' {...register('from')} />
+          <h2 className={styles.heading}>Accounts</h2>
+          <Input
+            enterKeyHint='search'
+            placeholder='From these accounts'
+            {...register('from')}
+          />
         </div>
 
         <div>
-          <h3 className={styles.heading}>Filters</h3>
+          <h2 className={styles.heading}>Filters</h2>
 
           <div className={styles.toggleGroup}>
             <div className={styles.toggle}>
@@ -95,10 +105,20 @@ const SearchFilterModal = (props: SearchFilterModalProps) => {
         </div>
 
         <div>
-          <h3 className={styles.heading}>Dates</h3>
+          <h2 className={styles.heading}>Dates</h2>
           <div className={styles.dateGroup}>
-            <Input placeholder='From' type='date' {...register('startTime')} />
-            <Input placeholder='To' type='date' {...register('endTime')} />
+            <Input
+              type='date'
+              placeholder='From'
+              className={styles.input}
+              {...register('startTime')}
+            />
+            <Input
+              type='date'
+              placeholder='To'
+              className={styles.input}
+              {...register('endTime')}
+            />
           </div>
         </div>
 
