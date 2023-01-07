@@ -8,6 +8,8 @@ import UsernameForm from './UsernameForm';
 import useAuth from '../../hooks/useAuth';
 import { useNavigate } from '@tanstack/react-location';
 import { toast } from 'react-hot-toast';
+import { CgChevronLeft as LeftArrow } from '@react-icons/all-files/cg/CgChevronLeft';
+import styles from './styles.module.scss';
 import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
 
 interface RegisterFormData {
@@ -42,6 +44,10 @@ const RegisterForm = (props: RegisterFormProps) => {
   };
 
   const handleSubmit = (inputs: Partial<RegisterFormData>) => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
     if (isLastStep) {
       signUp(
         { ...formData, ...inputs },
@@ -85,6 +91,20 @@ const RegisterForm = (props: RegisterFormProps) => {
       shouldCloseOnEsc={isFirstStep}
       shouldCloseOnOverlayClick={isFirstStep}
       hasCloseButton={isFirstStep}
+      header={
+        <div className={styles.stepIndexPanel}>
+          {!isFirstStep && (
+            <button
+              type='button'
+              onClick={previousStep}
+              className={styles.backButton}
+            >
+              <LeftArrow />
+            </button>
+          )}
+          {`Step ${currentStepIndex + 1} of ${steps.length}`}
+        </div>
+      }
     >
       <MultiStepContext.Provider
         value={{
