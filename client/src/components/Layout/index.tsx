@@ -1,9 +1,7 @@
 import { ReactNode, useContext, useEffect } from 'react';
 import styles from './styles.module.scss';
 import Header from '../Header';
-import useMediaQuery from '../../hooks/useMediaQuery';
 import UserPanel from '../UserPanel';
-import Sidebar from './Sidebar';
 import AuthenticatedNav from '../Nav/AuthenticatedNav';
 import UnauthenticatedNav from '../Nav/UnauthenticatedNav';
 import useUser from '../../hooks/useUser';
@@ -14,6 +12,7 @@ import useAuth from '../../hooks/useAuth';
 import { PromptContext } from '../UnauthenticatedApp';
 import { CreateChirpContext } from '../AuthenticatedApp';
 import { toast } from 'react-hot-toast';
+import useBreakpoint from '../../hooks/useBreakpoint';
 
 interface LayoutProps {
   children: ReactNode;
@@ -24,15 +23,10 @@ const Layout = ({ children }: LayoutProps) => {
   const createChirpContext = useContext(CreateChirpContext);
   const { user } = useUser();
   const { logOut } = useAuth();
-
-  const smallBreakpoint = 536;
-  const mediumBreakpoint = 690;
-  const largeBreakpoint = 940;
-  const xLargeBreakpoint = 1150;
-  const isSmallUp = useMediaQuery(`(min-width: ${smallBreakpoint}px)`);
-  const isMediumUp = useMediaQuery(`(min-width: ${mediumBreakpoint}px)`);
-  const isLargeUp = useMediaQuery(`(min-width: ${largeBreakpoint}px)`);
-  const isXLargeUp = useMediaQuery(`(min-width: ${xLargeBreakpoint}px)`);
+  const isScreenSmallUp = useBreakpoint('up', 'small');
+  const isScreenMediumUp = useBreakpoint('up', 'medium');
+  const isScreenLargeUp = useBreakpoint('up', 'large');
+  const isScreenXLargeUp = useBreakpoint('up', 'xlarge');
 
   useEffect(() => {
     const setViewportHeight = () => {
@@ -56,24 +50,28 @@ const Layout = ({ children }: LayoutProps) => {
       <Header />
 
       <div className={styles.grid}>
-        {isSmallUp && (
-          <Sidebar className={`${styles.nav} ${!user && styles.withPanel}`}>
+        {isScreenSmallUp && (
+          <aside
+            className={`${styles.sidebar} ${styles.nav} ${
+              !user && styles.withPanel
+            }`}
+          >
             {user ? (
               <>
-                <AuthenticatedNav showNames={isXLargeUp} />
+                <AuthenticatedNav showNames={isScreenXLargeUp} />
 
                 <Button
                   className={styles.button}
                   onClick={() => createChirpContext?.openCreateChirpModal()}
                 >
-                  {isXLargeUp ? (
+                  {isScreenXLargeUp ? (
                     'Chirp'
                   ) : (
                     <CreateChirpIcon className={styles.icon} />
                   )}
                 </Button>
 
-                {!isLargeUp && (
+                {!isScreenLargeUp && (
                   <Button
                     variant='dark'
                     className={styles.button}
@@ -87,21 +85,21 @@ const Layout = ({ children }: LayoutProps) => {
                 )}
               </>
             ) : (
-              <UnauthenticatedNav showNames={isXLargeUp} />
+              <UnauthenticatedNav showNames={isScreenXLargeUp} />
             )}
-          </Sidebar>
+          </aside>
         )}
 
         <main className={styles.main}>{children}</main>
 
-        {isLargeUp && (
-          <Sidebar className={`${!user && styles.withPanel}`}>
+        {isScreenLargeUp && (
+          <aside className={`${styles.sidebar} ${!user && styles.withPanel}`}>
             <UserPanel />
-          </Sidebar>
+          </aside>
         )}
       </div>
 
-      {!isSmallUp && user && (
+      {!isScreenSmallUp && user && (
         <Button
           className={styles.createChirpButton}
           onClick={() => createChirpContext?.openCreateChirpModal()}
@@ -112,7 +110,7 @@ const Layout = ({ children }: LayoutProps) => {
 
       {!user && (
         <div className={styles.authPanel}>
-          {isMediumUp && (
+          {isScreenMediumUp && (
             <div>
               <div className={styles.mainText}>
                 Don&apos;t miss what&apos;s happening
