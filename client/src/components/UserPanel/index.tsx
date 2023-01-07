@@ -6,8 +6,8 @@ import defaultAvatar from '../../assets/images/default_avatar.png';
 import useAuth from '../../hooks/useAuth';
 import { useContext } from 'react';
 import { PromptContext } from '../UnauthenticatedApp';
-import useMediaQuery from '../../hooks/useMediaQuery';
 import toast from 'react-hot-toast';
+import useBreakpoint from '../../hooks/useBreakpoint';
 
 type LocationGenerics = MakeGenerics<{
   Search: { dialog?: 'followed' | 'following' | 'edit-profile' };
@@ -17,11 +17,8 @@ const UserPanel = () => {
   const navigate = useNavigate<LocationGenerics>();
   const { user } = useUser();
   const { logOut } = useAuth();
-
-  const smallBreakpoint = 536;
-  const isSmallUp = useMediaQuery(`(min-width: ${smallBreakpoint}px)`);
-
   const promptContext = useContext(PromptContext);
+  const isScreenSmallUp = useBreakpoint('up', 'small');
 
   return user ? (
     <div className={styles.userPanel}>
@@ -67,7 +64,7 @@ const UserPanel = () => {
         </button>
       </div>
 
-      {isSmallUp && (
+      {isScreenSmallUp && (
         <div className={styles.buttonContainer}>
           <Button
             variant='light'
