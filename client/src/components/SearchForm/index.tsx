@@ -67,6 +67,11 @@ const SearchForm = () => {
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
+
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
     navigate({ to: '/search', search: (old) => ({ ...old, query }) });
   };
 
@@ -83,26 +88,15 @@ const SearchForm = () => {
         type='search'
         placeholder='Search Chirper'
         className={styles.input}
+        enterKeyHint='search'
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
 
       {isSearchPage && (
-        <>
-          <button type='button' className={styles.button} onClick={handleClick}>
-            <FaFilter />
-          </button>
-
-          <SearchFilterModal
-            isOpen={isAdvancedSearchOpen}
-            onRequestClose={() =>
-              navigate({
-                search: (old) => ({ ...old, dialog: undefined }),
-                replace: true,
-              })
-            }
-          />
-        </>
+        <button type='button' className={styles.button} onClick={handleClick}>
+          <FaFilter />
+        </button>
       )}
 
       <button
@@ -112,6 +106,16 @@ const SearchForm = () => {
       >
         <FaSearch />
       </button>
+
+      <SearchFilterModal
+        isOpen={isAdvancedSearchOpen && isSearchPage}
+        onRequestClose={() =>
+          navigate({
+            search: (old) => ({ ...old, dialog: undefined }),
+            replace: true,
+          })
+        }
+      />
     </form>
   );
 };
