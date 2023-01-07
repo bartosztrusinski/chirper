@@ -88,8 +88,6 @@ const LikingUsers = ({ chirpId }: LikingUsersProps) => {
 
   return (
     <section>
-      <h1 className='visually-hidden'>Liked by</h1>
-
       {users.map((user, index) => (
         <User
           key={user._id}

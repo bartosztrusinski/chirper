@@ -88,8 +88,6 @@ const FollowingUsers = ({ username }: FollowingUsersProps) => {
 
   return (
     <section>
-      <h1 className='visually-hidden'>Following</h1>
-
       {users.map((user, index) => (
         <User
           key={user._id}
