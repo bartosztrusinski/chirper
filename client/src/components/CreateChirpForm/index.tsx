@@ -48,6 +48,10 @@ const CreateChirpForm = ({ replyToId, autoFocus }: CreateChirpFormProps) => {
   const { ref, ...rest } = register('content');
 
   const onSubmit = ({ content }: Inputs) => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
     createChirp(
       { content, parentChirpId: replyToId },
       {
