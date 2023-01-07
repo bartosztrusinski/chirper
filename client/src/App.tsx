@@ -21,6 +21,7 @@ import {
   Outlet,
   Navigate,
 } from '@tanstack/react-location';
+import NotFound from './components/NotFound';
 
 const location = new ReactLocation();
 const routes: Route[] = [
@@ -60,7 +61,7 @@ const routes: Route[] = [
       {
         path: 'chirps',
         children: [
-          { path: '/', element: <h1>404 Not Found 💀</h1> },
+          { path: '/', element: <NotFound /> },
           {
             path: ':id',
             children: [
@@ -74,7 +75,7 @@ const routes: Route[] = [
       {
         path: 'users',
         children: [
-          { path: '/', element: <h1>404 Not Found 💀</h1> },
+          { path: '/', element: <NotFound /> },
           {
             path: ':username',
             element: <UserProfile />,
@@ -100,7 +101,7 @@ const routes: Route[] = [
         ],
       },
 
-      { element: <h1>404 Not Found 💀</h1> },
+      { element: <NotFound /> },
     ],
   },
 ];
