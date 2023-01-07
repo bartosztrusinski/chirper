@@ -43,5 +43,10 @@
 }
 
 .signUpLink {
+  font-size: var(--fs-200);
   color: var(--text-muted-color);
+
+  @include u.breakpoint-up('medium') {
+    font-size: var(--fs-300);
+  }
 }
