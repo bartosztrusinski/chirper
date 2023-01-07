@@ -10,9 +10,10 @@ import { useContext, useEffect, useState } from 'react';
 import { PromptContext } from '../UnauthenticatedApp';
 import { toast } from 'react-hot-toast';
 import { FaArrowLeft as BackIcon } from '@react-icons/all-files/fa/FaArrowLeft';
-import { FaRegCommentAlt as ReplyIcon } from '@react-icons/all-files/fa/FaRegCommentAlt';
-import { FaRegHeart as LikeIcon } from '@react-icons/all-files/fa/FaRegHeart';
-import { FiShare as ShareIcon } from '@react-icons/all-files/fi/FiShare';
+import { BiComment as ReplyIcon } from '@react-icons/all-files/bi/BiComment';
+import { RiHeart2Line as LikeIconOutline } from '@react-icons/all-files/ri/RiHeart2Line';
+import { RiHeart2Fill as LikeIconFill } from '@react-icons/all-files/ri/RiHeart2Fill';
+import { RiShareLine as ShareIcon } from '@react-icons/all-files/ri/RiShareLine';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Link,
@@ -79,6 +80,8 @@ const UnauthenticatedChirpPage = () => {
     );
   }
 
+  const LikeIcon = chirp.isLiked ? LikeIconFill : LikeIconOutline;
+
   return (
     <>
       <h1 className='visually-hidden'>Conversation</h1>
@@ -129,35 +132,21 @@ const UnauthenticatedChirpPage = () => {
                   </div>
                 )}
                 {chirp.metrics.likeCount > 0 && (
-                  <>
-                    <button
-                      type='button'
-                      className={styles.showLikesButton}
-                      onClick={() =>
-                        navigate({
-                          search: (old) => ({ ...old, dialog: 'likes' }),
-                          replace: true,
-                        })
-                      }
-                    >
-                      <span className={styles.count}>
-                        {formatCount(chirp.metrics.likeCount)}
-                      </span>
-                      {chirp.metrics.likeCount > 1 ? 'Likes' : 'Like'}
-                    </button>
-
-                    <Modal
-                      isOpen={isLikesModalOpen}
-                      onRequestClose={() =>
-                        navigate({
-                          search: (old) => ({ ...old, dialog: undefined }),
-                          replace: true,
-                        })
-                      }
-                    >
-                      <LikingUsers chirpId={chirp._id} />
-                    </Modal>
-                  </>
+                  <button
+                    type='button'
+                    className={styles.showLikesButton}
+                    onClick={() =>
+                      navigate({
+                        search: (old) => ({ ...old, dialog: 'likes' }),
+                        replace: true,
+                      })
+                    }
+                  >
+                    <span className={styles.count}>
+                      {formatCount(chirp.metrics.likeCount)}
+                    </span>
+                    {chirp.metrics.likeCount > 1 ? 'Likes' : 'Like'}
+                  </button>
                 )}
               </div>
               <div className={styles.date}>
@@ -203,6 +192,19 @@ const UnauthenticatedChirpPage = () => {
 
         <ChirpReplies chirp={chirp} />
       </section>
+
+      <Modal
+        header={<h1 className={styles.likesModalHeading}>Liked by</h1>}
+        isOpen={isLikesModalOpen && chirp.metrics.likeCount > 0}
+        onRequestClose={() =>
+          navigate({
+            search: (old) => ({ ...old, dialog: undefined }),
+            replace: true,
+          })
+        }
+      >
+        <LikingUsers chirpId={chirp._id} />
+      </Modal>
     </>
   );
 };
