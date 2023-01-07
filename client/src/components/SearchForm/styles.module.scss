@@ -22,25 +22,24 @@
   box-shadow: var(--shadow-inner);
   padding: u.rem(6);
   border-radius: u.rem(13);
-  outline: u.rem(2) solid transparent;
+  border: u.rem(2) solid var(--background-color);
   transition: outline-color 180ms ease-in-out;
 
   &:focus-within {
-    outline-color: var(--color-primary);
+    border-color: var(--color-primary);
   }
 }
 
 .input {
+  appearance: none;
+  min-width: 0;
   background-color: inherit;
   color: inherit;
-  font-size: var(--fs-200);
-  padding-inline: u.rem(8);
+  font-size: var(--fs-300);
+  padding-left: u.rem(8);
   border-radius: u.rem(14);
   border: none;
-
-  @include u.breakpoint-up('medium') {
-    font-size: var(--fs-300);
-  }
+  text-overflow: ellipsis;
 
   &:focus-visible {
     outline: none;
