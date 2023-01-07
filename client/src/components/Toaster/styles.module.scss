@@ -7,20 +7,11 @@
 }
 
 .container {
-  bottom: u.rem(70) !important;
-
-  @include u.breakpoint-up('small') {
-    bottom: u.rem(10) !important;
-  }
+  top: u.rem(12) !important;
+  bottom: u.rem(12) !important;
 
   &.space {
-    @include u.breakpoint-up('small') {
-      bottom: u.rem(75) !important;
-    }
-
-    @include u.breakpoint-up('medium') {
-      bottom: u.rem(80) !important;
-    }
+    bottom: calc(var(--bottom-panel-height) + u.rem(8)) !important;
   }
 }
 
