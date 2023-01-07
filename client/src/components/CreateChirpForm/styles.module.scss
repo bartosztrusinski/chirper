@@ -15,10 +15,11 @@
   grid-template-columns: u.rem(48) 1fr;
   align-items: start;
   gap: u.rem(12);
+  border-width: u.rem(2);
   cursor: text;
 
   &:focus-within {
-    outline: u.rem(2) solid var(--color-primary);
+    border-color: var(--color-primary);
 
     &.invalidInput {
       outline-color: var(--color-error);
