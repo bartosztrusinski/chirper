@@ -3,81 +3,108 @@
 .main {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 1fr;
   grid-template-rows: 1fr auto;
-  background-color: var(--color-dark-10);
-  padding: clamp(u.rem(20), u.rem(20) + 2vw, u.rem(40))
-    clamp(u.rem(25), u.rem(25) + 2vw, u.rem(58))
-    clamp(u.rem(48), u.rem(48) + 2vw, u.rem(54));
-
-  @include u.breakpoint-up('xlarge') {
-    grid-template-columns: 7fr 4fr;
-  }
-}
-
-.welcome {
-  display: grid;
-  place-content: center;
-  place-items: center;
-  color: var(--color-primary);
-  padding-bottom: calc(u.rem(48) + 2vw);
-
-  .icon {
-    font-size: clamp(u.rem(200), u.rem(200) + 12vw, u.rem(400));
-  }
-}
-
-.hero {
-  display: grid;
-  justify-content: center;
-  grid-template-columns: minmax(auto, u.rem(500));
   grid-auto-rows: 1fr;
   gap: u.rem(48);
-
-  @include u.breakpoint-up('large') {
-    grid-template-columns: repeat(2, minmax(u.rem(350), u.rem(500)));
-  }
-
-  @include u.breakpoint-up('xlarge') {
-    grid-template-columns: 1fr;
-  }
-}
-
-.card {
-  display: grid;
-  grid-template-columns: 1fr;
-  align-content: center;
-  justify-items: center;
+  background-color: var(--color-dark-10);
   text-align: center;
-  gap: u.rem(10);
-  background-color: var(--color-light-80);
-  color: var(--color-dark-10);
-  border-radius: u.rem(24);
-  box-shadow: var(--shadow-large);
-  padding: clamp(u.rem(28), u.rem(28) + 2.2vw, u.rem(60))
-    clamp(u.rem(19), u.rem(19) + 2vw, u.rem(40));
 
   @include u.breakpoint-up('xlarge') {
-    padding: u.rem(40);
-  }
-}
-
-.group {
-  display: grid;
-  grid-template-columns: 1fr;
-  background-color: var(--color-primary);
-  border-radius: u.rem(16);
-  gap: u.rem(16);
-  padding: clamp(u.rem(16), u.rem(16) + 2vw, u.rem(24)) u.rem(24);
-  width: clamp(u.rem(200), 100% - u.rem(60), u.rem(350));
-
-  @include u.breakpoint-up('medium') {
-    grid-template-columns: 1fr 1fr;
-    width: clamp(u.rem(320), 100% - u.rem(90), u.rem(450));
+    grid-template-rows: 1fr;
+    grid-template-columns: 5fr 3fr;
   }
 
-  @include u.breakpoint-up('xlarge') {
-    grid-template-columns: 1fr;
-    padding: u.rem(32);
+  .welcome {
+    min-height: 50vh;
+    display: grid;
+    align-content: center;
+    place-items: center;
+    color: var(--color-primary);
+
+    .icon {
+      font-size: u.rem(120);
+
+      @include u.breakpoint-up('small') {
+        font-size: u.rem(160);
+      }
+
+      @include u.breakpoint-up('medium') {
+        font-size: u.rem(210);
+      }
+
+      @include u.breakpoint-up('large') {
+        font-size: u.rem(250);
+      }
+
+      @include u.breakpoint-up('xlarge') {
+        font-size: u.rem(300);
+      }
+    }
+  }
+
+  .hero {
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-rows: 1fr;
+    justify-content: center;
+    background-color: var(--color-light-50);
+    grid-auto-flow: row;
+    padding: u.rem(30) u.rem(24);
+    gap: u.rem(24);
+
+    @include u.breakpoint-up('small') {
+      grid-auto-flow: column;
+    }
+
+    @include u.breakpoint-up('large') {
+      padding: u.rem(36);
+      gap: u.rem(36);
+    }
+
+    @include u.breakpoint-up('xlarge') {
+      grid-auto-flow: row;
+      justify-items: center;
+      padding-block: u.rem(48);
+      gap: u.rem(48);
+    }
+
+    .card {
+      display: grid;
+      grid-auto-flow: row;
+      align-content: center;
+      justify-items: center;
+      background-color: var(--color-light-80);
+      color: var(--color-dark-10);
+      border-radius: u.rem(16);
+      padding: u.rem(20);
+      box-shadow: var(--shadow-large);
+
+      @include u.breakpoint-up('large') {
+        padding: u.rem(24);
+      }
+
+      @include u.breakpoint-up('xlarge') {
+        min-width: u.rem(380);
+      }
+
+      .group {
+        width: clamp(u.rem(200), 100% - u.rem(60), u.rem(350));
+        display: grid;
+        grid-auto-flow: row;
+        gap: u.rem(16);
+        background-color: var(--color-primary);
+        margin-top: u.rem(16);
+        padding: u.rem(16);
+        border-radius: u.rem(16);
+
+        @include u.breakpoint-up('medium') {
+          padding: u.rem(18);
+        }
+
+        @include u.breakpoint-up('xlarge') {
+          padding: u.rem(20);
+        }
+      }
+    }
   }
 }

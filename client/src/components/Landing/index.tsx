@@ -1,30 +1,49 @@
-import { RiTwitterLine } from '@react-icons/all-files/ri/RiTwitterLine';
-import { Navigate } from '@tanstack/react-location';
+import { RiTwitterLine as ChirperIcon } from '@react-icons/all-files/ri/RiTwitterLine';
+import { Navigate, useNavigate } from '@tanstack/react-location';
 import { useContext } from 'react';
 import useUser from '../../hooks/useUser';
 import Button from '../Button';
+import Description from '../Description';
+import Heading from '../Heading';
 import { PromptContext } from '../UnauthenticatedApp';
 import styles from './styles.module.scss';
 
 const Landing = () => {
   const { user } = useUser();
   const promptContext = useContext(PromptContext);
+  const navigate = useNavigate();
 
   return user ? (
     <Navigate to='/home' />
   ) : (
     <main className={styles.main}>
       <article className={styles.welcome}>
-        <RiTwitterLine className={styles.icon} />
-        <h1>Welcome to Chirper!</h1>
+        <ChirperIcon className={styles.icon} />
+        <h1>
+          <Heading size='large'>Welcome to Chirper!</Heading>
+        </h1>
       </article>
       <article className={styles.hero}>
         <section className={styles.card}>
-          <h2>Don&apos;t miss what&apos;s happening</h2>
-          <p>People on Chirper are the first to know</p>
+          <h2>
+            <Heading size='medium'>
+              Don&apos;t miss what&apos;s happening
+            </Heading>
+          </h2>
+          <Description>People on Chirper are the first to know</Description>
+          <div className={styles.group}>
+            <Button
+              variant='light'
+              onClick={() => navigate({ to: '/explore' })}
+            >
+              Explore
+            </Button>
+          </div>
         </section>
         <section className={styles.card}>
-          <h2>Join Chirper today</h2>
+          <h2>
+            <Heading size='medium'>Join Chirper today</Heading>
+          </h2>
           <div className={styles.group}>
             <Button variant='light' onClick={promptContext?.openSignUp}>
               Sign up
