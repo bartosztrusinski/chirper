@@ -7,9 +7,11 @@ const Loader = ({ className, ...restProps }: LoaderProps) => {
   const classes = [styles.spinner, className].filter(Boolean).join(' ');
 
   return (
-    <div {...restProps} className={classes}>
-      <div className={styles.doubleBounce1}></div>
-      <div className={styles.doubleBounce2}></div>
+    <div className={styles.container}>
+      <div {...restProps} className={classes}>
+        <div className={styles.doubleBounce1}></div>
+        <div className={styles.doubleBounce2}></div>
+      </div>
     </div>
   );
 };
