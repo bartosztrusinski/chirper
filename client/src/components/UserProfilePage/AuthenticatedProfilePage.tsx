@@ -24,8 +24,7 @@ import {
   useSearch,
 } from '@tanstack/react-location';
 import Modal from '../Modal';
-import FollowedUsers from '../FollowedUsers';
-import FollowingUsers from '../FollowingUsers';
+import UserList from '../UserList';
 
 type LocationGenerics = MakeGenerics<{
   Params: { username: string };
@@ -33,13 +32,15 @@ type LocationGenerics = MakeGenerics<{
 }>;
 
 const AuthenticatedProfilePage = () => {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate<LocationGenerics>();
-  const { dialog } = useSearch<LocationGenerics>();
   const {
     params: { username },
   } = useMatch<LocationGenerics>();
   const queryKeys = [username];
+  const followedQueryKeys = [username, 'followed'];
+  const followingQueryKeys = [username, 'following'];
+  const queryClient = useQueryClient();
+  const navigate = useNavigate<LocationGenerics>();
+  const { dialog } = useSearch<LocationGenerics>();
   const { user: currentUser } = useUser() as { user: StoredUser };
   const { followUser, unfollowUser } = useFollowUser(queryKeys);
 
@@ -236,7 +237,14 @@ const AuthenticatedProfilePage = () => {
         onRequestClose={closeDialog}
         header={<h1 className={styles.followModalHeading}>Followed</h1>}
       >
-        <FollowedUsers username={user.username} />
+        <section>
+          <UserList
+            queryKeys={followedQueryKeys}
+            queryFn={(sinceId?: string) =>
+              UserService.getManyFollowed(user.username, sinceId)
+            }
+          />
+        </section>
       </Modal>
 
       <Modal
@@ -244,7 +252,14 @@ const AuthenticatedProfilePage = () => {
         onRequestClose={closeDialog}
         header={<h1 className={styles.followModalHeading}>Following</h1>}
       >
-        <FollowingUsers username={user.username} />
+        <section>
+          <UserList
+            queryKeys={followingQueryKeys}
+            queryFn={(sinceId?: string) =>
+              UserService.getManyFollowing(user.username, sinceId)
+            }
+          />
+        </section>
       </Modal>
 
       <ConfirmModal

@@ -1,6 +1,5 @@
 import styles from './styles.module.scss';
 import ChirpService from '../../api/services/Chirp';
-import ChirpReplies from '../ChirpReplies';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import Button from '../Button';
 import Loader from '../Loader';
@@ -24,7 +23,9 @@ import {
   useSearch,
 } from '@tanstack/react-location';
 import Modal from '../Modal';
-import LikingUsers from '../LikingUsers';
+import ChirpList from '../ChirpList';
+import UserService from '../../api/services/User';
+import UserList from '../UserList';
 
 type LocationGenerics = MakeGenerics<{
   Params: { id: string };
@@ -32,16 +33,17 @@ type LocationGenerics = MakeGenerics<{
 }>;
 
 const UnauthenticatedChirpPage = () => {
+  const {
+    params: { id },
+  } = useMatch<LocationGenerics>();
+  const queryKeys = [id];
+  const likingUsersQueryKeys = [...queryKeys, 'liking'];
+  const repliesQueryKeys = [...queryKeys, 'replies'];
   const queryClient = useQueryClient();
   const location = useLocation<LocationGenerics>();
   const navigate = useNavigate<LocationGenerics>();
   const { dialog } = useSearch<LocationGenerics>();
-  const {
-    params: { id },
-  } = useMatch<LocationGenerics>();
   const promptContext = useContext(PromptContext);
-
-  const queryKeys = [id];
 
   const [isLikesModalOpen, setIsLikesModalOpen] = useState<boolean>(
     dialog === 'likes',
@@ -190,7 +192,14 @@ const UnauthenticatedChirpPage = () => {
           </article>
         </div>
 
-        <ChirpReplies chirp={chirp} />
+        <section>
+          <ChirpList
+            queryKeys={repliesQueryKeys}
+            queryFn={(sinceId?: string) =>
+              ChirpService.getReplies(chirp._id, sinceId)
+            }
+          />
+        </section>
       </section>
 
       <Modal
@@ -203,7 +212,14 @@ const UnauthenticatedChirpPage = () => {
           })
         }
       >
-        <LikingUsers chirpId={chirp._id} />
+        <section>
+          <UserList
+            queryKeys={likingUsersQueryKeys}
+            queryFn={(sinceId?: string) =>
+              UserService.getManyLiking(chirp._id, sinceId)
+            }
+          />
+        </section>
       </Modal>
     </>
   );
