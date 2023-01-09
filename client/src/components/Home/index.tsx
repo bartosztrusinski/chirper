@@ -1,31 +1,42 @@
 import { Navigate } from '@tanstack/react-location';
 import { useEffect } from 'react';
 import useUser from '../../hooks/useUser';
+import ChirpList from '../ChirpList';
 import CreateChirpForm from '../CreateChirpForm';
-import UserTimeline from '../UserTimeline';
+import ChirpService from '../../api/services/Chirp';
+import Container from '../Container';
+import Line from '../Line';
 
 const Home = () => {
-  const { user } = useUser();
+  const { user: currentUser } = useUser();
 
   useEffect(() => {
     document.title = 'Home';
   }, []);
 
-  if (!user) {
+  if (!currentUser) {
     return <Navigate to='/' />;
   }
 
+  const queryKeys = [currentUser.username, 'timeline'];
+
   return (
     <>
-      <div
-        style={{
-          padding: '16px',
-          borderBottom: '1px solid var(--border-color)',
-        }}
-      >
+      <Container>
         <CreateChirpForm />
-      </div>
-      <UserTimeline />
+      </Container>
+
+      <Line />
+
+      <section>
+        <h1 className='visually-hidden'>Your Home Timeline</h1>
+        <ChirpList
+          queryKeys={queryKeys}
+          queryFn={(sinceId?: string) =>
+            ChirpService.getUserTimeline(currentUser.username, sinceId)
+          }
+        />
+      </section>
     </>
   );
 };
