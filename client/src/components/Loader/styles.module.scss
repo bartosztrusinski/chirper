@@ -3,17 +3,9 @@
 :root {
   --loader-size: #{u.rem(40)};
   --loader-timing: 1.4;
-  --loader-height: #{u.rem(64)};
-}
-
-.container {
-  position: relative;
 }
 
 .spinner {
-  height: var(--loader-height);
-  position: absolute;
-  inset-inline: 0;
   display: grid;
   grid-template-columns: var(--loader-size);
   grid-template-rows: var(--loader-size);
