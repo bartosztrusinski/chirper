@@ -1,5 +1,9 @@
-import SearchChirps from '../SearchChirps';
+import ChirpService from '../../api/services/Chirp';
 import { MakeGenerics, useSearch } from '@tanstack/react-location';
+import Container from '../Container';
+import Heading from '../Heading';
+import MutedText from '../MutedText';
+import ChirpList from '../ChirpList';
 
 type SearchParams = {
   query: string;
@@ -28,10 +32,25 @@ const Search = () => {
     endTime: search.endTime,
   };
 
+  const queryKeys = ['search', searchParams];
+
   return searchParams.query ? (
-    <SearchChirps searchParams={searchParams as SearchParams} />
+    <section>
+      <h1 className='visually-hidden'>Search Timeline</h1>
+      <ChirpList
+        queryKeys={queryKeys}
+        queryFn={(sinceId?: string) =>
+          ChirpService.searchChirps(searchParams as SearchParams, sinceId)
+        }
+      />
+    </section>
   ) : (
-    <div>Search for something</div>
+    <Container>
+      <Heading size='small'>What&apos;s on your mind? 💭</Heading>
+      <MutedText>
+        Search for Chirps by typing something in search bar above
+      </MutedText>
+    </Container>
   );
 };
 
