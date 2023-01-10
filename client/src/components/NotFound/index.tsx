@@ -1,21 +1,23 @@
 import { useNavigate } from '@tanstack/react-location';
 import Button from '../Button';
-import styles from './styles.module.scss';
+import Container from '../Container';
+import MutedText from '../MutedText';
+import Heading from '../Heading';
 
 const NotFound = () => {
   const navigate = useNavigate();
 
   return (
-    <div className={styles.container}>
-      <div className={styles.heading}>Hmm... this page doesn&apos;t exist</div>
-      <div className={styles.description}>Try searching for something else</div>
+    <Container>
+      <Heading size='small'>Hmm... this page doesn&apos;t exist 🤔</Heading>
+      <MutedText>Try searching for something else</MutedText>
       <Button
-        className={styles.button}
+        style={{ marginTop: '0.75rem' }}
         onClick={() => navigate({ to: '/search', search: true })}
       >
         Search
       </Button>
-    </div>
+    </Container>
   );
 };
 
