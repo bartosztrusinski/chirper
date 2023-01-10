@@ -9,7 +9,7 @@ import {
 
 const useFollowUser = (queryKeys: unknown[]) => {
   const queryClient = useQueryClient();
-  const { user: currentUser, updateUser } = useUser();
+  const { currentUser, updateUser } = useUser();
 
   const usersQueryKeys = ['users', ...queryKeys];
   const currentUserQueryKeys = ['user'];

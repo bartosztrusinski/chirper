@@ -25,7 +25,7 @@ interface UserListProps {
 
 const UserList = ({ queryKeys, queryFn }: UserListProps) => {
   const queryClient = useQueryClient();
-  const { user: currentUser } = useUser();
+  const { currentUser } = useUser();
   const { followUser, unfollowUser } = useFollowUser(queryKeys);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
   const [selectedUsername, setSelectedUsername] = useState<string>('');

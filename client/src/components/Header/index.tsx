@@ -27,7 +27,7 @@ const Header = () => {
   const navigate = useNavigate<LocationGenerics>();
   const location = useLocation<LocationGenerics>();
   const { dialog } = useSearch<LocationGenerics>();
-  const { user } = useUser();
+  const { currentUser } = useUser();
   const isScreenSmallUp = useBreakpoint('up', 'small');
   const isScreenMediumUp = useBreakpoint('up', 'medium');
   const [title, setTitle] = useState<string>('');
@@ -84,11 +84,11 @@ const Header = () => {
             })
           }
         >
-          {user ? (
+          {currentUser ? (
             <img
               className={styles.image}
-              src={user.profile.picture ?? defaultAvatar}
-              alt={`${user.username}'s avatar`}
+              src={currentUser.profile.picture ?? defaultAvatar}
+              alt={`${currentUser.username}'s avatar`}
             />
           ) : (
             <MenuIcon className={styles.icon} />

@@ -42,7 +42,7 @@ interface UpdatePassword {
 
 const useManageUser = (): UseManageUser => {
   const queryClient = useQueryClient();
-  const { user, updateUser, clearUser } = useUser();
+  const { currentUser, updateUser, clearUser } = useUser();
 
   const handleUpdateMutate = (newData: Partial<StoredUser>) => {
     queryClient.cancelQueries(['user']);
@@ -80,7 +80,7 @@ const useManageUser = (): UseManageUser => {
       },
       onSettled: () => {
         handleSettled();
-        queryClient.invalidateQueries(['users', user?.username]);
+        queryClient.invalidateQueries(['users', currentUser?.username]);
       },
     },
   );

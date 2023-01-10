@@ -58,7 +58,7 @@ const ChirpPage = () => {
   const { dialog } = useSearch<LocationGenerics>();
   const createChirpContext = useContext(CreateChirpContext);
   const promptContext = useContext(PromptContext);
-  const { user: currentUser } = useUser();
+  const { currentUser } = useUser();
   const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys);
   const { deleteChirp } = useManageChirp();
 

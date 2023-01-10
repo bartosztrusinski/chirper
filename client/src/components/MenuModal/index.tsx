@@ -11,7 +11,7 @@ import styles from './styles.module.scss';
 type MenuModalProps = ReactModal.Props;
 
 const MenuModal = (props: MenuModalProps) => {
-  const { user } = useUser();
+  const { currentUser } = useUser();
   const { logOut } = useAuth();
 
   return (
@@ -25,7 +25,7 @@ const MenuModal = (props: MenuModalProps) => {
 
       <Nav />
 
-      {user && (
+      {currentUser && (
         <Button
           className={styles.logOutButton}
           onClick={() => {

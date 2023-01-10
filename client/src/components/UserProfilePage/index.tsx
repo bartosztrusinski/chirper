@@ -45,7 +45,7 @@ const UserProfilePage = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate<LocationGenerics>();
   const { dialog } = useSearch<LocationGenerics>();
-  const { user: currentUser } = useUser();
+  const { currentUser } = useUser();
   const { followUser, unfollowUser } = useFollowUser(queryKeys);
   const promptContext = useContext(PromptContext);
 

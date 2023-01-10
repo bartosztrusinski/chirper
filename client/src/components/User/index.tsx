@@ -16,7 +16,7 @@ const User = forwardRef<HTMLDivElement | null, UserProps>(function User(
   ref,
 ) {
   const navigate = useNavigate();
-  const { user: currentUser } = useUser();
+  const { currentUser } = useUser();
 
   return (
     <div

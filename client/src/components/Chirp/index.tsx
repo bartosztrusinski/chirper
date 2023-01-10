@@ -30,7 +30,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
   const navigate = useNavigate();
   const createChirpContext = useContext(CreateChirpContext);
   const promptContext = useContext(PromptContext);
-  const { user: currentUser } = useUser();
+  const { currentUser } = useUser();
   const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys);
 
   const likeClasses = [styles.likes, chirp.isLiked && styles.liked]

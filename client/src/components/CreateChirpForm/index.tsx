@@ -4,7 +4,6 @@ import useUser from '../../hooks/useUser';
 import styles from './styles.module.scss';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import Button from '../Button';
-import { StoredUser } from '../../interfaces/User';
 import TextareaAutosize from 'react-textarea-autosize';
 import { useForm } from 'react-hook-form';
 import { content } from './schemas';
@@ -28,7 +27,7 @@ const inputsSchema = z.object({ content });
 
 const CreateChirpForm = ({ replyToId, autoFocus }: CreateChirpFormProps) => {
   const isCreatingChirp = useIsMutating(['chirps', 'create']);
-  const { user: currentUser } = useUser() as { user: StoredUser };
+  const { currentUser } = useUser();
   const { createChirp } = useManageChirp();
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
   const { closeCreateChirpModal } = useContext(
@@ -81,10 +80,10 @@ const CreateChirpForm = ({ replyToId, autoFocus }: CreateChirpFormProps) => {
   return (
     <>
       <div className={cardClasses} onClick={() => contentRef.current?.focus()}>
-        <Link to={`/users/${currentUser.username}`}>
+        <Link to={`/users/${currentUser?.username}`}>
           <img
-            src={currentUser.profile.picture ?? defaultAvatar}
-            alt={`${currentUser.username}'s  avatar`}
+            src={currentUser?.profile.picture ?? defaultAvatar}
+            alt={`${currentUser?.username}'s  avatar`}
             className={styles.avatar}
           />
         </Link>

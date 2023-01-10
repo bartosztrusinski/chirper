@@ -36,7 +36,7 @@ const filterObject = <T,>(
   );
 
 const EditProfileModal = (props: EditProfileModalProps) => {
-  const { user: currentUser } = useUser();
+  const { currentUser } = useUser();
   const { updateProfile } = useManageUser();
   const navigate = useNavigate();
   const isUpdatingProfile = useIsMutating(['user', 'update']);

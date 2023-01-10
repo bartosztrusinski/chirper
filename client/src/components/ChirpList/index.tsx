@@ -23,7 +23,7 @@ interface ChirpListProps {
 
 const ChirpList = ({ queryKeys, queryFn }: ChirpListProps) => {
   const queryClient = useQueryClient();
-  const { user: currentUser } = useUser();
+  const { currentUser } = useUser();
 
   const { data, isError, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery(

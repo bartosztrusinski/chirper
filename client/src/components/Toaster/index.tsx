@@ -8,11 +8,13 @@ import toast, {
 import useUser from '../../hooks/useUser';
 
 const Toaster = (props: ToasterProps) => {
-  const { user } = useUser();
+  const { currentUser } = useUser();
 
   return (
     <ReactHotToaster
-      containerClassName={`${styles.container} ${user ? '' : styles.space}`}
+      containerClassName={`${styles.container} ${
+        currentUser ? '' : styles.space
+      }`}
       toastOptions={{
         duration: 3000,
         success: {

@@ -9,11 +9,11 @@ import { PromptContext } from '../UnauthenticatedApp';
 import styles from './styles.module.scss';
 
 const Landing = () => {
-  const { user } = useUser();
+  const { currentUser } = useUser();
   const promptContext = useContext(PromptContext);
   const navigate = useNavigate();
 
-  return user ? (
+  return currentUser ? (
     <Navigate to='/home' />
   ) : (
     <main className={styles.main}>

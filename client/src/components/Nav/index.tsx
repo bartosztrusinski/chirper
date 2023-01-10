@@ -15,7 +15,7 @@ interface NavProps {
 }
 
 const Nav = ({ showNames = true }: NavProps) => {
-  const { user: currentUser } = useUser();
+  const { currentUser } = useUser();
 
   const exploreItem = {
     to: '/explore',

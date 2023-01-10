@@ -15,22 +15,25 @@ type LocationGenerics = MakeGenerics<{
 
 const UserPanel = () => {
   const navigate = useNavigate<LocationGenerics>();
-  const { user } = useUser();
+  const { currentUser } = useUser();
   const { logOut } = useAuth();
   const promptContext = useContext(PromptContext);
   const isScreenSmallUp = useBreakpoint('up', 'small');
 
-  return user ? (
+  return currentUser ? (
     <div className={styles.userPanel}>
-      <Link to={`/users/${user.username}`} className={styles.userContainer}>
+      <Link
+        to={`/users/${currentUser.username}`}
+        className={styles.userContainer}
+      >
         <img
-          src={user.profile.picture ?? defaultAvatar}
-          alt={`${user.username}'s avatar`}
+          src={currentUser.profile.picture ?? defaultAvatar}
+          alt={`${currentUser.username}'s avatar`}
           className={styles.avatar}
         />
         <div className={styles.usernames}>
-          <div className={styles.name}>{user.profile.name}</div>
-          <div className={styles.username}>@{user.username}</div>
+          <div className={styles.name}>{currentUser.profile.name}</div>
+          <div className={styles.username}>@{currentUser.username}</div>
         </div>
       </Link>
 
@@ -40,12 +43,14 @@ const UserPanel = () => {
           className={styles.button}
           onClick={() =>
             navigate({
-              to: `/users/${user.username}`,
+              to: `/users/${currentUser.username}`,
               search: { dialog: 'followed' },
             })
           }
         >
-          <div className={styles.count}>{user.metrics.followedCount}</div>
+          <div className={styles.count}>
+            {currentUser.metrics.followedCount}
+          </div>
           Followed
         </button>
         <div className={styles.line}></div>
@@ -54,12 +59,14 @@ const UserPanel = () => {
           className={styles.button}
           onClick={() =>
             navigate({
-              to: `/users/${user.username}`,
+              to: `/users/${currentUser.username}`,
               search: { dialog: 'following' },
             })
           }
         >
-          <div className={styles.count}>{user.metrics.followingCount}</div>
+          <div className={styles.count}>
+            {currentUser.metrics.followingCount}
+          </div>
           Following
         </button>
       </div>
@@ -70,7 +77,7 @@ const UserPanel = () => {
             variant='light'
             onClick={() =>
               navigate({
-                to: `/users/${user.username}`,
+                to: `/users/${currentUser.username}`,
                 search: { dialog: 'edit-profile' },
               })
             }

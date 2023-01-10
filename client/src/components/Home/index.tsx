@@ -8,7 +8,7 @@ import Container from '../Container';
 import Line from '../Line';
 
 const Home = () => {
-  const { user: currentUser } = useUser();
+  const { currentUser } = useUser();
 
   useEffect(() => {
     document.title = 'Home';

@@ -4,7 +4,7 @@ import { StoredUser, Token } from '../interfaces/User';
 import { getStoredUser, clearStoredUser, setStoredUser } from '../user-storage';
 
 interface UseUser {
-  user?: StoredUser;
+  currentUser: StoredUser | undefined;
   setUser: (token: Token) => void;
   updateUser: (user: StoredUser) => void;
   clearUser: () => void;
@@ -22,7 +22,7 @@ const getUser = async (
 const useUser = (): UseUser => {
   const queryClient = useQueryClient();
 
-  const { data: user } = useQuery<StoredUser>(
+  const { data: currentUser } = useQuery<StoredUser>(
     ['user'],
     ({ signal }): Promise<StoredUser> =>
       getUser(getStoredUser()?.token, signal),
@@ -54,7 +54,7 @@ const useUser = (): UseUser => {
   };
 
   return {
-    user,
+    currentUser,
     setUser,
     updateUser,
     clearUser,

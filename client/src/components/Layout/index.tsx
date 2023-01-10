@@ -20,7 +20,7 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const promptContext = useContext(PromptContext);
   const createChirpContext = useContext(CreateChirpContext);
-  const { user: currentUser } = useUser();
+  const { currentUser } = useUser();
   const { logOut } = useAuth();
   const isScreenSmallUp = useBreakpoint('up', 'small');
   const isScreenMediumUp = useBreakpoint('up', 'medium');

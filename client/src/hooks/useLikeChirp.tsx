@@ -9,7 +9,7 @@ import {
 
 const useLikeChirp = (queryKeys: unknown[]) => {
   const queryClient = useQueryClient();
-  const { user: currentUser } = useUser();
+  const { currentUser } = useUser();
 
   const chirpsQueryKeys = ['chirps', ...queryKeys];
   const currentUserLikedChirpsQueryKeys = [
