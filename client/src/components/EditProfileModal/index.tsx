@@ -1,7 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import useUser from '../../hooks/useUser';
-import { StoredUser } from '../../interfaces/User';
 import Button from '../Button';
 import Input from '../Input';
 import Modal from '../Modal';
@@ -15,6 +14,7 @@ import Loader from '../Loader';
 import { toast } from 'react-hot-toast';
 import { useIsMutating } from '@tanstack/react-query';
 import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
+import Heading from '../Heading';
 
 type EditProfileModalProps = ReactModal.Props;
 
@@ -36,10 +36,10 @@ const filterObject = <T,>(
   );
 
 const EditProfileModal = (props: EditProfileModalProps) => {
-  const { user: currentUser } = useUser() as { user: StoredUser };
+  const { user: currentUser } = useUser();
   const { updateProfile } = useManageUser();
   const navigate = useNavigate();
-  const isMutating = useIsMutating();
+  const isUpdatingProfile = useIsMutating(['user', 'update']);
 
   const {
     register,
@@ -49,7 +49,7 @@ const EditProfileModal = (props: EditProfileModalProps) => {
   } = useForm<Inputs>({
     mode: 'onChange',
     resolver: zodResolver(inputsSchema),
-    defaultValues: { ...currentUser.profile },
+    defaultValues: { ...currentUser?.profile },
   });
 
   const onSubmit = (inputs: Inputs) => {
@@ -77,7 +77,11 @@ const EditProfileModal = (props: EditProfileModalProps) => {
   return (
     <Modal
       {...props}
-      header={<h1 className={styles.heading}>Edit profile</h1>}
+      header={
+        <Heading size='medium'>
+          <h1>Edit profile</h1>
+        </Heading>
+      }
       onAfterClose={reset}
     >
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
@@ -146,12 +150,12 @@ const EditProfileModal = (props: EditProfileModalProps) => {
           )}
         </div>
 
-        {isMutating ? (
+        {isUpdatingProfile ? (
           <Loader />
         ) : (
           <Button
-            disabled={!isValid}
             type='submit'
+            disabled={!isValid}
             className={styles.submitButton}
           >
             Save
