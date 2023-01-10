@@ -12,6 +12,9 @@ import Modal from '../Modal';
 import ChirpList from '../ChirpList';
 import UserService from '../../api/services/User';
 import UserList from '../UserList';
+import Container from '../Container';
+import Heading from '../Heading';
+import MutedText from '../MutedText';
 import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
 import formatCount from '../../utils/formatCount';
 import formatTime from '../../utils/formatTime';
@@ -65,6 +68,10 @@ const ChirpPage = () => {
   );
 
   useEffect(() => {
+    document.title = 'Chirp';
+  }, []);
+
+  useEffect(() => {
     setIsLikesModalOpen(dialog === 'likes');
   }, [dialog]);
 
@@ -92,14 +99,24 @@ const ChirpPage = () => {
   );
 
   if (isLoading) {
-    return <Loader />;
+    return (
+      <Container>
+        <Loader />
+      </Container>
+    );
   }
 
-  if (isError) {
+  if (!chirp && isError) {
     return (
-      <div>
-        <p> Oops something went wrong...</p>
+      <Container>
+        <Heading size='small'>
+          Oops... there&apos;s been problem retrieving this Chirp 😬
+        </Heading>
+        <MutedText>
+          Try clicking the button below or refreshing the page
+        </MutedText>
         <Button
+          className={styles.retryButton}
           onClick={() =>
             queryClient.refetchQueries(['chirps', ...queryKeys], {
               exact: true,
@@ -108,7 +125,7 @@ const ChirpPage = () => {
         >
           Retry
         </Button>
-      </div>
+      </Container>
     );
   }
 
@@ -259,7 +276,11 @@ const ChirpPage = () => {
       </section>
 
       <Modal
-        header={<h1 className={styles.likesModalHeading}>Liked by</h1>}
+        header={
+          <Heading size='medium'>
+            <h1>Liked by</h1>
+          </Heading>
+        }
         isOpen={isLikesModalOpen && chirp.metrics.likeCount > 0}
         onRequestClose={() =>
           navigate({
