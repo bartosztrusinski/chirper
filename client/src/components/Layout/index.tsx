@@ -2,8 +2,6 @@ import { ReactNode, useContext, useEffect } from 'react';
 import styles from './styles.module.scss';
 import Header from '../Header';
 import UserPanel from '../UserPanel';
-import AuthenticatedNav from '../Nav/AuthenticatedNav';
-import UnauthenticatedNav from '../Nav/UnauthenticatedNav';
 import useUser from '../../hooks/useUser';
 import Button from '../Button';
 import { BiLogOut as LogOutIcon } from '@react-icons/all-files/bi/BiLogOut';
@@ -13,6 +11,7 @@ import { PromptContext } from '../UnauthenticatedApp';
 import { CreateChirpContext } from '../AuthenticatedApp';
 import { toast } from 'react-hot-toast';
 import useBreakpoint from '../../hooks/useBreakpoint';
+import Nav from '../Nav';
 
 interface LayoutProps {
   children: ReactNode;
@@ -21,7 +20,7 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const promptContext = useContext(PromptContext);
   const createChirpContext = useContext(CreateChirpContext);
-  const { user } = useUser();
+  const { user: currentUser } = useUser();
   const { logOut } = useAuth();
   const isScreenSmallUp = useBreakpoint('up', 'small');
   const isScreenMediumUp = useBreakpoint('up', 'medium');
@@ -53,13 +52,13 @@ const Layout = ({ children }: LayoutProps) => {
         {isScreenSmallUp && (
           <aside
             className={`${styles.sidebar} ${styles.nav} ${
-              !user && styles.withPanel
+              !currentUser && styles.withPanel
             }`}
           >
-            {user ? (
-              <>
-                <AuthenticatedNav showNames={isScreenXLargeUp} />
+            <Nav showNames={isScreenXLargeUp} />
 
+            {currentUser && (
+              <>
                 <Button
                   className={styles.button}
                   onClick={() => createChirpContext?.openCreateChirpModal()}
@@ -84,8 +83,6 @@ const Layout = ({ children }: LayoutProps) => {
                   </Button>
                 )}
               </>
-            ) : (
-              <UnauthenticatedNav showNames={isScreenXLargeUp} />
             )}
           </aside>
         )}
@@ -93,13 +90,15 @@ const Layout = ({ children }: LayoutProps) => {
         <main className={styles.main}>{children}</main>
 
         {isScreenLargeUp && (
-          <aside className={`${styles.sidebar} ${!user && styles.withPanel}`}>
+          <aside
+            className={`${styles.sidebar} ${!currentUser && styles.withPanel}`}
+          >
             <UserPanel />
           </aside>
         )}
       </div>
 
-      {!isScreenSmallUp && user && (
+      {!isScreenSmallUp && currentUser && (
         <Button
           className={styles.createChirpButton}
           onClick={() => createChirpContext?.openCreateChirpModal()}
@@ -108,7 +107,7 @@ const Layout = ({ children }: LayoutProps) => {
         </Button>
       )}
 
-      {!user && (
+      {!currentUser && (
         <div className={styles.authPanel}>
           {isScreenMediumUp && (
             <div>
