@@ -97,8 +97,11 @@ const ChirpList = ({ queryKeys, queryFn }: ChirpListProps) => {
             />
           </Container>
         ))}
-        {isFetchingNextPage && <Loader />}
-        {!hasNextPage && (
+        {hasNextPage ? (
+          <div style={{ minHeight: '2.5rem' }}>
+            {isFetchingNextPage && <Loader />}
+          </div>
+        ) : (
           <Container>
             <Heading size='small'>🚧 End of the road 🚧</Heading>
             <MutedText>
@@ -133,7 +136,11 @@ const ChirpList = ({ queryKeys, queryFn }: ChirpListProps) => {
     );
   }
 
-  return <Loader />;
+  return (
+    <Container>
+      <Loader />
+    </Container>
+  );
 };
 
 export default ChirpList;

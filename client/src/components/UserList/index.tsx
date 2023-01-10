@@ -108,8 +108,11 @@ const UserList = ({ queryKeys, queryFn }: UserListProps) => {
             }}
           />
         ))}
-        {isFetchingNextPage && <Loader />}
-        {!hasNextPage && (
+        {hasNextPage ? (
+          <div style={{ minHeight: '2.5rem' }}>
+            {isFetchingNextPage && <Loader />}
+          </div>
+        ) : (
           <Container>
             <Heading size='small'>🚧 End of the road 🚧</Heading>
             <MutedText>
@@ -137,7 +140,7 @@ const UserList = ({ queryKeys, queryFn }: UserListProps) => {
     return (
       <Container>
         <Heading size='small'>
-          Oops... looks like we couldn&apos;t get Chirps 😬
+          Oops... looks like we couldn&apos;t get users 😬
         </Heading>
         <MutedText>
           Try clicking the button below or refreshing the page

@@ -1,6 +1,7 @@
 @use '../../assets/styles/util' as u;
 
 .heading {
+  text-align: center;
   font-weight: var(--fw-bold);
 
   &.small {

@@ -59,7 +59,7 @@
 }
 
 .main {
-  padding-bottom: u.rem(100);
+  padding-bottom: calc(var(--bottom-panel-height) + u.rem(24));
 
   @include u.breakpoint-up('small') {
     border-left: u.rem(1) solid var(--border-color);
@@ -78,7 +78,7 @@
   height: calc(100dvh - var(--header-height));
   overscroll-behavior: contain;
   overflow-y: auto;
-  padding: u.rem(12) u.rem(20);
+  padding: u.rem(12) u.rem(19);
 
   @include u.breakpoint-up('xlarge') {
     padding-top: u.rem(20);
@@ -110,7 +110,7 @@
     }
 
     .icon {
-      margin: u.rem(13);
+      margin: u.rem(12);
       font-size: var(--fs-600);
     }
   }

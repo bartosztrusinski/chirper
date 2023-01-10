@@ -6,7 +6,7 @@ interface MutedTextProps {
 }
 
 const MutedText = ({ children }: MutedTextProps) => {
-  return <div className={styles.description}>{children}</div>;
+  return <div className={styles.mutedText}>{children}</div>;
 };
 
 export default MutedText;

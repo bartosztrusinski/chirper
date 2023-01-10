@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from '@tanstack/react-location';
 import { useContext } from 'react';
 import useUser from '../../hooks/useUser';
 import Button from '../Button';
-import Description from '../Description';
+import MutedText from '../MutedText';
 import Heading from '../Heading';
 import { PromptContext } from '../UnauthenticatedApp';
 import styles from './styles.module.scss';
@@ -19,9 +19,9 @@ const Landing = () => {
     <main className={styles.main}>
       <article className={styles.welcome}>
         <ChirperIcon className={styles.icon} />
-        <h1>
-          <Heading size='large'>Welcome to Chirper!</Heading>
-        </h1>
+        <Heading size='large'>
+          <h1>Welcome to Chirper!</h1>
+        </Heading>
       </article>
       <article className={styles.hero}>
         <section className={styles.card}>
@@ -30,7 +30,7 @@ const Landing = () => {
               Don&apos;t miss what&apos;s happening
             </Heading>
           </h2>
-          <Description>People on Chirper are the first to know</Description>
+          <MutedText>People on Chirper are the first to know</MutedText>
           <div className={styles.group}>
             <Button
               variant='light'
