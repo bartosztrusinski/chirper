@@ -11,6 +11,7 @@ import Loader from '../Loader';
 import toast from 'react-hot-toast';
 import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
 import { useIsMutating } from '@tanstack/react-query';
+import Heading from '../Heading';
 
 interface LogInInputs {
   login: string;
@@ -55,7 +56,9 @@ const LogInForm = () => {
   return (
     <>
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-        <h1 className={styles.heading}>Sign in to Chirper</h1>
+        <Heading size='large'>
+          <h1>Sign in to Chirper</h1>
+        </Heading>
         <div className={styles.inputGroup}>
           <div>
             <Input

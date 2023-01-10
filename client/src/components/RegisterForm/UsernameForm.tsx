@@ -9,6 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import toast from 'react-hot-toast';
 import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
+import Heading from '../Heading';
+import MutedText from '../MutedText';
 
 interface UsernameFormProps {
   formData: RegisterFormData;
@@ -59,10 +61,13 @@ const UsernameForm = ({ formData, onSubmit }: UsernameFormProps) => {
   return (
     <FormWrapper onSubmit={handleSubmit(onUsernameSubmit)} isInvalid={!isValid}>
       <div>
-        <h1 className={styles.heading}>What should we call you?</h1>
-        <p className={styles.description}>
-          Your @username is unique. You can always change it later
-        </p>
+        <Heading size='large'>
+          <h1>What should we call you?</h1>
+        </Heading>
+        <MutedText>
+          Your @username is unique. You should choose it wisely as you&apos;ll
+          be stuck with it
+        </MutedText>
       </div>
       <div className={styles.inputGroup}>
         <div>

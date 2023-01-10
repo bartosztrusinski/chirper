@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { toast } from 'react-hot-toast';
 import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
+import Heading from '../Heading';
 
 interface EmailFormProps {
   formData: RegisterFormData;
@@ -57,7 +58,9 @@ const EmailForm = ({ formData, onSubmit }: EmailFormProps) => {
 
   return (
     <FormWrapper onSubmit={handleSubmit(onEmailSubmit)} isInvalid={!isValid}>
-      <h1 className={styles.heading}>Create your account</h1>
+      <Heading size='large'>
+        <h1>Create your account</h1>
+      </Heading>
 
       <div className={styles.inputGroup}>
         <div>

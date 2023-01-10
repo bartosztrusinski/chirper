@@ -6,6 +6,7 @@ import { passwordConfirm, password } from './schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import Heading from '../Heading';
 
 interface PasswordFormProps {
   formData: RegisterFormData;
@@ -37,7 +38,10 @@ const PasswordForm = ({ formData, onSubmit }: PasswordFormProps) => {
 
   return (
     <FormWrapper onSubmit={handleSubmit(onSubmit)} isInvalid={!isValid}>
-      <h1 className={styles.heading}>You&apos;ll need a password</h1>
+      <Heading size='large'>
+        <h1>You&apos;ll need a password</h1>
+      </Heading>
+
       <div className={styles.inputGroup}>
         <div>
           <PasswordInput

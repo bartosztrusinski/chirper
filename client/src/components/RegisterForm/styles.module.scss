@@ -29,22 +29,6 @@
     gap: u.rem(30);
   }
 
-  .heading {
-    font-size: var(--fs-600);
-    font-weight: var(--fw-bold);
-    justify-self: center;
-    text-align: center;
-
-    @include u.breakpoint-up('medium') {
-      font-size: var(--fs-700);
-    }
-  }
-
-  .description {
-    color: var(--text-muted-color);
-    font-size: var(--fs-200);
-  }
-
   .inputGroup {
     display: grid;
     gap: u.rem(12);

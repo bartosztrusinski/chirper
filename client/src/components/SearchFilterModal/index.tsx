@@ -6,6 +6,7 @@ import Modal from '../Modal';
 import Toggle from '../Toggle';
 import styles from './styles.module.scss';
 import { HiSelector as SelectIcon } from '@react-icons/all-files/hi/HiSelector';
+import Heading from '../Heading';
 
 type SearchFilterModalProps = ReactModal.Props;
 
@@ -51,7 +52,11 @@ const SearchFilterModal = (props: SearchFilterModalProps) => {
   return (
     <Modal
       {...props}
-      header={<h1 className={styles.heading}>Advanced Search</h1>}
+      header={
+        <Heading size='medium'>
+          <h1>Advanced Search</h1>
+        </Heading>
+      }
       onAfterOpen={() => reset(search)}
     >
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>

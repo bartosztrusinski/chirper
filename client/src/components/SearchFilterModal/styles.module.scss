@@ -1,10 +1,5 @@
 @use '../../assets/styles/util' as u;
 
-.heading {
-  font-size: var(--fs-600);
-  font-weight: var(--fw-bold);
-}
-
 .form {
   display: grid;
   gap: u.rem(12);
