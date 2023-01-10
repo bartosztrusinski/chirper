@@ -25,6 +25,9 @@ import {
   useNavigate,
   useSearch,
 } from '@tanstack/react-location';
+import Container from '../Container';
+import Heading from '../Heading';
+import MutedText from '../MutedText';
 
 type LocationGenerics = MakeGenerics<{
   Params: { username: string };
@@ -58,6 +61,7 @@ const UserProfilePage = () => {
     dialog === 'following',
   );
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
   const {
     data: user,
@@ -68,7 +72,7 @@ const UserProfilePage = () => {
     async () => {
       const user = await UserService.getOne(username);
 
-      if (!currentUser) {
+      if (!currentUser || isCurrentUserProfile) {
         return user;
       }
 
@@ -89,6 +93,11 @@ const UserProfilePage = () => {
     });
 
   useEffect(() => {
+    document.title = `${username}'s Profile`;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     setIsFollowedModalOpen(dialog === 'followed');
     setIsFollowingModalOpen(dialog === 'following');
     setIsEditModalOpen(dialog === 'edit-profile' && isCurrentUserProfile);
@@ -96,30 +105,40 @@ const UserProfilePage = () => {
   }, [dialog]);
 
   if (isLoading) {
-    return <Loader />;
+    return (
+      <Container>
+        <Loader />
+      </Container>
+    );
   }
 
-  if (isError) {
+  if (!user && isError) {
     return (
-      <div>
-        <p> Oops something went wrong...</p>
+      <Container>
+        <Heading size='small'>
+          Oops... there&apos;s been problem finding this user 😬
+        </Heading>
+        <MutedText>
+          Try clicking the button below or refreshing the page
+        </MutedText>
         <Button
+          className={styles.retryButton}
           onClick={() =>
-            queryClient.refetchQueries(['users', ...queryKeys], {
-              exact: true,
-            })
+            queryClient.refetchQueries(['users', ...queryKeys], { exact: true })
           }
         >
           Retry
         </Button>
-      </div>
+      </Container>
     );
   }
 
   return (
     <>
+      <h1 className='visually-hidden'>{`${user.username}'s Profile`}</h1>
+
       <div className={styles.profile}>
-        <div className={styles.intro}>
+        <div className={styles.main}>
           <img
             className={styles.avatar}
             src={user.profile.picture ?? defaultAvatar}
@@ -131,7 +150,11 @@ const UserProfilePage = () => {
           </div>
           <Button
             type='button'
-            className={styles.button}
+            className={`${styles.button} ${
+              user.isFollowed ? styles.followed : ''
+            }`}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             onClick={() => {
               if (!currentUser) {
                 promptContext?.openFollowPrompt(user.username);
@@ -151,7 +174,9 @@ const UserProfilePage = () => {
               : isCurrentUserProfile
               ? 'Edit Profile'
               : user.isFollowed
-              ? 'Unfollow'
+              ? isHovered
+                ? 'Unfollow'
+                : 'Following'
               : 'Follow'}
           </Button>
         </div>
@@ -248,7 +273,11 @@ const UserProfilePage = () => {
       <Modal
         isOpen={isFollowedModalOpen}
         onRequestClose={closeDialog}
-        header={<h1 className={styles.followModalHeading}>Followed</h1>}
+        header={
+          <Heading size='medium'>
+            <h1>Followed</h1>
+          </Heading>
+        }
       >
         <section>
           <UserList
@@ -263,7 +292,11 @@ const UserProfilePage = () => {
       <Modal
         isOpen={isFollowingModalOpen}
         onRequestClose={closeDialog}
-        header={<h1 className={styles.followModalHeading}>Following</h1>}
+        header={
+          <Heading size='medium'>
+            <h1>Following</h1>
+          </Heading>
+        }
       >
         <section>
           <UserList
