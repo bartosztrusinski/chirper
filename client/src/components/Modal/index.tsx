@@ -40,6 +40,7 @@ const Modal = ({
   return (
     <ReactModal
       {...restProps}
+      closeTimeoutMS={150}
       contentRef={(element) => (contentRef.current = element)}
       isOpen={isOpen}
       onRequestClose={onRequestClose}
