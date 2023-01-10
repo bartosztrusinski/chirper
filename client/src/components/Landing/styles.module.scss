@@ -7,6 +7,11 @@
   grid-auto-rows: 1fr;
   gap: u.rem(48);
   background-color: var(--color-dark-10);
+  background-image: linear-gradient(
+    45deg,
+    var(--color-dark-10),
+    var(--color-dark-30)
+  );
   text-align: center;
 
   @include u.breakpoint-up('xlarge') {
@@ -47,10 +52,15 @@
     grid-auto-columns: 1fr;
     grid-auto-rows: 1fr;
     justify-content: center;
-    background-color: var(--color-light-50);
-    grid-auto-flow: row;
-    padding: u.rem(30) u.rem(24);
     gap: u.rem(24);
+    background-color: var(--color-light-50);
+    background-image: linear-gradient(
+      45deg,
+      var(--color-light-30),
+      var(--color-light-80)
+    );
+    padding: u.rem(30) max(env(safe-area-inset-right), u.rem(24)) u.rem(30)
+      max(env(safe-area-inset-left), u.rem(24));
 
     @include u.breakpoint-up('small') {
       grid-auto-flow: column;
