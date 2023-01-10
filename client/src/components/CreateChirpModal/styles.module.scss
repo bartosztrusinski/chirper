@@ -1,13 +1,6 @@
 @use '../../assets/styles/util' as u;
 
-.heading {
-  font-size: var(--fs-600);
-  font-weight: var(--fw-bold);
-}
-
 .line {
   justify-self: center;
   height: u.rem(32);
-  padding-inline: u.rem(1);
-  background: var(--border-color);
 }
