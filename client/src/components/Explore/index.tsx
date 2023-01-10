@@ -1,8 +1,13 @@
+import { useEffect } from 'react';
 import ChirpService from '../../api/services/Chirp';
 import ChirpList from '../ChirpList';
 
 const Explore = () => {
   const queryKeys = ['all'];
+
+  useEffect(() => {
+    document.title = 'Explore';
+  }, []);
 
   return (
     <section>

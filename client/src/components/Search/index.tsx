@@ -4,6 +4,7 @@ import Container from '../Container';
 import Heading from '../Heading';
 import MutedText from '../MutedText';
 import ChirpList from '../ChirpList';
+import { useEffect } from 'react';
 
 type SearchParams = {
   query: string;
@@ -33,6 +34,10 @@ const Search = () => {
   };
 
   const queryKeys = ['search', searchParams];
+
+  useEffect(() => {
+    document.title = 'Search';
+  }, []);
 
   return searchParams.query ? (
     <section>
