@@ -15,6 +15,7 @@ import {
   useNavigate,
   useSearch,
 } from '@tanstack/react-location';
+import Heading from '../Heading';
 
 type LocationGenerics = MakeGenerics<{
   Search: {
@@ -32,15 +33,16 @@ const Header = () => {
   const [title, setTitle] = useState<string>('');
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(dialog === 'menu');
 
+  const isSearchPage = location.current.pathname === '/search';
+  const { title: docTitle } = document;
+
   useEffect(() => {
-    setTitle(document.title);
-  }, []);
+    setTitle(docTitle);
+  }, [docTitle]);
 
   useEffect(() => {
     setIsMenuOpen(dialog === 'menu');
   }, [dialog]);
-
-  const isSearchPage = location.current.pathname === '/search';
 
   const closeDialog = () => {
     navigate({
@@ -62,15 +64,13 @@ const Header = () => {
         <ChirperIcon className={styles.icon} />
       </Link>
 
-      <h1
-        className={`${styles.heading} ${
-          isSearchPage || isScreenSmallUp ? 'visually-hidden' : ''
-        }`}
-      >
-        {title}
-      </h1>
-
-      {(isSearchPage || isScreenSmallUp) && <SearchForm />}
+      {isSearchPage || isScreenSmallUp ? (
+        <SearchForm />
+      ) : (
+        <Heading size='medium' className={styles.heading}>
+          {title}
+        </Heading>
+      )}
 
       {isScreenSmallUp ? (
         <DarkModeToggle />
