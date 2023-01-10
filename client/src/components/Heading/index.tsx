@@ -1,13 +1,21 @@
 import styles from './styles.module.scss';
-import { ReactNode } from 'react';
+import { ComponentPropsWithoutRef, ReactNode } from 'react';
 
-interface HeadingProps {
+interface HeadingProps extends ComponentPropsWithoutRef<'div'> {
   children: ReactNode;
   size: 'small' | 'medium' | 'large';
 }
 
-const Heading = ({ children, size }: HeadingProps) => {
-  return <div className={`${styles.heading} ${styles[size]}`}>{children}</div>;
+const Heading = ({ children, size, className, ...restProps }: HeadingProps) => {
+  const classes = [styles.heading, styles[size], className]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    <div {...restProps} className={classes}>
+      {children}
+    </div>
+  );
 };
 
 export default Heading;
