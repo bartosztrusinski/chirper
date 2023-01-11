@@ -97,7 +97,7 @@
     font-size: var(--fs-200);
     background-color: inherit;
     color: var(--text-muted-color);
-    transition: color 210ms ease;
+    transition: color 180ms ease-out;
 
     @include u.breakpoint-up('small') {
       gap: u.rem(8);
@@ -110,7 +110,7 @@
       border-radius: 50%;
       border: none;
       cursor: pointer;
-      transition: background-color 210ms ease;
+      transition: background-color 180ms ease-out;
 
       &:focus-visible {
         outline: u.rem(2) solid var(--color-primary);
@@ -118,27 +118,29 @@
 
       .icon {
         font-size: var(--fs-400);
+        transition: transform 60ms cubic-bezier(0.555, -0.175, 0.575, 1.38);
       }
     }
-  }
 
-  .replies,
-  .share {
+    &:active {
+      .icon {
+        transform: scale(1.2);
+      }
+    }
+
     &:hover {
       color: var(--color-primary);
 
       .iconBackground {
         background-color: hsl(var(--color-primary-hsl) / 10%);
       }
-    }
-  }
 
-  .likes {
-    &:hover {
-      color: var(--color-like);
+      &.likes {
+        color: var(--color-like);
 
-      .iconBackground {
-        background-color: hsl(var(--color-like-hsl) / 10%);
+        .iconBackground {
+          background-color: hsl(var(--color-like-hsl) / 10%);
+        }
       }
     }
 

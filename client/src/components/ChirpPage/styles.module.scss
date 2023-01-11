@@ -60,18 +60,22 @@
 
     .name {
       color: var(--text-color);
-      font-weight: var(--fw-bold);
+      font-weight: var(--fw-semi-bold);
       font-size: var(--fs-400);
     }
   }
 }
 
 .content {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  font-size: var(--fs-600);
+  font-size: var(--fs-500);
   padding-bottom: u.rem(10);
   border-bottom: u.rem(1) solid var(--border-color);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+
+  @include u.breakpoint-up('medium') {
+    font-size: var(--fs-600);
+  }
 }
 
 .meta {
@@ -122,7 +126,7 @@
 
   .date {
     display: grid;
-    grid-template-columns: repeat(3, auto);
+    grid-auto-flow: column;
     gap: u.rem(6);
 
     @include u.breakpoint-up('medium') {
@@ -147,7 +151,9 @@
     border-radius: 50%;
     outline: u.rem(2) solid transparent;
     cursor: pointer;
-    transition: background-color 210ms ease, color 210ms ease;
+    transition-property: background-color color;
+    transition-duration: 180ms;
+    transition-timing-function: ease-out;
 
     &.liked {
       color: var(--color-like);
@@ -155,10 +161,17 @@
 
     .icon {
       font-size: var(--fs-600);
+      transition: transform 60ms cubic-bezier(0.555, -0.175, 0.575, 1.38);
     }
 
     &:focus-visible {
       outline-color: var(--color-primary);
+    }
+
+    &:active {
+      .icon {
+        transform: scale(1.16);
+      }
     }
 
     &:hover {
