@@ -1,4 +1,4 @@
-import { ReactNode, useContext, useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 import styles from './styles.module.scss';
 import Header from '../Header';
 import UserPanel from '../UserPanel';
@@ -7,19 +7,17 @@ import Button from '../Button';
 import { BiLogOut as LogOutIcon } from '@react-icons/all-files/bi/BiLogOut';
 import { IoMdAdd as CreateChirpIcon } from '@react-icons/all-files/io/IoMdAdd';
 import useAuth from '../../hooks/useAuth';
-import { PromptContext } from '../UnauthenticatedApp';
-import { CreateChirpContext } from '../AuthenticatedApp';
 import { toast } from 'react-hot-toast';
 import useBreakpoint from '../../hooks/useBreakpoint';
 import Nav from '../Nav';
+import { useModal } from '../ModalProvider';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => {
-  const promptContext = useContext(PromptContext);
-  const createChirpContext = useContext(CreateChirpContext);
+  const modal = useModal();
   const { currentUser } = useUser();
   const { logOut } = useAuth();
   const isScreenSmallUp = useBreakpoint('up', 'small');
@@ -61,7 +59,7 @@ const Layout = ({ children }: LayoutProps) => {
               <>
                 <Button
                   className={styles.button}
-                  onClick={() => createChirpContext?.openCreateChirpModal()}
+                  onClick={() => modal.openCreateChirp()}
                 >
                   {isScreenXLargeUp ? (
                     'Chirp'
@@ -101,7 +99,7 @@ const Layout = ({ children }: LayoutProps) => {
       {!isScreenSmallUp && currentUser && (
         <Button
           className={styles.createChirpButton}
-          onClick={() => createChirpContext?.openCreateChirpModal()}
+          onClick={() => modal.openCreateChirp()}
         >
           <CreateChirpIcon className={styles.icon} />
         </Button>
@@ -119,10 +117,10 @@ const Layout = ({ children }: LayoutProps) => {
               </div>
             </div>
           )}
-          <Button variant='light' onClick={promptContext?.openLogIn}>
+          <Button variant='light' onClick={modal.openLogIn}>
             Log in
           </Button>
-          <Button variant='light' onClick={promptContext?.openSignUp}>
+          <Button variant='light' onClick={modal.openSignUp}>
             Sign up
           </Button>
         </div>

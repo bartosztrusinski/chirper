@@ -1,16 +1,15 @@
 import { RiTwitterLine as ChirperIcon } from '@react-icons/all-files/ri/RiTwitterLine';
 import { Navigate, useNavigate } from '@tanstack/react-location';
-import { useContext } from 'react';
 import useUser from '../../hooks/useUser';
 import Button from '../Button';
 import MutedText from '../MutedText';
 import Heading from '../Heading';
-import { PromptContext } from '../UnauthenticatedApp';
 import styles from './styles.module.scss';
+import { useModal } from '../ModalProvider';
 
 const Landing = () => {
   const { currentUser } = useUser();
-  const promptContext = useContext(PromptContext);
+  const modal = useModal();
   const navigate = useNavigate();
 
   return currentUser ? (
@@ -45,10 +44,10 @@ const Landing = () => {
             <Heading size='medium'>Join Chirper today</Heading>
           </h2>
           <div className={styles.group}>
-            <Button variant='light' onClick={promptContext?.openSignUp}>
+            <Button variant='light' onClick={modal.openSignUp}>
               Sign up
             </Button>
-            <Button variant='light' onClick={promptContext?.openLogIn}>
+            <Button variant='light' onClick={modal.openLogIn}>
               Log in
             </Button>
           </div>

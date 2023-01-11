@@ -3,9 +3,9 @@ import Button from '../Button';
 import Loader from '../Loader';
 import { ComponentPropsWithoutRef, useContext } from 'react';
 import { MultiStepContext } from '.';
-import { PromptContext } from '../UnauthenticatedApp';
 import { MultiStep } from '../../hooks/useMultiStep';
 import { useIsMutating } from '@tanstack/react-query';
+import { useModal } from '../ModalProvider';
 
 interface FormWrapperProps extends ComponentPropsWithoutRef<'form'> {
   isInvalid?: boolean;
@@ -17,7 +17,7 @@ const FormWrapper = ({
   ...restProps
 }: FormWrapperProps) => {
   const isSigningUp = useIsMutating(['user', 'auth']);
-  const { LogInLink } = useContext(PromptContext) as PromptContext;
+  const { LogInLink } = useModal();
   const { isFirstStep, isLastStep } = useContext(MultiStepContext) as MultiStep;
 
   return (

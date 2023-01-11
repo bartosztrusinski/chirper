@@ -4,10 +4,9 @@ import Button from '../Button';
 import styles from './styles.module.scss';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import useAuth from '../../hooks/useAuth';
-import { useContext } from 'react';
-import { PromptContext } from '../UnauthenticatedApp';
 import toast from 'react-hot-toast';
 import useBreakpoint from '../../hooks/useBreakpoint';
+import { useModal } from '../ModalProvider';
 
 type LocationGenerics = MakeGenerics<{
   Search: { dialog?: 'followed' | 'following' | 'edit-profile' };
@@ -17,7 +16,7 @@ const UserPanel = () => {
   const navigate = useNavigate<LocationGenerics>();
   const { currentUser } = useUser();
   const { logOut } = useAuth();
-  const promptContext = useContext(PromptContext);
+  const modal = useModal();
   const isScreenSmallUp = useBreakpoint('up', 'small');
 
   return currentUser ? (
@@ -99,10 +98,10 @@ const UserPanel = () => {
     </div>
   ) : (
     <div className={styles.buttonContainer}>
-      <Button variant='light' onClick={() => promptContext?.openSignUp()}>
+      <Button variant='light' onClick={() => modal.openSignUp()}>
         Sign up
       </Button>
-      <Button variant='light' onClick={() => promptContext?.openLogIn()}>
+      <Button variant='light' onClick={() => modal.openLogIn()}>
         Log in
       </Button>
     </div>

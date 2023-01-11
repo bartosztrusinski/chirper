@@ -11,8 +11,7 @@ import Modal from '../Modal';
 import UserList from '../UserList';
 import formatCount from '../../utils/formatCount';
 import formatTime from '../../utils/formatTime';
-import { useContext, useEffect, useState } from 'react';
-import { PromptContext } from '../UnauthenticatedApp';
+import { useEffect, useState } from 'react';
 import { IoCalendarOutline as DateIcon } from '@react-icons/all-files/io5/IoCalendarOutline';
 import { HiOutlineLocationMarker as LocationIcon } from '@react-icons/all-files/hi/HiOutlineLocationMarker';
 import { BiLinkAlt as WebsiteIcon } from '@react-icons/all-files/bi/BiLinkAlt';
@@ -28,6 +27,7 @@ import {
 import Container from '../Container';
 import Heading from '../Heading';
 import MutedText from '../MutedText';
+import { useModal } from '../ModalProvider';
 
 type LocationGenerics = MakeGenerics<{
   Params: { username: string };
@@ -47,7 +47,7 @@ const UserProfilePage = () => {
   const { dialog } = useSearch<LocationGenerics>();
   const { currentUser } = useUser();
   const { followUser, unfollowUser } = useFollowUser(queryKeys);
-  const promptContext = useContext(PromptContext);
+  const modal = useModal();
 
   const isCurrentUserProfile = currentUser?.username === username;
 
@@ -157,7 +157,7 @@ const UserProfilePage = () => {
             onMouseLeave={() => setIsHovered(false)}
             onClick={() => {
               if (!currentUser) {
-                promptContext?.openFollowPrompt(user.username);
+                modal.openFollowPrompt(user.username);
               }
 
               if (isCurrentUserProfile) {

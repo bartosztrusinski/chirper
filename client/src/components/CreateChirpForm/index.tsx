@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-location';
-import { useContext, useRef } from 'react';
+import { useRef } from 'react';
 import useUser from '../../hooks/useUser';
 import styles from './styles.module.scss';
 import defaultAvatar from '../../assets/images/default_avatar.png';
@@ -10,11 +10,11 @@ import { content } from './schemas';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useManageChirp from '../../hooks/useManageChirp';
-import { CreateChirpContext } from '../AuthenticatedApp';
 import Loader from '../Loader';
 import { toast } from 'react-hot-toast';
 import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
 import { useIsMutating } from '@tanstack/react-query';
+import { useModal } from '../ModalProvider';
 
 interface CreateChirpFormProps {
   replyToId?: string;
@@ -30,9 +30,7 @@ const CreateChirpForm = ({ replyToId, autoFocus }: CreateChirpFormProps) => {
   const { currentUser } = useUser();
   const { createChirp } = useManageChirp();
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
-  const { closeCreateChirpModal } = useContext(
-    CreateChirpContext,
-  ) as CreateChirpContext;
+  const modal = useModal();
   const {
     register,
     handleSubmit,
@@ -56,7 +54,7 @@ const CreateChirpForm = ({ replyToId, autoFocus }: CreateChirpFormProps) => {
       {
         onSuccess: (newChirpId) => {
           reset();
-          closeCreateChirpModal();
+          modal.close();
           toast.success(
             <div className={styles.toast}>
               <div className={styles.message}>Your chirp was created!</div>

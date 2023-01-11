@@ -5,13 +5,12 @@ import Button from '../Button';
 import { useNavigate } from '@tanstack/react-location';
 import useAuth from '../../hooks/useAuth';
 import { useForm } from 'react-hook-form';
-import { useContext } from 'react';
-import { PromptContext } from '../UnauthenticatedApp';
 import Loader from '../Loader';
 import toast from 'react-hot-toast';
 import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
 import { useIsMutating } from '@tanstack/react-query';
 import Heading from '../Heading';
+import { useModal } from '../ModalProvider';
 
 interface LogInInputs {
   login: string;
@@ -21,7 +20,7 @@ interface LogInInputs {
 const LogInForm = () => {
   const navigate = useNavigate();
   const isLoggingIn = useIsMutating(['user', 'auth']);
-  const { SignUpLink } = useContext(PromptContext) as PromptContext;
+  const { SignUpLink } = useModal();
   const { logIn } = useAuth();
   const {
     register,

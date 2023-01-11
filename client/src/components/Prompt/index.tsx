@@ -1,7 +1,6 @@
 import styles from './styles.module.scss';
 import Button from '../Button';
-import { useContext } from 'react';
-import { PromptContext } from '../UnauthenticatedApp';
+import { useModal } from '../ModalProvider';
 
 interface PromptProps {
   title: string;
@@ -9,7 +8,7 @@ interface PromptProps {
 }
 
 const Prompt = ({ title, description }: PromptProps) => {
-  const promptContext = useContext(PromptContext);
+  const modal = useModal();
 
   return (
     <>
@@ -22,8 +21,8 @@ const Prompt = ({ title, description }: PromptProps) => {
         <Button
           autoFocus
           onClick={() => {
-            promptContext?.openLogIn();
-            promptContext?.closePrompt();
+            modal.close();
+            modal.openLogIn();
           }}
         >
           Log In
@@ -31,8 +30,8 @@ const Prompt = ({ title, description }: PromptProps) => {
         <Button
           variant='light'
           onClick={() => {
-            promptContext?.openSignUp();
-            promptContext?.closePrompt();
+            modal.close();
+            modal.openSignUp();
           }}
         >
           Sign Up

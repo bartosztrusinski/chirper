@@ -1,19 +1,18 @@
 import styles from './styles.module.scss';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 import Chirp from '../../interfaces/Chirp';
-import { forwardRef, useContext } from 'react';
+import { forwardRef } from 'react';
 import { Link, useNavigate } from '@tanstack/react-location';
 import { BiComment as ReplyIcon } from '@react-icons/all-files/bi/BiComment';
 import { RiHeart2Line as LikeIconOutline } from '@react-icons/all-files/ri/RiHeart2Line';
 import { RiHeart2Fill as LikeIconFill } from '@react-icons/all-files/ri/RiHeart2Fill';
 import { RiShareLine as ShareIcon } from '@react-icons/all-files/ri/RiShareLine';
-import { CreateChirpContext } from '../AuthenticatedApp';
-import { PromptContext } from '../UnauthenticatedApp';
 import useUser from '../../hooks/useUser';
 import formatRelativeTime from '../../utils/formatRelativeTime';
 import formatCount from '../../utils/formatCount';
 import { toast } from 'react-hot-toast';
 import useLikeChirp from '../../hooks/useLikeChirp';
+import { useModal } from '../ModalProvider';
 
 interface ChirpProps {
   chirp: Chirp;
@@ -28,8 +27,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
   ref,
 ) {
   const navigate = useNavigate();
-  const createChirpContext = useContext(CreateChirpContext);
-  const promptContext = useContext(PromptContext);
+  const modal = useModal();
   const { currentUser } = useUser();
   const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys);
 
@@ -39,7 +37,7 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
 
   const handleLike = () => {
     if (!currentUser) {
-      promptContext?.openLikePrompt(chirp.author.username);
+      modal.openLikePrompt(chirp.author.username);
     } else if (chirp.isLiked) {
       unlikeChirp(chirp);
     } else {
@@ -49,9 +47,9 @@ const Chirp = forwardRef<Ref, ChirpProps>(function Chirp(
 
   const handleReply = () => {
     if (currentUser) {
-      createChirpContext?.openCreateChirpModal(chirp);
+      modal.openCreateChirp(chirp);
     } else {
-      promptContext?.openReplyPrompt(chirp.author.username);
+      modal.openReplyPrompt(chirp.author.username);
     }
   };
 

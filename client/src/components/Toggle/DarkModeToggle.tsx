@@ -1,13 +1,10 @@
 import styles from './styles.module.scss';
 import { FiSun as SunIcon } from '@react-icons/all-files/fi/FiSun';
 import { FiMoon as MoonIcon } from '@react-icons/all-files/fi/FiMoon';
-import { useContext } from 'react';
-import { ThemeContext } from '../../App';
+import { useTheme } from '../ThemeProvider';
 
 const DarkModeToggle = () => {
-  const { isDarkMode, toggleDarkMode } = useContext(
-    ThemeContext,
-  ) as ThemeContext;
+  const { isDarkMode, toggleDarkMode } = useTheme();
 
   const classes = [
     styles.toggle,

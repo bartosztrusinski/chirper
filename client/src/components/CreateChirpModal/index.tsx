@@ -2,32 +2,31 @@ import styles from './styles.module.scss';
 import Modal from '../Modal';
 import Chirp from '../Chirp';
 import CreateChirpForm from '../CreateChirpForm';
-import { useContext } from 'react';
-import { CreateChirpContext } from '../AuthenticatedApp';
 import Line from '../Line';
 import Heading from '../Heading';
+import { useModal } from '../ModalProvider';
 
 type CreateChirpModalProps = ReactModal.Props;
 
 const CreateChirpModal = (props: CreateChirpModalProps) => {
-  const { replyTo } = useContext(CreateChirpContext) as CreateChirpContext;
+  const modal = useModal();
 
   return (
     <Modal
       {...props}
       header={
         <Heading size='medium'>
-          <h1>{replyTo ? 'Reply to' : 'Create Chirp'}</h1>
+          <h1>{modal.replyTo ? 'Reply to' : 'Create Chirp'}</h1>
         </Heading>
       }
     >
-      {replyTo && (
+      {modal.replyTo && (
         <>
-          <Chirp chirp={replyTo} showMetrics={false} queryKeys={[]} />
+          <Chirp chirp={modal.replyTo} showMetrics={false} queryKeys={[]} />
           <Line bold className={styles.line} />
         </>
       )}
-      <CreateChirpForm autoFocus replyToId={replyTo?._id} />
+      <CreateChirpForm autoFocus replyToId={modal.replyTo?._id} />
     </Modal>
   );
 };

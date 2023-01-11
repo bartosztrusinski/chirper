@@ -18,9 +18,7 @@ import MutedText from '../MutedText';
 import getRequestErrorMessage from '../../utils/getResponseErrorMessage';
 import formatCount from '../../utils/formatCount';
 import formatTime from '../../utils/formatTime';
-import { useContext, useEffect, useState } from 'react';
-import { CreateChirpContext } from '../AuthenticatedApp';
-import { PromptContext } from '../UnauthenticatedApp';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { FaArrowLeft as BackIcon } from '@react-icons/all-files/fa/FaArrowLeft';
 import { BiComment as ReplyIcon } from '@react-icons/all-files/bi/BiComment';
@@ -37,6 +35,7 @@ import {
   useNavigate,
   useSearch,
 } from '@tanstack/react-location';
+import { useModal } from '../ModalProvider';
 
 type LocationGenerics = MakeGenerics<{
   Params: { id: string };
@@ -56,8 +55,7 @@ const ChirpPage = () => {
   const location = useLocation<LocationGenerics>();
   const navigate = useNavigate<LocationGenerics>();
   const { dialog } = useSearch<LocationGenerics>();
-  const createChirpContext = useContext(CreateChirpContext);
-  const promptContext = useContext(PromptContext);
+  const modal = useModal();
   const { currentUser } = useUser();
   const { likeChirp, unlikeChirp } = useLikeChirp(queryKeys);
   const { deleteChirp } = useManageChirp();
@@ -210,9 +208,9 @@ const ChirpPage = () => {
                 className={styles.button}
                 onClick={() => {
                   if (currentUser) {
-                    createChirpContext?.openCreateChirpModal(chirp);
+                    modal.openCreateChirp(chirp);
                   } else {
-                    promptContext?.openReplyPrompt(chirp.author.username);
+                    modal.openReplyPrompt(chirp.author.username);
                   }
                 }}
               >
@@ -228,7 +226,7 @@ const ChirpPage = () => {
                   if (currentUser) {
                     chirp.isLiked ? unlikeChirp(chirp) : likeChirp(chirp);
                   } else {
-                    promptContext?.openLikePrompt(chirp.author.username);
+                    modal.openLikePrompt(chirp.author.username);
                   }
                 }}
               >
