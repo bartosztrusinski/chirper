@@ -103,6 +103,10 @@
       gap: u.rem(8);
     }
 
+    &.liked {
+      color: var(--color-like);
+    }
+
     .iconBackground {
       background-color: inherit;
       color: inherit;
@@ -123,16 +127,14 @@
     }
 
     &:active {
-      .icon {
-        transform: scale(1.2);
-      }
-    }
-
-    &:hover {
       color: var(--color-primary);
 
       .iconBackground {
         background-color: hsl(var(--color-primary-hsl) / 10%);
+
+        .icon {
+          transform: scale(1.2);
+        }
       }
 
       &.likes {
@@ -144,8 +146,22 @@
       }
     }
 
-    &.liked {
-      color: var(--color-like);
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: var(--color-primary);
+
+        .iconBackground {
+          background-color: hsl(var(--color-primary-hsl) / 10%);
+        }
+
+        &.likes {
+          color: var(--color-like);
+
+          .iconBackground {
+            background-color: hsl(var(--color-like-hsl) / 10%);
+          }
+        }
+      }
     }
   }
 }

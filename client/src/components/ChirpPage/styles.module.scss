@@ -169,16 +169,11 @@
     }
 
     &:active {
-      .icon {
-        transform: scale(1.16);
-      }
-    }
-
-    &:hover {
       background-color: hsl(var(--color-primary-hsl) / 10%);
 
       .icon {
         color: var(--color-primary);
+        transform: scale(1.16);
       }
 
       &.like {
@@ -194,6 +189,32 @@
 
         .icon {
           color: var(--color-error);
+        }
+      }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: hsl(var(--color-primary-hsl) / 10%);
+
+        .icon {
+          color: var(--color-primary);
+        }
+
+        &.like {
+          background-color: hsl(var(--color-like-hsl) / 10%);
+
+          .icon {
+            color: var(--color-like);
+          }
+        }
+
+        &.delete {
+          background-color: hsl(var(--color-error-hsl) / 10%);
+
+          .icon {
+            color: var(--color-error);
+          }
         }
       }
     }
