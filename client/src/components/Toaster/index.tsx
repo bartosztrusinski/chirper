@@ -1,14 +1,11 @@
 import styles from './styles.module.scss';
-import { RiCloseFill as CloseIcon } from '@react-icons/all-files/ri/RiCloseFill';
-import toast, {
-  ToastBar,
-  Toaster as ReactHotToaster,
-  ToasterProps,
-} from 'react-hot-toast';
 import useUser from '../../hooks/useUser';
+import ToastBar from './ToastBar';
+import { Toaster as ReactHotToaster, ToasterProps } from 'react-hot-toast';
 
 const Toaster = (props: ToasterProps) => {
   const { currentUser } = useUser();
+  const duration = 3000;
 
   return (
     <ReactHotToaster
@@ -16,7 +13,7 @@ const Toaster = (props: ToasterProps) => {
         currentUser ? '' : styles.space
       }`}
       toastOptions={{
-        duration: 3000,
+        duration,
         success: {
           position: 'bottom-center',
           className: styles.success,
@@ -36,24 +33,7 @@ const Toaster = (props: ToasterProps) => {
       }}
       {...props}
     >
-      {(t) => (
-        <ToastBar toast={t}>
-          {({ icon, message }) => (
-            <>
-              {icon}
-              {message}
-              {t.type !== 'loading' && (
-                <button
-                  className={styles.closeButton}
-                  onClick={() => toast.dismiss(t.id)}
-                >
-                  <CloseIcon />
-                </button>
-              )}
-            </>
-          )}
-        </ToastBar>
-      )}
+      {(t) => <ToastBar t={t} duration={duration} />}
     </ReactHotToaster>
   );
 };
