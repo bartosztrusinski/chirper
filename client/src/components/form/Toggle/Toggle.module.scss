@@ -1,0 +1,58 @@
+@use '../../../assets/styles/util' as u;
+
+.small {
+  --toggle-width: #{u.rem(50)};
+}
+
+.medium {
+  --toggle-width: #{u.rem(60)};
+}
+
+.large {
+  --toggle-width: #{u.rem(70)};
+}
+
+.toggle {
+  display: block;
+  position: relative;
+  height: calc(var(--toggle-width) / 2);
+  width: var(--toggle-width);
+  background-color: var(--toggle-background-color);
+  border-radius: calc(var(--toggle-width) / 3.25);
+  padding: calc(var(--toggle-width) / 10.4) calc(var(--toggle-width) / 10.8);
+  cursor: pointer;
+  box-shadow: var(--shadow-inner);
+  outline: u.rem(2) solid transparent;
+
+  &:focus-within {
+    outline-color: var(--color-primary);
+  }
+
+  &::before {
+    content: '';
+    display: block;
+    height: calc(var(--toggle-width) / 3.25);
+    width: calc(var(--toggle-width) / 3.25);
+    border-radius: 50%;
+    background-color: var(--toggle-handle-color);
+    position: absolute;
+    transform: none;
+    transition: transform 160ms cubic-bezier(0.555, -0.175, 0.575, 1.38);
+    box-shadow: var(--shadow-medium);
+  }
+
+  &.enabled {
+    background-color: var(--toggle-enabled-color);
+
+    &::before {
+      transform: translate(calc(var(--toggle-width) / 2));
+    }
+  }
+
+  .input {
+    position: absolute;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+}

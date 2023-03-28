@@ -1,0 +1,10 @@
+@use '../../../assets/styles/util' as u;
+
+.icon {
+  color: var(--color-primary);
+  font-size: var(--fs-700);
+
+  @include u.breakpoint-up('medium') {
+    font-size: var(--fs-800);
+  }
+}

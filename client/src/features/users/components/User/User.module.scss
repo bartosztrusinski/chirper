@@ -1,0 +1,74 @@
+@use '../../../../assets/styles/util/' as u;
+
+[data-theme='light'] {
+  --user-item-background-color: var(--background-color);
+}
+
+[data-theme='dark'] {
+  --user-item-background-color: var(--color-dark-20);
+}
+
+@mixin card {
+  background-color: var(--card-background-color);
+  border: u.rem(1) solid var(--border-color);
+  border-radius: u.rem(8);
+  box-shadow: var(--shadow-small);
+  padding: u.rem(12);
+}
+
+.userContainer {
+  @include card;
+
+  display: grid;
+  grid-template-columns: u.rem(48) 1fr;
+  align-items: center;
+  gap: u.rem(12);
+  margin-block: u.rem(12);
+  cursor: pointer;
+
+  .avatarContainer {
+    align-self: start;
+  }
+
+  .avatar {
+    border-radius: 50%;
+  }
+
+  .mainContainer {
+    display: grid;
+    grid-auto-flow: row;
+    gap: u.rem(8);
+    font-size: var(--fs-200);
+    overflow-wrap: anywhere;
+
+    .topPanel {
+      display: grid;
+      grid-auto-flow: column;
+      align-items: start;
+      justify-content: space-between;
+      gap: u.rem(4);
+
+      .usernames {
+        display: grid;
+        grid-auto-flow: row;
+        justify-items: start;
+
+        .name {
+          font-size: var(--fs-300);
+          font-weight: var(--fw-bold);
+          color: var(--text-color);
+        }
+
+        .username {
+          color: var(--text-muted-color);
+        }
+      }
+
+      .followButton {
+        width: u.rem(80);
+        padding: u.rem(8) 0;
+        font-size: var(--fs-300);
+      }
+    }
+  }
+}

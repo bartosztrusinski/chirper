@@ -1,0 +1,74 @@
+@use '../../../assets/styles/util' as u;
+
+:root {
+  --input-transition-time: 200ms;
+  --input-padding: #{u.rem(12)};
+}
+
+.inputContainer {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  background-color: var(--background-color);
+  font-size: var(--fs-300);
+  border: u.rem(2) solid var(--border-color);
+  border-radius: u.rem(4);
+  cursor: text;
+  transition: border-color var(--input-transition-time) ease-in-out;
+
+  .placeholder {
+    position: absolute;
+    top: var(--input-padding);
+    padding-inline: var(--input-padding);
+    color: var(--text-muted-color);
+    pointer-events: none;
+    transition-property: transform, background-color, color;
+    transition-duration: var(--input-transition-time);
+    transition-timing-function: ease-in-out;
+  }
+
+  &:focus-within {
+    border-color: var(--color-primary);
+
+    .placeholder {
+      color: var(--color-primary);
+      transform: translateY(-100%) scale(88%);
+      background-color: inherit;
+      font-weight: var(--fw-bold);
+    }
+  }
+
+  .input {
+    background-color: inherit;
+    color: inherit;
+    padding: var(--input-padding);
+    outline: none;
+    border: none;
+    min-width: 0;
+    cursor: inherit;
+
+    &:not(:placeholder-shown) ~ .placeholder {
+      transform: translateY(-100%) scale(88%);
+      background-color: inherit;
+      font-weight: var(--fw-bold);
+    }
+  }
+}
+
+.inputButton {
+  aspect-ratio: 1 / 1;
+  background-color: inherit;
+  color: inherit;
+  margin-right: u.rem(8);
+  padding-inline: u.rem(6);
+  font-size: var(--fs-400);
+  border: none;
+  border-radius: inherit;
+  outline: u.rem(1) solid transparent;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline-color: var(--color-primary);
+  }
+}

@@ -1,0 +1,107 @@
+@use '../../../../assets/styles/util/' as u;
+
+@mixin card {
+  background-color: var(--card-background-color);
+  border: u.rem(1) solid var(--border-color);
+  border-radius: u.rem(8);
+  box-shadow: var(--shadow-small);
+  padding: u.rem(12);
+}
+
+.userPanel {
+  display: grid;
+  gap: u.rem(14);
+
+  .userContainer {
+    @include card;
+
+    display: grid;
+    grid-auto-flow: column;
+    justify-items: start;
+    align-items: center;
+    gap: u.rem(12);
+    overflow-wrap: anywhere;
+    cursor: pointer;
+
+    @include u.breakpoint-up('small') {
+      grid-auto-flow: row;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .avatar {
+      width: u.rem(56);
+      border-radius: 50%;
+
+      @include u.breakpoint-up('small') {
+        width: u.rem(80);
+      }
+    }
+
+    .name {
+      color: var(--text-color);
+      font-weight: var(--fw-bold);
+      font-size: var(--fs-400);
+    }
+
+    .username {
+      color: var(--text-muted-color);
+      font-size: var(--fs-200);
+    }
+  }
+
+  .followContainer {
+    @include card;
+
+    display: grid;
+    grid-template-columns: 1fr u.rem(1) 1fr;
+    padding: u.rem(8);
+    gap: u.rem(8);
+    text-align: center;
+    color: var(--text-muted-color);
+    font-size: var(--fs-200);
+
+    .button {
+      background-color: inherit;
+      color: inherit;
+      border-radius: u.rem(8);
+      border: none;
+      outline: u.rem(2) solid transparent;
+      cursor: pointer;
+      transition: background-color 140ms ease-in-out;
+
+      @include u.breakpoint-up('small') {
+        padding: u.rem(8);
+      }
+
+      &:hover {
+        background-color: var(--card-background-color-hover);
+      }
+
+      &:focus-visible {
+        outline-color: var(--color-primary);
+      }
+    }
+
+    .line {
+      padding: u.rem(1);
+      background-color: var(--border-color);
+    }
+
+    .count {
+      color: var(--text-color);
+      font-size: var(--fs-300);
+      font-weight: var(--fw-bold);
+    }
+  }
+
+  .buttonContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    background-color: var(--color-primary);
+    border-radius: u.rem(8);
+    gap: u.rem(16);
+    padding: clamp(u.rem(16), u.rem(16) + 2vw, u.rem(20)) u.rem(20);
+    box-shadow: var(--shadow-small);
+  }
+}

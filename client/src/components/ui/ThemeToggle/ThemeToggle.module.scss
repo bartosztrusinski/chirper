@@ -1,0 +1,91 @@
+@use '../../../assets/styles/util' as u;
+
+:root {
+  --theme-toggle-width: #{u.rem(70)};
+}
+
+[data-theme='light'] {
+  --toggle-background-color: var(--color-light-50);
+  --toggle-handle-color: var(--color-light-80);
+  --toggle-enabled-color: var(--color-green-40);
+  --toggle-icon-color: var(--color-dark-80);
+
+  .darkMode {
+    --toggle-background-color: var(--color-light-60);
+    --toggle-handle-color: var(--color-light-10);
+    --toggle-enabled-color: var(--toggle-background-color);
+  }
+}
+
+[data-theme='dark'] {
+  --toggle-background-color: var(--color-dark-40);
+  --toggle-handle-color: var(--color-light-70);
+  --toggle-enabled-color: var(--color-green-30);
+  --toggle-icon-color: var(--color-light-10);
+
+  .darkMode {
+    --toggle-background-color: var(--color-dark-40);
+    --toggle-handle-color: var(--color-dark-80);
+    --toggle-enabled-color: var(--toggle-background-color);
+  }
+}
+
+.toggle {
+  display: block;
+  position: relative;
+  height: calc(var(--theme-toggle-width) / 2);
+  width: var(--theme-toggle-width);
+  background-color: var(--toggle-background-color);
+  border-radius: calc(var(--theme-toggle-width) / 3.25);
+  padding: calc(var(--theme-toggle-width) / 10.4)
+    calc(var(--theme-toggle-width) / 10.8);
+  cursor: pointer;
+  box-shadow: var(--shadow-inner);
+  outline: u.rem(2) solid transparent;
+
+  &:focus-within {
+    outline-color: var(--color-primary);
+  }
+
+  &::before {
+    content: '';
+    display: block;
+    height: calc(var(--theme-toggle-width) / 3.25);
+    width: calc(var(--theme-toggle-width) / 3.25);
+    border-radius: 50%;
+    background-color: var(--toggle-handle-color);
+    position: absolute;
+    transform: none;
+    transition: transform 160ms cubic-bezier(0.555, -0.175, 0.575, 1.38);
+    box-shadow: var(--shadow-medium);
+  }
+
+  &.enabled {
+    background-color: var(--toggle-enabled-color);
+
+    &::before {
+      transform: translate(calc(var(--theme-toggle-width) / 2));
+    }
+  }
+
+  .icons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    margin-inline: calc(var(--theme-toggle-width) / 26);
+
+    svg {
+      color: var(--toggle-icon-color);
+      height: calc(var(--theme-toggle-width) / 4.3);
+      width: calc(var(--theme-toggle-width) / 4.3);
+    }
+  }
+
+  .input {
+    position: absolute;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+}

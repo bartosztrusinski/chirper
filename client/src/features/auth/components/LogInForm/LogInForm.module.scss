@@ -1,0 +1,42 @@
+@use '../../../../assets/styles/util/' as u;
+
+.form {
+  display: grid;
+  gap: u.rem(18);
+
+  @include u.breakpoint-up('small') {
+    gap: u.rem(24);
+  }
+
+  @include u.breakpoint-up('medium') {
+    gap: u.rem(30);
+  }
+
+  .inputGroup {
+    display: grid;
+    gap: u.rem(12);
+
+    .errorMessage {
+      color: var(--color-error);
+      font-size: var(--fs-200);
+      padding: u.rem(4);
+    }
+
+    .invalidInput:focus-within {
+      border-color: var(--color-error);
+
+      .placeholder {
+        color: var(--color-error);
+      }
+    }
+  }
+}
+
+.signUpLink {
+  font-size: var(--fs-200);
+  color: var(--text-muted-color);
+
+  @include u.breakpoint-up('medium') {
+    font-size: var(--fs-300);
+  }
+}

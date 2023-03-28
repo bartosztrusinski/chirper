@@ -1,0 +1,167 @@
+@use '../../../../assets/styles/util/' as u;
+
+@mixin card {
+  background-color: var(--card-background-color);
+  border: u.rem(1) solid var(--border-color);
+  border-radius: u.rem(8);
+  box-shadow: var(--shadow-small);
+  padding: u.rem(12);
+}
+
+.chirp {
+  @include card;
+
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: u.rem(8);
+  color: var(--text-color);
+  padding: u.rem(12) u.rem(12) u.rem(4);
+  cursor: pointer;
+
+  &:focus-visible {
+    background-color: var(--card-background-color-hover);
+  }
+
+  @include u.breakpoint-up('small') {
+    gap: u.rem(12);
+    padding: u.rem(16) u.rem(16) u.rem(8);
+  }
+}
+
+.avatar {
+  width: u.rem(48);
+  border-radius: 50%;
+}
+
+.mainContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: u.rem(8);
+
+  @include u.breakpoint-up('small') {
+    gap: u.rem(12);
+  }
+}
+
+.upperPanel {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: start;
+  gap: u.rem(6);
+  color: var(--text-muted-color);
+  font-size: var(--fs-200);
+
+  @include u.breakpoint-up('small') {
+    font-size: var(--fs-300);
+  }
+
+  .usernames {
+    display: grid;
+    grid-auto-flow: column;
+    gap: u.rem(4);
+
+    .username {
+      color: var(--text-muted-color);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .name {
+      color: var(--text-color);
+      font-weight: var(--fw-bold);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.content {
+  text-align: initial;
+  padding-bottom: u.rem(8);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr;
+  justify-items: start;
+
+  .replies,
+  .likes,
+  .share {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    font-size: var(--fs-200);
+    background-color: inherit;
+    color: var(--text-muted-color);
+    transition: color 180ms ease-out;
+
+    @include u.breakpoint-up('small') {
+      gap: u.rem(8);
+    }
+
+    &.liked {
+      color: var(--color-like);
+    }
+
+    .iconBackground {
+      background-color: inherit;
+      color: inherit;
+      padding: u.rem(8);
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      transition: background-color 180ms ease-out;
+
+      &:focus-visible {
+        outline: u.rem(2) solid var(--color-primary);
+      }
+
+      .icon {
+        font-size: var(--fs-400);
+        transition: transform 60ms cubic-bezier(0.555, -0.175, 0.575, 1.38);
+      }
+    }
+
+    &:active {
+      color: var(--color-primary);
+
+      .iconBackground {
+        background-color: hsl(var(--color-primary-hsl) / 10%);
+
+        .icon {
+          transform: scale(1.2);
+        }
+      }
+
+      &.likes {
+        color: var(--color-like);
+
+        .iconBackground {
+          background-color: hsl(var(--color-like-hsl) / 10%);
+        }
+      }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: var(--color-primary);
+
+        .iconBackground {
+          background-color: hsl(var(--color-primary-hsl) / 10%);
+        }
+
+        &.likes {
+          color: var(--color-like);
+
+          .iconBackground {
+            background-color: hsl(var(--color-like-hsl) / 10%);
+          }
+        }
+      }
+    }
+  }
+}

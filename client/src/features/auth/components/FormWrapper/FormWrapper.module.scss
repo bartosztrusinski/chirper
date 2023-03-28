@@ -1,0 +1,23 @@
+@use '../../../../assets/styles/util' as u;
+
+.form {
+  display: grid;
+  gap: u.rem(18);
+
+  @include u.breakpoint-up('small') {
+    gap: u.rem(24);
+  }
+
+  @include u.breakpoint-up('medium') {
+    gap: u.rem(30);
+  }
+}
+
+.logInLink {
+  font-size: var(--fs-200);
+  color: var(--text-muted-color);
+
+  @include u.breakpoint-up('medium') {
+    font-size: var(--fs-300);
+  }
+}

@@ -1,0 +1,58 @@
+@use '../../../assets/styles/util' as u;
+
+:root {
+  --textarea-transition-time: 200ms;
+  --textarea-padding: #{u.rem(12)};
+}
+
+.textareaContainer {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  background-color: var(--background-color);
+  font-size: var(--fs-300);
+  border: u.rem(2) solid var(--border-color);
+  border-radius: u.rem(4);
+  cursor: text;
+  transition: border-color var(--textarea-transition-time) ease-in-out;
+
+  .placeholder {
+    position: absolute;
+    top: var(--textarea-padding);
+    padding-inline: var(--textarea-padding);
+    color: var(--text-muted-color);
+    pointer-events: none;
+    transition-property: transform, background-color, color;
+    transition-duration: var(--input-transition-time);
+    transition-timing-function: ease-in-out;
+  }
+
+  &:focus-within {
+    border-color: var(--color-primary);
+
+    .placeholder {
+      background-color: inherit;
+      color: var(--color-primary);
+      font-weight: var(--fw-bold);
+      transform: translateY(-100%) scale(88%);
+    }
+  }
+
+  .textarea {
+    background-color: inherit;
+    color: inherit;
+    outline: none;
+    border: none;
+    min-width: 0;
+    padding: var(--textarea-padding);
+    resize: none;
+    overflow: hidden;
+
+    &:not(:placeholder-shown) ~ .placeholder {
+      transform: translateY(-100%) scale(88%);
+      background-color: inherit;
+      font-weight: var(--fw-bold);
+    }
+  }
+}

@@ -1,10 +1,10 @@
 import './App.scss';
 import { Outlet } from '@tanstack/react-location';
-import QueryProvider from './components/QueryProvider';
-import RouterProvider from './components/RouterProvider';
-import ThemeProvider from './components/ThemeProvider';
-import ModalProvider from './components/ModalProvider';
-import Toaster from './components/Toaster';
+import QueryProvider from './context/QueryContext';
+import RouterProvider from './context/RouterContext';
+import ThemeProvider from './context/ThemeContext';
+import ModalProvider from './context/ModalContext';
+import Toaster from './components/ui/Toaster';
 
 const App = () => {
   return (

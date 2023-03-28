@@ -1,0 +1,76 @@
+@use '../../../assets/styles/util/' as u;
+
+:root {
+  --button-background-color: var(--color-primary);
+  --button-text-color: var(--color-light-80);
+  --button-outline-color: var(--color-green-80);
+}
+
+@mixin button-colors($bg, $text, $outline, $bg-hover) {
+  --button-background-color: #{$bg};
+  --button-text-color: #{$text};
+  --button-outline-color: #{$outline};
+
+  &:hover:not(:disabled) {
+    --button-background-color: #{$bg-hover};
+  }
+}
+
+.button {
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
+  box-shadow: var(--shadow-small);
+  font-weight: var(--fw-semi-bold);
+  border-radius: u.rem(12);
+  border: none;
+  cursor: pointer;
+  padding: u.rem(12) u.rem(24);
+  outline-offset: u.rem(2);
+  transition: background-color 140ms ease-out,
+    transform 140ms cubic-bezier(0.555, -0.175, 0.575, 1.38);
+
+  &:focus-visible {
+    outline-color: var(--button-outline-color);
+  }
+
+  &:hover {
+    transform: scale(1.048);
+  }
+
+  &:active {
+    transform: none;
+  }
+
+  &:disabled {
+    transform: none;
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  &.primary {
+    @include button-colors(
+      var(--color-primary),
+      var(--color-light-80),
+      var(--color-green-20),
+      var(--color-green-30)
+    );
+  }
+
+  &.light {
+    @include button-colors(
+      var(--color-light-80),
+      var(--color-dark-10),
+      var(--color-light-20),
+      var(--color-light-70)
+    );
+  }
+
+  &.dark {
+    @include button-colors(
+      var(--color-dark-10),
+      var(--color-light-60),
+      var(--color-dark-80),
+      var(--color-dark-30)
+    );
+  }
+}

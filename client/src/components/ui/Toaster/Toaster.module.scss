@@ -1,0 +1,34 @@
+@use '../../../assets/styles/util' as u;
+
+:root {
+  --toast-color: var(--color-light-80);
+  --toast-success-color: var(--color-primary);
+  --toast-error-color: var(--color-error);
+}
+
+.container {
+  top: u.rem(12) !important;
+  bottom: u.rem(12) !important;
+
+  &.space {
+    bottom: calc(var(--bottom-panel-height) + u.rem(8)) !important;
+  }
+}
+
+@mixin toast {
+  color: var(--toast-color) !important;
+  font-weight: var(--fw-semi-bold) !important;
+  user-select: none;
+}
+
+.success {
+  @include toast;
+
+  background-color: var(--toast-success-color) !important;
+}
+
+.error {
+  @include toast;
+
+  background-color: var(--toast-error-color) !important;
+}

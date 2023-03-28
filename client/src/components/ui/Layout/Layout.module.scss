@@ -1,0 +1,160 @@
+@use '../../../assets/styles/util' as u;
+
+:root {
+  --viewport-height: 100%;
+  --bottom-panel-height: #{u.rem(67)};
+
+  @include u.breakpoint-up('medium') {
+    --bottom-panel-height: #{u.rem(72)};
+  }
+}
+
+[data-theme='light'] {
+  --bottom-panel-background-color: hsl(var(--color-light-80-hsl) / 85%);
+}
+
+[data-theme='dark'] {
+  --bottom-panel-background-color: hsl(var(--color-dark-10-hsl) / 85%);
+}
+
+.container {
+  min-height: 100vh;
+  min-height: var(--viewport-height);
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 0 env(safe-area-inset-right) 0 env(safe-area-inset-left);
+}
+
+.grid {
+  overscroll-behavior: contain;
+  display: grid;
+  grid-template-columns: 1fr;
+
+  @include u.breakpoint-up('small') {
+    grid-template-columns: u.rem(90) auto;
+  }
+
+  @include u.breakpoint-up('medium') {
+    grid-template-columns:
+      minmax(u.rem(90), 1fr)
+      minmax(auto, u.rem(650))
+      1fr;
+  }
+
+  @include u.breakpoint-up('large') {
+    grid-template-columns:
+      minmax(u.rem(90), 1fr)
+      minmax(auto, u.rem(650))
+      minmax(u.rem(250), 1fr);
+  }
+
+  @include u.breakpoint-up('xlarge') {
+    grid-template-columns:
+      u.rem(250)
+      u.rem(650)
+      minmax(u.rem(250), u.rem(300));
+    justify-content: center;
+  }
+}
+
+.main {
+  padding-bottom: calc(var(--bottom-panel-height) + u.rem(24));
+
+  @include u.breakpoint-up('small') {
+    border-left: u.rem(1) solid var(--border-color);
+  }
+
+  @include u.breakpoint-up('medium') {
+    border-right: u.rem(1) solid var(--border-color);
+  }
+}
+
+.sidebar {
+  position: sticky;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  height: calc(var(--viewport-height) - var(--header-height));
+  height: calc(100dvh - var(--header-height));
+  overscroll-behavior: contain;
+  overflow-y: auto;
+  padding: u.rem(12) u.rem(19);
+
+  @include u.breakpoint-up('xlarge') {
+    padding-top: u.rem(20);
+  }
+
+  &.withPanel {
+    padding-bottom: calc(var(--bottom-panel-height) + u.rem(12));
+  }
+
+  &.nav {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: u.rem(24);
+
+    @include u.breakpoint-up('medium') {
+      grid-template-rows: auto 1fr;
+    }
+  }
+
+  .button {
+    justify-self: end;
+    align-self: start;
+    font-size: var(--fs-400);
+    padding: 0;
+
+    @include u.breakpoint-up('xlarge') {
+      justify-self: stretch;
+      padding-block: u.rem(10);
+    }
+
+    .icon {
+      margin: u.rem(12);
+      font-size: var(--fs-600);
+    }
+  }
+}
+
+.authPanel {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 3;
+  height: var(--bottom-panel-height);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: u.rem(12);
+  padding: u.rem(10) u.rem(25);
+  background-color: var(--color-primary);
+  color: var(--color-light-80);
+
+  @include u.breakpoint-up('medium') {
+    padding-inline: u.rem(60);
+    justify-content: center;
+    grid-template-columns:
+      minmax(auto, u.rem(400))
+      minmax(auto, u.rem(110))
+      minmax(auto, u.rem(110));
+  }
+
+  @include u.breakpoint-up('xlarge') {
+    margin-left: u.rem(-50);
+  }
+
+  .mainText {
+    font-size: var(--fs-500);
+    font-weight: var(--fw-bold);
+  }
+
+  .subText {
+    font-size: var(--fs-200);
+  }
+}
+
+.createChirpButton {
+  position: fixed;
+  bottom: u.rem(12);
+  right: u.rem(12);
+  font-size: var(--fs-600);
+  padding: u.rem(12);
+}

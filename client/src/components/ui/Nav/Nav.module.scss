@@ -1,0 +1,11 @@
+@use '../../../assets/styles/util' as u;
+
+.list {
+  display: grid;
+  gap: u.rem(12);
+  justify-content: end;
+
+  &.nameShown {
+    justify-content: stretch;
+  }
+}

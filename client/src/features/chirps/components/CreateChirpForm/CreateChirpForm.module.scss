@@ -1,0 +1,95 @@
+@use '../../../../assets/styles/util/' as u;
+
+@mixin card {
+  background-color: var(--card-background-color);
+  border: u.rem(1) solid var(--border-color);
+  border-radius: u.rem(8);
+  box-shadow: var(--shadow-small);
+  padding: u.rem(12);
+}
+
+.card {
+  @include card;
+
+  display: grid;
+  grid-template-columns: u.rem(48) 1fr;
+  align-items: start;
+  gap: u.rem(12);
+  border-width: u.rem(2);
+  cursor: text;
+
+  &:focus-within {
+    border-color: var(--color-primary);
+
+    &.invalidInput {
+      outline-color: var(--color-error);
+    }
+  }
+
+  .avatar {
+    border-radius: 50%;
+  }
+
+  .form {
+    display: grid;
+    align-items: end;
+    gap: u.rem(6);
+
+    @include u.breakpoint-up('small') {
+      grid-template-columns: 1fr auto;
+      gap: u.rem(16);
+    }
+
+    .contentInput {
+      font-size: var(--fs-400);
+      resize: none;
+      overflow: hidden;
+      background-color: transparent;
+      color: var(--text-color);
+      padding-block: u.rem(12);
+      border: none;
+      outline: none;
+
+      &:disabled {
+        color: var(--text-muted-color);
+      }
+    }
+
+    .submitButton {
+      padding: u.rem(10) clamp(u.rem(16), u.rem(14.4) + 0.5vw, u.rem(24));
+      font-size: var(--fs-200);
+    }
+
+    & > :last-child {
+      place-self: end;
+      margin: 0 0 u.rem(6);
+    }
+  }
+}
+
+.errorMessage {
+  color: var(--color-error);
+  font-size: var(--fs-200);
+  padding: u.rem(4);
+}
+
+.toast {
+  display: grid;
+  grid-auto-flow: column;
+  gap: u.rem(8);
+
+  .message {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .link {
+    color: var(--text-color);
+    font-weight: var(--fw-bold);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

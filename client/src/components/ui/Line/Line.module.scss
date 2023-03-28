@@ -1,0 +1,10 @@
+@use '../../../assets/styles/util' as u;
+
+.line {
+  background-color: var(--border-color);
+  padding: u.rem(0.5);
+
+  &.bold {
+    padding: u.rem(1);
+  }
+}

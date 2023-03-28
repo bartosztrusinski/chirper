@@ -1,0 +1,10 @@
+@use '../../../assets/styles/util' as u;
+
+.container {
+  text-align: center;
+  margin: u.rem(12);
+
+  @include u.breakpoint-up('small') {
+    margin: u.rem(16);
+  }
+}

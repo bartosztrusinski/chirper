@@ -1,0 +1,14 @@
+@use '../../../assets/styles/util' as u;
+
+.themePanel {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: u.rem(8);
+  font-size: var(--fs-400);
+}
+
+.logOutButton {
+  margin-top: u.rem(16);
+}
