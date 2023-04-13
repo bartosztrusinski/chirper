@@ -65,7 +65,7 @@ const EditProfileModal = (props: ModalProps) => {
       onSuccess: (updatedProfile) => {
         reset({ ...updatedProfile });
         navigate({ to: '.' });
-        toast.success('Your profile was updated!');
+        toast.success('Profile updated!');
       },
       onError: (error) => {
         toast.error(getRequestErrorMessage(error));

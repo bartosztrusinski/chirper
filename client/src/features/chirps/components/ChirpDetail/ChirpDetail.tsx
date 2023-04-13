@@ -267,7 +267,7 @@ const ChirpDetail = () => {
           const toastId = toast.loading('Deleting your Chirp...');
           deleteChirp(chirp._id, {
             onSuccess: () => {
-              toast.success('Your Chirp was deleted', {
+              toast.success('Your Chirp has been deleted', {
                 id: toastId,
               });
               setIsConfirmModalOpen(false);

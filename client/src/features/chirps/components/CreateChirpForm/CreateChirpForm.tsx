@@ -58,7 +58,7 @@ const CreateChirpForm = ({ replyToId, autoFocus }: CreateChirpFormProps) => {
           modal.close();
           toast.success(
             <div className={styles.toast}>
-              <div className={styles.message}>Your chirp was created!</div>
+              <div className={styles.message}>Chirp created!</div>
               <Link className={styles.link} to={`/chirps/${newChirpId}`}>
                 View
               </Link>
