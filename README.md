@@ -1,4 +1,4 @@
-<img src="https://user-images.githubusercontent.com/33166095/231520414-ffa85122-2465-4eed-a93f-3aec25210cf2.png" align="right" hspace="1" vspace="1">
+<img src="https://user-images.githubusercontent.com/33166095/231520414-ffa85122-2465-4eed-a93f-3aec25210cf2.png" align="right" alt="Chirper logo">
 
 # Chirper
 
@@ -45,3 +45,13 @@
 - Client & server side authentication
 - Client & server side authorization
 - Client & server side validation
+
+## Screenshots
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/33166095/231905408-0668e5f0-1a6a-4edf-9a07-2da9dab2fbb0.png" alt="Chirper home page">
+  <img src="https://user-images.githubusercontent.com/33166095/231905442-d154de85-be67-4e37-a753-22bb61ad08b7.png" alt="Chirper user profile">
+  <img src="https://user-images.githubusercontent.com/33166095/231905460-409e399e-5b3c-406c-bfe0-b79464f318c3.png" alt="Chirper search page">
+</p>
+
+
