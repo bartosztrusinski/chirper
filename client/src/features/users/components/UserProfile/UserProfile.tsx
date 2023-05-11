@@ -133,11 +133,15 @@ const UserProfile = () => {
             onClick={() => {
               if (!currentUser) {
                 modal.openFollowPrompt(user.username);
+                return;
               }
 
               if (isCurrentUserProfile) {
                 navigate({ search: { dialog: 'edit-profile' }, replace: true });
-              } else if (user.isFollowed) {
+                return;
+              }
+                                                           
+              if (user.isFollowed) {
                 setIsConfirmModalOpen(true);
               } else {
                 followUser(user.username, {
