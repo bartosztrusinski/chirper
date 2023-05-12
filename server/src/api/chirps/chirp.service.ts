@@ -18,7 +18,6 @@ const findMany = async (
 ) => {
   const query = ChirpModel.find(filter)
     .select(select)
-    // .select({ score: { $meta: 'textScore' } })
     .populate(populate)
     .sort(sort);
 

@@ -17,10 +17,7 @@ const findMany = async (
   limit?: number,
   skip?: number
 ) => {
-  const query = UserModel.find(filter)
-    .select(select)
-    // .select({ score: { $meta: 'textScore' } })
-    .sort(sort);
+  const query = UserModel.find(filter).select(select).sort(sort);
 
   if (limit) query.limit(limit);
   if (skip) query.skip(skip);

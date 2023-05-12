@@ -182,7 +182,6 @@ const signUp = async (
   req: Request<{}, SuccessResponse, UserControllers.SignUp['body']>,
   res: Response<SuccessResponse>
 ) => {
-  // verify email
   const { username, email, password, name } = req.body;
 
   res.status(400);
@@ -292,7 +291,6 @@ const updateEmail = async (
   req: Request<{}, SuccessResponse, UserControllers.UpdateEmail['body']>,
   res: Response<SuccessResponse>
 ) => {
-  // verify new email
   const { currentUserId } = <
     { currentUserId: UserControllers.UpdateEmail['currentUserId'] }
   >req;
