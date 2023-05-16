@@ -26,7 +26,7 @@ const from = createInputSchema('from').optional();
 const parentId = stringId.optional();
 
 const includeReplies = createInputSchema('includeReplies')
-  .default('false')
+  .default('true')
   .transform(stringToBoolean);
 
 const expandAuthor = createInputSchema('expandAuthor')
