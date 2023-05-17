@@ -1,7 +1,6 @@
 import styles from './ChirpDetail.module.scss';
 import defaultAvatar from '../../../../assets/images/default_avatar.png';
 import CreateChirpForm from '../CreateChirpForm';
-import ReplyChirps from '../ReplyChirps';
 import useLikeChirp from '../../hooks/useLikeChirp';
 import useManageChirp from '../../hooks/useManageChirp';
 import Container from '../../../../components/ui/Container';
@@ -29,6 +28,7 @@ import { BsTrash as DeleteIcon } from '@react-icons/all-files/bs/BsTrash';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Link,
+  Outlet,
   useLocation,
   useMatch,
   useNavigate,
@@ -237,7 +237,7 @@ const ChirpDetail = () => {
           </div>
         )}
 
-        <ReplyChirps chirpId={chirp._id} />
+        <Outlet />
       </section>
 
       <Modal
