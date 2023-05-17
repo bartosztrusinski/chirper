@@ -6,7 +6,7 @@ type ParamsGenerics = DefaultGenerics['Params'];
 type SearchGenerics = DefaultGenerics['Search'];
 
 interface SearchParams extends SearchGenerics {
-  query: string;
+  query?: string;
   sortOrder?: 'relevant' | 'recent' | 'popular';
   from?: string;
   includeReplies?: boolean;

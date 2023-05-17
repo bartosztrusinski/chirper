@@ -4,7 +4,7 @@ import { SearchParams } from '../../../../interface';
 import chirpKeys from '../../queryKeys';
 
 interface SearchChirpsProps {
-  searchParams: SearchParams;
+  searchParams: Partial<SearchParams>;
 }
 
 const SearchChirps = ({ searchParams }: SearchChirpsProps) => {

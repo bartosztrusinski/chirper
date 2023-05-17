@@ -14,7 +14,7 @@ type UpdateFilter = 'create' | 'delete';
 const chirpKeys = {
   all: () => ['chirps'] as const,
   lists: () => [...chirpKeys.all(), 'list'] as const,
-  list: (filter: ListFilter, id?: string | SearchParams) => {
+  list: (filter: ListFilter, id?: string | Partial<SearchParams>) => {
     const keys = [...chirpKeys.lists(), filter] as const;
 
     if (id) {

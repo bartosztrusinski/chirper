@@ -24,7 +24,7 @@ const Search = () => {
   }, []);
 
   return searchParams.query ? (
-    <SearchChirps searchParams={searchParams as SearchParams} />
+    <SearchChirps searchParams={searchParams} />
   ) : (
     <Container>
       <Heading size='small'>What&apos;s on your mind? 💭</Heading>
