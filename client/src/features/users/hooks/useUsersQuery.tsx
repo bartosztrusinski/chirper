@@ -1,13 +1,19 @@
-import { User, UsersResponse } from '../interface';
 import useCurrentUser from './useCurrentUser';
+import userKeys from '../queryKeys';
+import { User, UsersResponse } from '../interface';
+import {
+  fetchFollowedUsernames,
+  fetchUser,
+  fetchFollowedUsers,
+  fetchFollowingUsers,
+  fetchLikingUsers,
+} from '../api';
 import {
   useInfiniteQuery,
   UseInfiniteQueryResult,
   useQuery,
   UseQueryResult,
 } from '@tanstack/react-query';
-import { publicClient } from '../../../apiClient';
-import userKeys from '../queryKeys';
 
 type UseUsersQuery = ({
   queryFn,
@@ -16,68 +22,6 @@ type UseUsersQuery = ({
   queryFn: (sinceId?: string) => Promise<UsersResponse>;
   queryKeys: readonly unknown[];
 }) => UseInfiniteQueryResult<UsersResponse>;
-
-const fetchUser = async (username: string) => {
-  const params = {
-    userFields: 'username, profile, metrics, createdAt',
-  };
-
-  const { data } = await publicClient.get<{ data: User }>(
-    `/users/${username}`,
-    { params },
-  );
-
-  return data.data;
-};
-
-const fetchLikingUsers = async (chirpId: string, sinceId?: string) => {
-  const params = { userFields: 'username, profile', sinceId };
-
-  const { data } = await publicClient.get<UsersResponse>(
-    `/chirps/${chirpId}/liking-users`,
-    { params },
-  );
-
-  return data;
-};
-
-const fetchFollowedUsers = async (username: string, sinceId?: string) => {
-  const params = { userFields: 'username, profile', sinceId };
-
-  const { data } = await publicClient.get<UsersResponse>(
-    `/users/${username}/followed`,
-    {
-      params,
-    },
-  );
-
-  return data;
-};
-
-const fetchFollowingUsers = async (username: string, sinceId?: string) => {
-  const params = { userFields: 'username, profile', sinceId };
-
-  const { data } = await publicClient.get<UsersResponse>(
-    `/users/${username}/following`,
-    { params },
-  );
-
-  return data;
-};
-
-const fetchFollowedUsernames = async (
-  username: string,
-  userIds?: string[],
-): Promise<string[]> => {
-  const params = { userIds };
-
-  const { data } = await publicClient.get<UsersResponse>(
-    `/users/${username}/followed`,
-    { params },
-  );
-
-  return data.data.map((user) => user.username);
-};
 
 const useUserQuery = (username: string): UseQueryResult<User> => {
   const { currentUser } = useCurrentUser();
