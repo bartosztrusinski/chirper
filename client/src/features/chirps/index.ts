@@ -11,9 +11,23 @@ import SearchChirps from './components/SearchChirps';
 import CreatedChirpsPanel from './components/CreatedChirpsPanel';
 import CreatedChirpsWithRepliesPanel from './components/CreatedChirpsWithRepliesPanel';
 import LikedChirpsPanel from './components/LikedChirpsPanel';
+import ReplyChirps from './components/ReplyChirps';
+
+import {
+  loadChirp,
+  loadAllChirps,
+  loadFeedChirps,
+  loadLikedChirps,
+  loadReplyChirps,
+  loadSearchChirps,
+  loadUserChirps,
+  loadUserChirpsWithReplies,
+} from './queryLoaders';
+
 import type { Chirp, ChirpLocationGenerics } from './interface';
 
 export {
+  ReplyChirps,
   ChirpDetail,
   CreatedChirpsPanel,
   CreatedChirpsWithRepliesPanel,
@@ -29,4 +43,12 @@ export {
   SearchChirps,
   Chirp,
   ChirpLocationGenerics,
+  loadChirp,
+  loadAllChirps,
+  loadFeedChirps,
+  loadLikedChirps,
+  loadReplyChirps,
+  loadSearchChirps,
+  loadUserChirps,
+  loadUserChirpsWithReplies,
 };
