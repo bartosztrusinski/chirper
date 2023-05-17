@@ -11,18 +11,29 @@ import {
   Route,
   Outlet,
   Navigate,
+  DefaultGenerics,
 } from '@tanstack/react-location';
 import {
   ChirpDetail,
   CreatedChirpsPanel,
   CreatedChirpsWithRepliesPanel,
   LikedChirpsPanel,
+  loadAllChirps,
+  loadChirp,
+  loadFeedChirps,
+  loadLikedChirps,
+  loadReplyChirps,
+  loadSearchChirps,
+  loadUserChirps,
+  loadUserChirpsWithReplies,
+  ReplyChirps,
 } from '../features/chirps';
-import { UserProfile } from '../features/users';
+import { loadUser, UserProfile } from '../features/users';
+import { LocationGenerics } from '../interface';
 
 const location = new ReactLocation();
 
-const routes: Route[] = [
+const routes: Route<LocationGenerics & DefaultGenerics>[] = [
   { path: '/', element: <Landing /> },
   {
     element: (
@@ -35,7 +46,11 @@ const routes: Route[] = [
       {
         path: 'home',
         children: [
-          { path: '/', element: <Home /> },
+          {
+            path: '/',
+            loader: loadFeedChirps,
+            element: <Home />,
+          },
           { element: <Navigate to='.' /> },
         ],
       },
@@ -43,7 +58,11 @@ const routes: Route[] = [
       {
         path: 'search',
         children: [
-          { path: '/', element: <Search /> },
+          {
+            path: '/',
+            loader: ({ search: { query } }) => loadSearchChirps(query),
+            element: <Search />,
+          },
           { element: <Navigate to='.' /> },
         ],
       },
@@ -51,7 +70,11 @@ const routes: Route[] = [
       {
         path: 'explore',
         children: [
-          { path: '/', element: <Explore /> },
+          {
+            path: '/',
+            loader: loadAllChirps,
+            element: <Explore />,
+          },
           { element: <Navigate to='.' /> },
         ],
       },
@@ -62,8 +85,14 @@ const routes: Route[] = [
           { path: '/', element: <NotFound /> },
           {
             path: ':id',
+            loader: ({ params: { id } }) => loadChirp(id),
+            element: <ChirpDetail />,
             children: [
-              { path: '/', element: <ChirpDetail /> },
+              {
+                path: '/',
+                loader: ({ params: { id } }) => loadReplyChirps(id),
+                element: <ReplyChirps />,
+              },
               { element: <Navigate to={`.`} /> },
             ],
           },
@@ -76,20 +105,35 @@ const routes: Route[] = [
           { path: '/', element: <NotFound /> },
           {
             path: ':username',
+            loader: ({ params: { username } }) => loadUser(username),
             element: <UserProfile />,
             children: [
-              { path: '/', element: <CreatedChirpsPanel /> },
+              {
+                path: '/',
+                loader: ({ params: { username } }) => loadUserChirps(username),
+                element: <CreatedChirpsPanel />,
+              },
               {
                 path: 'with-replies',
                 children: [
-                  { path: '/', element: <CreatedChirpsWithRepliesPanel /> },
+                  {
+                    path: '/',
+                    loader: ({ params: { username } }) =>
+                      loadUserChirpsWithReplies(username),
+                    element: <CreatedChirpsWithRepliesPanel />,
+                  },
                   { element: <Navigate to={`.`} /> },
                 ],
               },
               {
                 path: 'likes',
                 children: [
-                  { path: '/', element: <LikedChirpsPanel /> },
+                  {
+                    path: '/',
+                    loader: ({ params: { username } }) =>
+                      loadLikedChirps(username),
+                    element: <LikedChirpsPanel />,
+                  },
                   { element: <Navigate to={`.`} /> },
                 ],
               },
