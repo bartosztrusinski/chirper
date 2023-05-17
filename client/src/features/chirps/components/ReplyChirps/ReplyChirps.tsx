@@ -1,17 +1,19 @@
 import ChirpList from '../ChirpList';
 import { useReplyChirpsQuery } from '../../hooks/useChirpsQuery';
 import chirpKeys from '../../queryKeys';
+import { ChirpLocationGenerics } from '../../interface';
+import { useMatch } from '@tanstack/react-location';
 
-interface ReplyChirpsProps {
-  chirpId: string;
-}
+const ReplyChirps = () => {
+  const {
+    params: { id },
+  } = useMatch<ChirpLocationGenerics>();
 
-const ReplyChirps = ({ chirpId }: ReplyChirpsProps) => {
   return (
     <section>
       <ChirpList
-        queryKeys={chirpKeys.list('replies', chirpId)}
-        queryData={useReplyChirpsQuery(chirpId)}
+        queryKeys={chirpKeys.list('replies', id)}
+        queryData={useReplyChirpsQuery(id)}
       />
     </section>
   );
