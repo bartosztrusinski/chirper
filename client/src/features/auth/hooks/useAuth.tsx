@@ -1,45 +1,22 @@
+import authKeys from '../queryKeys';
 import { useCurrentUser } from '../../users';
 import { Token } from '../../../interface';
-import { publicClient } from '../../../apiClient';
-import { UseMutateFunction, useMutation } from '@tanstack/react-query';
-import { LogInData, RegisterData } from '../interface';
-import authKeys from '../queryKeys';
+import { LogInData, SignUpData } from '../interface';
+import { fetchLogIn, fetchSignUp } from '../api';
+import {
+  UseMutateFunction,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 
-interface UseAuth {
+type UseAuth = () => {
   logIn: UseMutateFunction<Token, unknown, LogInData, unknown>;
-  signUp: UseMutateFunction<Token, unknown, RegisterData, unknown>;
+  signUp: UseMutateFunction<Token, unknown, SignUpData, unknown>;
   logOut: () => void;
-}
-
-const fetchLogIn = async ({ login, password }: LogInData) => {
-  const { data } = await publicClient.post<{ data: { authToken: string } }>(
-    `/users/login`,
-    { login, password },
-  );
-
-  return data.data.authToken;
 };
 
-const fetchSignUp = async ({
-  username,
-  name,
-  email,
-  password,
-}: RegisterData) => {
-  const { data } = await publicClient.post<{ data: { authToken: string } }>(
-    '/users',
-    {
-      username,
-      name,
-      email,
-      password,
-    },
-  );
-
-  return data.data.authToken;
-};
-
-const useAuth = (): UseAuth => {
+const useAuth: UseAuth = () => {
+  const queryClient = useQueryClient();
   const { setUser, clearUser } = useCurrentUser();
 
   const { mutate: logIn } = useMutation(authKeys.update('logIn'), fetchLogIn, {
@@ -52,7 +29,10 @@ const useAuth = (): UseAuth => {
     { onSuccess: (token: Token) => setUser(token) },
   );
 
-  const logOut = () => clearUser();
+  const logOut = () => {
+    clearUser();
+    queryClient.clear();
+  };
 
   return { logIn, signUp, logOut };
 };
