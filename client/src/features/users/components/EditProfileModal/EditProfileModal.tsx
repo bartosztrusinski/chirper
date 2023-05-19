@@ -8,6 +8,8 @@ import Button from '../../../../components/ui/Button';
 import useCurrentUser from '../../hooks/useCurrentUser';
 import useManageUser from '../../hooks/useManageUser';
 import getRequestErrorMessage from '../../../../utils/getResponseErrorMessage';
+import filterObject from '../../../../utils/filterObject';
+import userKeys from '../../queryKeys';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,7 +17,6 @@ import { useNavigate } from '@tanstack/react-location';
 import { toast } from 'react-hot-toast';
 import { useIsMutating } from '@tanstack/react-query';
 import { name, bio, location, website } from '../../schema';
-import userKeys from '../../queryKeys';
 
 type Inputs = z.infer<typeof inputsSchema>;
 
@@ -25,14 +26,6 @@ const inputsSchema = z.object({
   location,
   website,
 });
-
-const filterObject = <T,>(
-  object: Record<string, T>,
-  predicate: (val: T, key: string) => boolean,
-): Record<string, T> =>
-  Object.fromEntries(
-    Object.entries(object).filter(([key, val]) => predicate(val, key)),
-  );
 
 const EditProfileModal = (props: ModalProps) => {
   const { currentUser } = useCurrentUser();

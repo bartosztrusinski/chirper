@@ -4,20 +4,13 @@ import Heading from '../Heading';
 import Input from '../../form/Input';
 import Toggle from '../../form/Toggle';
 import Button from '../Button';
+import filterObject from '../../../utils/filterObject';
 import { useNavigate, useSearch } from '@tanstack/react-location';
 import { useForm } from 'react-hook-form';
 import { HiSelector as SelectIcon } from '@react-icons/all-files/hi/HiSelector';
 import { LocationGenerics, SearchParams } from '../../../interface';
 
 type Inputs = SearchParams;
-
-const filterObject = <T,>(
-  object: Record<string, T>,
-  predicate: (val: T, key: string) => boolean,
-): Record<string, T> =>
-  Object.fromEntries(
-    Object.entries(object).filter(([key, val]) => predicate(val, key)),
-  );
 
 const SearchOptionsModal = (props: ModalProps) => {
   const navigate = useNavigate<LocationGenerics>();
