@@ -1,17 +1,26 @@
+import { Token } from '../../interface';
+import { User } from '../users';
+
 interface LogInData {
   login: string;
   password: string;
 }
 
-interface RegisterData {
+interface SignUpData {
   email: string;
-  name: string;
+  name: User['profile']['name'];
   password: string;
-  username: string;
+  username: User['username'];
 }
 
-interface RegisterFormData extends RegisterData {
+interface SignUpFormData extends SignUpData {
   passwordConfirm: string;
 }
 
-export { LogInData, RegisterData, RegisterFormData };
+interface TokenResponse {
+  data: {
+    authToken: Token;
+  };
+}
+
+export { LogInData, SignUpData, SignUpFormData, TokenResponse };
