@@ -64,6 +64,12 @@ const SearchBar = () => {
     });
   };
 
+  const handleModalClose = () =>
+    navigate({
+      search: (old) => ({ ...old, dialog: undefined }),
+      replace: true,
+    });
+
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <input
@@ -91,12 +97,7 @@ const SearchBar = () => {
 
       <SearchOptionsModal
         isOpen={isAdvancedSearchOpen && isSearchPage}
-        onRequestClose={() =>
-          navigate({
-            search: (old) => ({ ...old, dialog: undefined }),
-            replace: true,
-          })
-        }
+        onRequestClose={handleModalClose}
       />
     </form>
   );
