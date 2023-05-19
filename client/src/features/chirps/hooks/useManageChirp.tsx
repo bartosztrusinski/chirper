@@ -1,39 +1,18 @@
-import { Chirp } from '../interface';
-import { privateClient } from '../../../apiClient';
+import { Chirp, CreateChirp } from '../interface';
 import {
   UseMutateFunction,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
 import chirpKeys from '../queryKeys';
+import { fetchCreateChirp, fetchDeleteChirp } from '../api';
 
-interface UseManageChirp {
+type UseManageChirp = () => {
   createChirp: UseMutateFunction<Chirp['_id'], unknown, CreateChirp, unknown>;
   deleteChirp: UseMutateFunction<void, unknown, string, unknown>;
-}
-
-interface CreateChirp {
-  content: Chirp['content'];
-  parentChirpId?: Chirp['_id'];
-}
-
-const fetchCreateChirp = async ({
-  content,
-  parentChirpId,
-}: CreateChirp): Promise<Chirp['_id']> => {
-  const { data } = await privateClient.post<{ data: Chirp['_id'] }>('/chirps', {
-    content,
-    parentId: parentChirpId,
-  });
-
-  return data.data;
 };
 
-const fetchDeleteChirp = async (chirpId: string) => {
-  await privateClient.delete(`/chirps/${chirpId}`);
-};
-
-const useManageChirp = (): UseManageChirp => {
+const useManageChirp: UseManageChirp = () => {
   const queryClient = useQueryClient();
 
   const { mutate: createChirp } = useMutation(

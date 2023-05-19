@@ -1,22 +1,20 @@
 import { useCurrentUser, userKeys } from '../../users';
 import { Chirp, ChirpsResponse } from '../interface';
-import { privateClient } from '../../../apiClient';
 import {
   InfiniteData,
+  UseMutateFunction,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
 import chirpKeys from '../queryKeys';
+import { fetchLikeChirp, fetchUnlikeChirp } from '../api';
 
-const fetchLikeChirp = async (chirp: Chirp) => {
-  await privateClient.post(`/me/likes`, { chirpId: chirp._id });
+type UseLikeChirp = (queryKeys: readonly unknown[]) => {
+  likeChirp: UseMutateFunction<void, unknown, Chirp, unknown>;
+  unlikeChirp: UseMutateFunction<void, unknown, Chirp, unknown>;
 };
 
-const fetchUnlikeChirp = async (chirp: Chirp) => {
-  await privateClient.delete(`/me/likes/${chirp._id}`);
-};
-
-const useLikeChirp = (queryKeys: readonly unknown[]) => {
+const useLikeChirp: UseLikeChirp = (queryKeys) => {
   const queryClient = useQueryClient();
   const { currentUser } = useCurrentUser();
   const chirpsQueryKeys = queryKeys;

@@ -1,10 +1,10 @@
 import { User } from '../users';
 import { privateClient, publicClient } from '../../apiClient';
-import { Chirp, ChirpsResponse } from './interface';
+import { Chirp, ChirpsResponse, CreateChirp } from './interface';
 import { SearchParams } from '../../interface';
 
-const fetchChirps = async (sinceId?: string) => {
-  const params: Record<string, unknown> = {
+const fetchChirps = async (sinceId?: Chirp['_id']): Promise<ChirpsResponse> => {
+  const params = {
     expandAuthor: true,
     userFields: 'username, profile',
     chirpFields: 'content, createdAt, metrics, replies',
@@ -18,21 +18,27 @@ const fetchChirps = async (sinceId?: string) => {
   return data;
 };
 
-const fetchChirp = async (id: string) => {
+const fetchChirp = async (chirpId: Chirp['_id']): Promise<Chirp> => {
   const params = {
     expandAuthor: true,
     userFields: 'username, profile',
     chirpFields: 'content, createdAt, metrics, replies',
   };
 
-  const { data } = await publicClient.get<{ data: Chirp }>(`/chirps/${id}`, {
-    params,
-  });
+  const { data } = await publicClient.get<{ data: Chirp }>(
+    `/chirps/${chirpId}`,
+    {
+      params,
+    },
+  );
 
   return data.data;
 };
 
-const fetchReplyChirps = async (chirpId: string, sinceId?: string) => {
+const fetchReplyChirps = async (
+  chirpId: Chirp['_id'],
+  sinceId?: Chirp['_id'],
+): Promise<ChirpsResponse> => {
   const params = {
     expandAuthor: true,
     userFields: 'username, profile',
@@ -48,7 +54,10 @@ const fetchReplyChirps = async (chirpId: string, sinceId?: string) => {
   return data;
 };
 
-const fetchUserChirps = async (username: string, sinceId?: string) => {
+const fetchUserChirps = async (
+  username: User['username'],
+  sinceId?: Chirp['_id'],
+): Promise<ChirpsResponse> => {
   const params = {
     expandAuthor: true,
     userFields: 'username, profile',
@@ -65,9 +74,9 @@ const fetchUserChirps = async (username: string, sinceId?: string) => {
 };
 
 const fetchUserChirpsWithReplies = async (
-  username: string,
-  sinceId?: string,
-) => {
+  username: User['username'],
+  sinceId?: Chirp['_id'],
+): Promise<ChirpsResponse> => {
   const params = {
     expandAuthor: true,
     userFields: 'username, profile',
@@ -84,7 +93,10 @@ const fetchUserChirpsWithReplies = async (
   return data;
 };
 
-const fetchLikedChirps = async (username: string, sinceId?: string) => {
+const fetchLikedChirps = async (
+  username: User['_id'],
+  sinceId?: Chirp['_id'],
+): Promise<ChirpsResponse> => {
   const params = {
     expandAuthor: true,
     userFields: 'username, profile',
@@ -100,7 +112,10 @@ const fetchLikedChirps = async (username: string, sinceId?: string) => {
   return data;
 };
 
-const fetchFeedChirps = async (username: string, sinceId?: string) => {
+const fetchFeedChirps = async (
+  username: User['_id'],
+  sinceId?: Chirp['_id'],
+): Promise<ChirpsResponse> => {
   const params = {
     expandAuthor: true,
     userFields: 'username, profile',
@@ -119,7 +134,7 @@ const fetchFeedChirps = async (username: string, sinceId?: string) => {
 const fetchSearchChirps = async (
   searchParams: Partial<SearchParams>,
   nextPage?: string,
-) => {
+): Promise<ChirpsResponse> => {
   const params = {
     expandAuthor: true,
     userFields: 'username, profile',
@@ -151,6 +166,30 @@ const fetchLikedChirpIds = async (
   return data.data.map((chirp) => chirp._id);
 };
 
+const fetchLikeChirp = async (chirp: Chirp): Promise<void> => {
+  await privateClient.post(`/me/likes`, { chirpId: chirp._id });
+};
+
+const fetchUnlikeChirp = async (chirp: Chirp): Promise<void> => {
+  await privateClient.delete(`/me/likes/${chirp._id}`);
+};
+
+const fetchCreateChirp = async ({
+  content,
+  parentChirpId,
+}: CreateChirp): Promise<Chirp['_id']> => {
+  const { data } = await privateClient.post<{ data: Chirp['_id'] }>('/chirps', {
+    content,
+    parentId: parentChirpId,
+  });
+
+  return data.data;
+};
+
+const fetchDeleteChirp = async (chirpId: Chirp['_id']): Promise<void> => {
+  await privateClient.delete(`/chirps/${chirpId}`);
+};
+
 export {
   fetchChirps,
   fetchChirp,
@@ -161,4 +200,8 @@ export {
   fetchFeedChirps,
   fetchSearchChirps,
   fetchLikedChirpIds,
+  fetchLikeChirp,
+  fetchUnlikeChirp,
+  fetchCreateChirp,
+  fetchDeleteChirp,
 };

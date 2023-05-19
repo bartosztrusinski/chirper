@@ -19,6 +19,11 @@ interface ChirpsResponse {
   };
 }
 
+interface CreateChirp {
+  content: Chirp['content'];
+  parentChirpId?: Chirp['_id'];
+}
+
 interface ChirpParams extends ParamsGenerics {
   id: string;
 }
@@ -26,4 +31,4 @@ interface ChirpParams extends ParamsGenerics {
 type ChirpLocationGenerics = LocationGenerics &
   MakeGenerics<{ Params: ChirpParams }>;
 
-export { Chirp, ChirpsResponse, ChirpLocationGenerics };
+export { Chirp, ChirpsResponse, CreateChirp, ChirpLocationGenerics };
