@@ -13,9 +13,11 @@ interface ToastProps {
 
 const ToastBar = ({ t, duration }: ToastProps) => {
   useEffect(() => {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       toast.dismiss(t.id);
     }, duration);
+
+    return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
