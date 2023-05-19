@@ -1,0 +1,59 @@
+@use '../../../../assets/styles/util/' as u;
+
+.inputGroup {
+  display: grid;
+  gap: u.rem(12);
+
+  .errorMessage {
+    color: var(--color-error);
+    font-size: var(--fs-200);
+    padding: u.rem(4);
+  }
+
+  .invalidInput:focus-within {
+    border-color: var(--color-error);
+
+    .placeholder {
+      color: var(--color-error);
+    }
+  }
+}
+
+.stepIndexPanel {
+  justify-self: end;
+  font-size: var(--fs-200);
+  margin-right: u.rem(10);
+
+  .backButton {
+    position: absolute;
+    left: 0;
+    background-color: transparent;
+    color: inherit;
+    font-size: var(--fs-500);
+    padding: u.rem(2);
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.form {
+  display: grid;
+  gap: u.rem(18);
+
+  @include u.breakpoint-up('small') {
+    gap: u.rem(24);
+  }
+
+  @include u.breakpoint-up('medium') {
+    gap: u.rem(30);
+  }
+}
+
+.logInLink {
+  font-size: var(--fs-200);
+  color: var(--text-muted-color);
+
+  @include u.breakpoint-up('medium') {
+    font-size: var(--fs-300);
+  }
+}

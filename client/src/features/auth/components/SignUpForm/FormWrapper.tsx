@@ -1,12 +1,11 @@
-import styles from './FormWrapper.module.scss';
+import styles from './SignUp.module.scss';
 import Loader from '../../../../components/ui/Loader';
 import Button from '../../../../components/ui/Button';
-import { MultiStepContext } from '../RegisterForm';
-import { useModal } from '../../../../context/ModalContext';
-import { MultiStep } from '../../hooks/useMultiStep';
-import { ComponentPropsWithoutRef, useContext } from 'react';
-import { useIsMutating } from '@tanstack/react-query';
 import authKeys from '../../queryKeys';
+import { useModal } from '../../../../context/ModalContext';
+import { ComponentPropsWithoutRef } from 'react';
+import { useIsMutating } from '@tanstack/react-query';
+import { useSignUpForm } from './SignUpFormContext';
 
 interface FormWrapperProps extends ComponentPropsWithoutRef<'form'> {
   isInvalid?: boolean;
@@ -19,7 +18,7 @@ const FormWrapper = ({
 }: FormWrapperProps) => {
   const isSigningUp = useIsMutating(authKeys.update('signUp'));
   const { LogInLink } = useModal();
-  const { isFirstStep, isLastStep } = useContext(MultiStepContext) as MultiStep;
+  const { isFirstStep, isLastStep } = useSignUpForm();
 
   return (
     <>

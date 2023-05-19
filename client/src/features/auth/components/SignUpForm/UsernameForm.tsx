@@ -1,41 +1,27 @@
-import styles from './UsernameForm.module.scss';
-import FormWrapper from '../FormWrapper';
+import styles from './SignUp.module.scss';
+import FormWrapper from './FormWrapper';
 import Heading from '../../../../components/ui/Heading';
 import MutedText from '../../../../components/ui/MutedText';
 import Input from '../../../../components/form/Input';
 import getRequestErrorMessage from '../../../../utils/getResponseErrorMessage';
 import toast from 'react-hot-toast';
-import axios from 'axios';
 import * as z from 'zod';
 import { username } from '../../schema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { publicClient } from '../../../../apiClient';
-import { RegisterFormData } from '../../interface';
-
-interface UsernameFormProps {
-  formData: RegisterFormData;
-  onSubmit: (data: Partial<RegisterFormData>) => void;
-}
+import { fetchIsUsernameTaken } from '../../api';
+import { useSignUpForm } from './SignUpFormContext';
+import { useNavigate } from '@tanstack/react-location';
+import useAuth from '../../hooks/useAuth';
 
 type Inputs = z.infer<typeof inputsSchema>;
 
 const inputsSchema = z.object({ username });
 
-const fetchIsUsernameTaken = async (username: string) => {
-  try {
-    await publicClient.head('/users', { params: { username } });
-    return true;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
-      return false;
-    }
-
-    throw error;
-  }
-};
-
-const UsernameForm = ({ formData, onSubmit }: UsernameFormProps) => {
+const UsernameForm = () => {
+  const { formData, resetSteps, clearFormData } = useSignUpForm();
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -49,7 +35,7 @@ const UsernameForm = ({ formData, onSubmit }: UsernameFormProps) => {
     },
   });
 
-  const onUsernameSubmit = async (inputs: Inputs) => {
+  const onSubmit = async (inputs: Inputs) => {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
@@ -62,16 +48,32 @@ const UsernameForm = ({ formData, onSubmit }: UsernameFormProps) => {
           type: 'manual',
           message: 'Username is already taken',
         });
-      } else {
-        onSubmit(inputs);
+        return;
       }
+
+      signUp(
+        { ...formData, ...inputs },
+        {
+          onSuccess: () => {
+            navigate({ to: '/' });
+            toast.success('Welcome to Chirper!');
+          },
+          onError: (error) => {
+            toast.error(getRequestErrorMessage(error));
+          },
+          onSettled: () => {
+            clearFormData();
+            resetSteps();
+          },
+        },
+      );
     } catch (error) {
       toast.error(getRequestErrorMessage(error));
     }
   };
 
   return (
-    <FormWrapper onSubmit={handleSubmit(onUsernameSubmit)} isInvalid={!isValid}>
+    <FormWrapper onSubmit={handleSubmit(onSubmit)} isInvalid={!isValid}>
       <div>
         <Heading size='large'>
           <h1>What should we call you?</h1>

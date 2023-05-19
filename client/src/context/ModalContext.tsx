@@ -4,7 +4,7 @@ import LikePromptModal from '../components/ui/LikePromptModal';
 import FollowPromptModal from '../components/ui/FollowPromptModal';
 import { useCurrentUser } from '../features/users';
 import { Chirp, CreateChirpModal } from '../features/chirps';
-import { LogInForm, RegisterForm } from '../features/auth';
+import { LogInForm, SignUpForm } from '../features/auth';
 import { LocationGenerics } from '../interface';
 import {
   createContext,
@@ -169,7 +169,7 @@ const ModalProvider = ({ children }: ModalProviderProps) => {
         <LogInForm />
       </Modal>
 
-      <RegisterForm isOpen={isSignUpOpen} onRequestClose={close} />
+      <SignUpForm isOpen={isSignUpOpen} onRequestClose={close} />
 
       <ReplyPromptModal
         isOpen={isReplyPromptOpen}

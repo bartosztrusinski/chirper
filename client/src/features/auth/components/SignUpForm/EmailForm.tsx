@@ -1,40 +1,22 @@
-import styles from './EmailForm.module.scss';
-import FormWrapper from '../FormWrapper';
+import styles from './SignUp.module.scss';
+import FormWrapper from './FormWrapper';
 import Heading from '../../../../components/ui/Heading';
 import Input from '../../../../components/form/Input';
 import getRequestErrorMessage from '../../../../utils/getResponseErrorMessage';
-import axios from 'axios';
 import * as z from 'zod';
-import { publicClient } from '../../../../apiClient';
 import { email, name } from '../../schema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-hot-toast';
-import { RegisterFormData } from '../../interface';
-
-interface EmailFormProps {
-  formData: RegisterFormData;
-  onSubmit: (data: Partial<RegisterFormData>) => void;
-}
+import { fetchIsEmailTaken } from '../../api';
+import { useSignUpForm } from './SignUpFormContext';
 
 type Inputs = z.infer<typeof inputsSchema>;
 
 const inputsSchema = z.object({ email, name });
 
-const fetchIsEmailTaken = async (email: string) => {
-  try {
-    await publicClient.head('/users', { params: { email } });
-    return true;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
-      return false;
-    }
-
-    throw error;
-  }
-};
-
-const EmailForm = ({ formData, onSubmit }: EmailFormProps) => {
+const EmailForm = () => {
+  const { formData, setFormData, nextStep } = useSignUpForm();
   const {
     register,
     handleSubmit,
@@ -49,7 +31,7 @@ const EmailForm = ({ formData, onSubmit }: EmailFormProps) => {
     },
   });
 
-  const onEmailSubmit = async (inputs: Inputs) => {
+  const onSubmit = async (inputs: Inputs) => {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
@@ -63,7 +45,8 @@ const EmailForm = ({ formData, onSubmit }: EmailFormProps) => {
           message: 'Email is already taken',
         });
       } else {
-        onSubmit(inputs);
+        setFormData((prev) => ({ ...prev, ...inputs }));
+        nextStep();
       }
     } catch (error) {
       toast.error(getRequestErrorMessage(error));
@@ -71,7 +54,7 @@ const EmailForm = ({ formData, onSubmit }: EmailFormProps) => {
   };
 
   return (
-    <FormWrapper onSubmit={handleSubmit(onEmailSubmit)} isInvalid={!isValid}>
+    <FormWrapper onSubmit={handleSubmit(onSubmit)} isInvalid={!isValid}>
       <Heading size='large'>
         <h1>Create your account</h1>
       </Heading>

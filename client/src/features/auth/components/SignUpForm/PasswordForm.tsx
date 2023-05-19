@@ -1,17 +1,13 @@
-import styles from './PasswordForm.module.scss';
-import FormWrapper from '../FormWrapper';
+import styles from './SignUp.module.scss';
+import FormWrapper from './FormWrapper';
 import Heading from '../../../../components/ui/Heading';
 import PasswordInput from '../../../../components/form/PasswordInput';
 import * as z from 'zod';
 import { password, passwordConfirm } from '../../schema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { RegisterFormData } from '../../interface';
-
-interface PasswordFormProps {
-  formData: RegisterFormData;
-  onSubmit: (data: Partial<RegisterFormData>) => void;
-}
+import { SignUpFormData } from '../../interface';
+import { useSignUpForm } from './SignUpFormContext';
 
 type Inputs = z.infer<typeof inputsSchema>;
 
@@ -22,7 +18,8 @@ const inputsSchema = z
     path: ['passwordConfirm'],
   });
 
-const PasswordForm = ({ formData, onSubmit }: PasswordFormProps) => {
+const PasswordForm = () => {
+  const { formData, setFormData, nextStep } = useSignUpForm();
   const {
     register,
     handleSubmit,
@@ -35,6 +32,15 @@ const PasswordForm = ({ formData, onSubmit }: PasswordFormProps) => {
       passwordConfirm: formData.passwordConfirm,
     },
   });
+
+  const onSubmit = (inputs: Partial<SignUpFormData>) => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
+    setFormData((prev) => ({ ...prev, ...inputs }));
+    nextStep();
+  };
 
   return (
     <FormWrapper onSubmit={handleSubmit(onSubmit)} isInvalid={!isValid}>
