@@ -40,4 +40,27 @@ interface UserParams extends ParamsGenerics {
 type UserLocationGenerics = LocationGenerics &
   MakeGenerics<{ Params: UserParams }>;
 
-export { User, UsersResponse, UserLocationGenerics, StoredUser };
+interface UpdateUsernameParams {
+  newUsername: User['username'];
+  password: string;
+}
+
+interface UpdateEmailParams {
+  newEmail: string;
+  password: string;
+}
+
+interface UpdatePasswordParams {
+  newPassword: string;
+  password: string;
+}
+
+export {
+  User,
+  UsersResponse,
+  UserLocationGenerics,
+  StoredUser,
+  UpdateUsernameParams,
+  UpdateEmailParams,
+  UpdatePasswordParams,
+};

@@ -1,22 +1,20 @@
 import useCurrentUser from './useCurrentUser';
+import userKeys from '../queryKeys';
 import { StoredUser, User, UsersResponse } from '../interface';
+import { fetchFollowUser, fetchUnfollowUser } from '../api';
 import {
   InfiniteData,
+  UseMutateFunction,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import { privateClient } from '../../../apiClient';
-import userKeys from '../queryKeys';
 
-const fetchFollowUser = async (newFollowUsername: string) => {
-  await privateClient.post(`/me/followed`, { username: newFollowUsername });
+type UseFollowUser = (queryKeys: readonly unknown[]) => {
+  followUser: UseMutateFunction<void, unknown, User['username'], unknown>;
+  unfollowUser: UseMutateFunction<void, unknown, User['username'], unknown>;
 };
 
-const fetchUnfollowUser = async (deletedFollowUsername: string) => {
-  await privateClient.delete(`/me/followed/${deletedFollowUsername}`);
-};
-
-const useFollowUser = (queryKeys: readonly unknown[]) => {
+const useFollowUser: UseFollowUser = (queryKeys) => {
   const queryClient = useQueryClient();
   const { currentUser, updateUser } = useCurrentUser();
   const usersQueryKeys = queryKeys;

@@ -1,37 +1,18 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { publicClient } from '../../../apiClient';
-import { Token } from '../../../interface';
-import { StoredUser, User } from '../interface';
 import userKeys from '../queryKeys';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Token } from '../../../interface';
+import { StoredUser } from '../interface';
 import { getStoredUser, clearStoredUser, setStoredUser } from '../storage';
+import { fetchCurrentUser } from '../api';
 
-interface UseCurrentUser {
+type UseCurrentUser = () => {
   currentUser: StoredUser | undefined;
   setUser: (token: Token) => void;
   updateUser: (user: StoredUser) => void;
   clearUser: () => void;
-}
-
-const fetchCurrentUser = async (
-  token?: Token,
-  signal?: AbortSignal,
-): Promise<StoredUser> => {
-  if (!token) throw new Error('No token provided');
-  const params = { userFields: 'username, profile, metrics, createdAt' };
-  const headers = { Authorization: `Bearer ${token}` };
-
-  const { data } = await publicClient.get<{ data: User }>('/me', {
-    params,
-    signal,
-    headers,
-  });
-
-  const user = data.data;
-
-  return { ...user, token };
 };
 
-const useCurrentUser = (): UseCurrentUser => {
+const useCurrentUser: UseCurrentUser = () => {
   const queryClient = useQueryClient();
 
   const { data: currentUser } = useQuery<StoredUser>(

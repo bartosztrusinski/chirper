@@ -1,93 +1,49 @@
 import useCurrentUser from './useCurrentUser';
-import { StoredUser, User } from '../interface';
-import { privateClient } from '../../../apiClient';
+import {
+  StoredUser,
+  UpdateEmailParams,
+  UpdatePasswordParams,
+  UpdateUsernameParams,
+  User,
+} from '../interface';
 import {
   UseMutateFunction,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
 import userKeys from '../queryKeys';
+import {
+  fetchDeleteCurrentOne,
+  fetchUpdateEmail,
+  fetchUpdatePassword,
+  fetchUpdateProfile,
+  fetchUpdateUsername,
+} from '../api';
 
-interface UseManageUser {
+type UseManageUser = () => {
   updateProfile: UseMutateFunction<
-    StoredUser['profile'],
+    User['profile'],
     unknown,
-    StoredUser['profile'],
+    User['profile'],
     unknown
   >;
   updateUsername: UseMutateFunction<
-    StoredUser['username'],
+    User['username'],
     unknown,
-    UpdateUsername,
+    UpdateUsernameParams,
     unknown
   >;
-  updateEmail: UseMutateFunction<string, unknown, UpdateEmail, unknown>;
-  updatePassword: UseMutateFunction<void, unknown, UpdatePassword, unknown>;
+  updateEmail: UseMutateFunction<string, unknown, UpdateEmailParams, unknown>;
+  updatePassword: UseMutateFunction<
+    void,
+    unknown,
+    UpdatePasswordParams,
+    unknown
+  >;
   deleteUser: UseMutateFunction<void, unknown, string, unknown>;
-}
-
-interface UpdateUsername {
-  newUsername: StoredUser['username'];
-  password: string;
-}
-
-interface UpdateEmail {
-  newEmail: string;
-  password: string;
-}
-
-interface UpdatePassword {
-  newPassword: string;
-  password: string;
-}
-
-const fetchUpdateProfile = async (
-  profile: User['profile'],
-): Promise<User['profile']> => {
-  const { data } = await privateClient.put<{ data: User['profile'] }>(
-    '/me/profile',
-    profile,
-  );
-
-  return data.data;
 };
 
-const fetchUpdateUsername = async ({
-  newUsername,
-  password,
-}: UpdateUsername): Promise<User['username']> => {
-  const { data } = await privateClient.put<{ data: User['username'] }>(
-    '/me/username',
-    { newUsername, password },
-  );
-
-  return data.data;
-};
-
-const fetchUpdateEmail = async ({
-  newEmail,
-  password,
-}: UpdateEmail): Promise<string> => {
-  const { data } = await privateClient.put<{ data: string }>('/me/email', {
-    newEmail,
-    password,
-  });
-
-  return data.data;
-};
-
-const fetchUpdatePassword = async ({
-  password,
-  newPassword,
-}: UpdatePassword): Promise<void> => {
-  await privateClient.put('/me/password', { password, newPassword });
-};
-
-const fetchDeleteCurrentOne = async (password: string): Promise<void> => {
-  await privateClient.delete('/me', { data: { password } });
-};
-
-const useManageUser = (): UseManageUser => {
+const useManageUser: UseManageUser = () => {
   const queryClient = useQueryClient();
   const { currentUser, updateUser, clearUser } = useCurrentUser();
 
