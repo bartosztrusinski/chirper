@@ -1,7 +1,7 @@
 import chirpKeys from '../queryKeys';
 import { Chirp, ChirpsResponse } from '../interface';
 import { SearchParams } from '../../../interface';
-import { useCurrentUser } from '../../users';
+import { User, useCurrentUser } from '../../users';
 import {
   fetchChirp,
   fetchChirps,
@@ -20,15 +20,16 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-type UseChirpsQuery = ({
-  queryFn,
-  queryKeys,
-}: {
-  queryFn: (sinceId?: string) => Promise<ChirpsResponse>;
-  queryKeys: readonly unknown[];
-}) => UseInfiniteQueryResult<ChirpsResponse>;
+type UseChirpsQuery = (
+  queryFn: (sinceId?: Chirp['_id']) => Promise<ChirpsResponse>,
+  queryKeys: readonly unknown[],
+) => UseChirpsQueryResult;
 
-const useChirpQuery = (chirpId: string): UseQueryResult<Chirp> => {
+type UseChirpsQueryResult = UseInfiniteQueryResult<ChirpsResponse>;
+
+type UseChirpQuery = (chirpId: Chirp['_id']) => UseQueryResult<Chirp>;
+
+const useChirpQuery: UseChirpQuery = (chirpId) => {
   const { currentUser } = useCurrentUser();
 
   return useQuery({
@@ -50,7 +51,7 @@ const useChirpQuery = (chirpId: string): UseQueryResult<Chirp> => {
   });
 };
 
-const useChirpsQuery: UseChirpsQuery = ({ queryFn, queryKeys }) => {
+const useChirpsQuery: UseChirpsQuery = (queryFn, queryKeys) => {
   const { currentUser } = useCurrentUser();
 
   return useInfiniteQuery(
@@ -79,67 +80,53 @@ const useChirpsQuery: UseChirpsQuery = ({ queryFn, queryKeys }) => {
   );
 };
 
-const useReplyChirpsQuery = (
-  chirpId: string,
-): UseInfiniteQueryResult<ChirpsResponse> => {
-  return useChirpsQuery({
-    queryKeys: chirpKeys.list('replies', chirpId),
-    queryFn: (sinceId?: string) => fetchReplyChirps(chirpId, sinceId),
-  });
-};
+const useReplyChirpsQuery = (chirpId: Chirp['_id']): UseChirpsQueryResult =>
+  useChirpsQuery(
+    (sinceId?: Chirp['_id']) => fetchReplyChirps(chirpId, sinceId),
+    chirpKeys.list('replies', chirpId),
+  );
 
-const useUserChirpsQuery = (
-  username: string,
-): UseInfiniteQueryResult<ChirpsResponse> => {
-  return useChirpsQuery({
-    queryKeys: chirpKeys.list('noReplies', username),
-    queryFn: (sinceId?: string) => fetchUserChirps(username, sinceId),
-  });
-};
+const useUserChirpsQuery = (username: User['username']): UseChirpsQueryResult =>
+  useChirpsQuery(
+    (sinceId?: Chirp['_id']) => fetchUserChirps(username, sinceId),
+    chirpKeys.list('noReplies', username),
+  );
 
 const useUserChirpsWithRepliesQuery = (
-  username: string,
-): UseInfiniteQueryResult<ChirpsResponse> => {
-  return useChirpsQuery({
-    queryKeys: chirpKeys.list('withReplies', username),
-    queryFn: (sinceId?: string) =>
-      fetchUserChirpsWithReplies(username, sinceId),
-  });
-};
+  username: User['username'],
+): UseChirpsQueryResult =>
+  useChirpsQuery(
+    (sinceId?: Chirp['_id']) => fetchUserChirpsWithReplies(username, sinceId),
+    chirpKeys.list('withReplies', username),
+  );
 
 const useUserLikedChirpsQuery = (
-  username: string,
-): UseInfiniteQueryResult<ChirpsResponse> => {
-  return useChirpsQuery({
-    queryKeys: chirpKeys.list('liked', username),
-    queryFn: (sinceId?: string) => fetchLikedChirps(username, sinceId),
-  });
-};
+  username: User['username'],
+): UseChirpsQueryResult =>
+  useChirpsQuery(
+    (sinceId?: Chirp['_id']) => fetchLikedChirps(username, sinceId),
+    chirpKeys.list('liked', username),
+  );
 
-const useAllChirpsQuery = (): UseInfiniteQueryResult<ChirpsResponse> => {
-  return useChirpsQuery({
-    queryKeys: chirpKeys.list('all'),
-    queryFn: (sinceId?: string) => fetchChirps(sinceId),
-  });
-};
+const useAllChirpsQuery = (): UseChirpsQueryResult =>
+  useChirpsQuery(
+    (sinceId?: Chirp['_id']) => fetchChirps(sinceId),
+    chirpKeys.list('all'),
+  );
 
-const useFeedChirpsQuery = (
-  username: string,
-): UseInfiniteQueryResult<ChirpsResponse> => {
-  return useChirpsQuery({
-    queryKeys: chirpKeys.list('feed', username),
-    queryFn: (sinceId?: string) => fetchFeedChirps(username, sinceId),
-  });
-};
+const useFeedChirpsQuery = (username: User['username']): UseChirpsQueryResult =>
+  useChirpsQuery(
+    (sinceId?: Chirp['_id']) => fetchFeedChirps(username, sinceId),
+    chirpKeys.list('feed', username),
+  );
 
 const useSearchChirpsQuery = (
   searchParams: Partial<SearchParams>,
-): UseInfiniteQueryResult<ChirpsResponse> => {
-  return useChirpsQuery({
-    queryKeys: chirpKeys.list('search', searchParams),
-    queryFn: (sinceId?: string) => fetchSearchChirps(searchParams, sinceId),
-  });
-};
+): UseChirpsQueryResult =>
+  useChirpsQuery(
+    (sinceId?: Chirp['_id']) => fetchSearchChirps(searchParams, sinceId),
+    chirpKeys.list('search', searchParams),
+  );
 
 export {
   useChirpQuery,

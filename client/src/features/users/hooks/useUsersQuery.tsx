@@ -15,15 +15,16 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-type UseUsersQuery = ({
-  queryFn,
-  queryKeys,
-}: {
-  queryFn: (sinceId?: string) => Promise<UsersResponse>;
-  queryKeys: readonly unknown[];
-}) => UseInfiniteQueryResult<UsersResponse>;
+type UseUsersQuery = (
+  queryFn: (sinceId?: User['_id']) => Promise<UsersResponse>,
+  queryKeys: readonly unknown[],
+) => UseUsersQueryResult;
 
-const useUserQuery = (username: string): UseQueryResult<User> => {
+type UseUsersQueryResult = UseInfiniteQueryResult<UsersResponse>;
+
+type UseUserQuery = (username: User['_id']) => UseQueryResult<User>;
+
+const useUserQuery: UseUserQuery = (username) => {
   const { currentUser } = useCurrentUser();
 
   return useQuery(
@@ -46,7 +47,7 @@ const useUserQuery = (username: string): UseQueryResult<User> => {
   );
 };
 
-const useUsersQuery: UseUsersQuery = ({ queryFn, queryKeys }) => {
+const useUsersQuery: UseUsersQuery = (queryFn, queryKeys) => {
   const { currentUser } = useCurrentUser();
 
   return useInfiniteQuery(
@@ -75,32 +76,23 @@ const useUsersQuery: UseUsersQuery = ({ queryFn, queryKeys }) => {
   );
 };
 
-const useFollowedUsersQuery = (
-  username: string,
-): UseInfiniteQueryResult<UsersResponse> => {
-  return useUsersQuery({
-    queryKeys: userKeys.list('followed', username),
-    queryFn: (sinceId?: string) => fetchFollowedUsers(username, sinceId),
-  });
-};
+const useFollowedUsersQuery = (username: string): UseUsersQueryResult =>
+  useUsersQuery(
+    (sinceId?: string) => fetchFollowedUsers(username, sinceId),
+    userKeys.list('followed', username),
+  );
 
-const useFollowingUsersQuery = (
-  username: string,
-): UseInfiniteQueryResult<UsersResponse> => {
-  return useUsersQuery({
-    queryKeys: userKeys.list('following', username),
-    queryFn: (sinceId?: string) => fetchFollowingUsers(username, sinceId),
-  });
-};
+const useFollowingUsersQuery = (username: string): UseUsersQueryResult =>
+  useUsersQuery(
+    (sinceId?: string) => fetchFollowingUsers(username, sinceId),
+    userKeys.list('following', username),
+  );
 
-const useLikingUsersQuery = (
-  chirpId: string,
-): UseInfiniteQueryResult<UsersResponse> => {
-  return useUsersQuery({
-    queryKeys: userKeys.list('liking', chirpId),
-    queryFn: (sinceId?: string) => fetchLikingUsers(chirpId, sinceId),
-  });
-};
+const useLikingUsersQuery = (chirpId: string): UseUsersQueryResult =>
+  useUsersQuery(
+    (sinceId?: string) => fetchLikingUsers(chirpId, sinceId),
+    userKeys.list('liking', chirpId),
+  );
 
 export {
   useUserQuery,
