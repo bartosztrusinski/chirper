@@ -1,4 +1,6 @@
-<img src="https://user-images.githubusercontent.com/33166095/231520414-ffa85122-2465-4eed-a93f-3aec25210cf2.png" align="right" alt="Chirper logo">
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/33166095/231520414-ffa85122-2465-4eed-a93f-3aec25210cf2.png" alt="Chirper logo">
+</p>
 
 # Chirper
 
