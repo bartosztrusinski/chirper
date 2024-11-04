@@ -5,10 +5,10 @@
   "author": "Bartosz Trusiński",
   "scripts": {
     "build": "tsc",
-    "serve": "node dist/server.js",
+    "serve": "node dist",
     "start": "npm run serve",
     "watch-ts": "tsc -w",
-    "watch-node": "nodemon dist/server.js",
+    "watch-node": "nodemon dist",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\"  -c \"#3178c6.bold,#5ea450.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
     "lint": "tsc --noEmit && eslint \"src/**/*.{js,ts}\"",
     "lint-fix": "npm run lint -- --fix",
