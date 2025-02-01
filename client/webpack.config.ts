@@ -4,6 +4,9 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import HTMLWebpackPlugin from 'html-webpack-plugin';
 import ReactFastRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import 'webpack-dev-server';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -30,6 +33,9 @@ const config: webpack.Configuration = {
   devtool: 'source-map',
 
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env.API_BASE_URL': JSON.stringify(process.env.API_BASE_URL),
+    }),
     new MiniCssExtractPlugin({
       filename: filename('css'),
     }),

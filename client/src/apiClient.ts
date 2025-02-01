@@ -1,8 +1,10 @@
 import axios, { AxiosRequestConfig, CreateAxiosDefaults } from 'axios';
 import { getStoredUser } from './features/users';
 
+const apiBaseURL = process.env.API_BASE_URL ?? 'http://localhost:3000';
+
 const config: CreateAxiosDefaults = {
-  baseURL: 'https://chirper-api.up.railway.app/api',
+  baseURL: `${apiBaseURL}/api`,
 };
 
 const requestInterceptor = (config: AxiosRequestConfig): AxiosRequestConfig => {
