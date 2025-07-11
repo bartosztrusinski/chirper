@@ -1,4 +1,9 @@
-{ 
-  "version": 2, 
-  "rewrites": [{ "source": "/(.*)", "destination": "index.js" }] 
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/dist/index.js"
+    }
+  ]
 }
