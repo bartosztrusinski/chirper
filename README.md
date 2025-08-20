@@ -1,10 +1,6 @@
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/33166095/231520414-ffa85122-2465-4eed-a93f-3aec25210cf2.png" alt="Chirper logo">
-</p>
+# <img width="30" height="30" alt="Chirper logo" src="https://github.com/user-attachments/assets/ce56c0c1-7523-4621-8e66-6b427b0632b3" /> Chirper
 
-# Chirper
-
-**Chirper** is a social media web application based on Twitter. Create an account to post Chirps and follow other users or just explore what others have to say.
+Social media web application based on Twitter. Create an account to post Chirps and follow other users or just explore what others have to say.
 
 ## Technology
 
