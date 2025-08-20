@@ -1,17 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "builds": [
-    {
-      "src": "dist/index.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "dist/index.js"
-    }
-  ],
+  "builds": [{ "src": "dist/index.js", "use": "@vercel/node" }],
+  "rewrites": [{ "source": "/(.*)", "destination": "dist/index.js" }],
   "outputDirectory": "dist",
   "buildCommand": "npm run build"
 }
